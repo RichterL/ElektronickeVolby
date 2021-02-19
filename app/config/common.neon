@@ -19,3 +19,13 @@ di:
 
 services:
 	router: App\Router\RouterFactory::createRouter
+	authenticator: PasswordAuthenticator
+	- Models\AclModel
+	authorizatorFactory : AuthorizatorFactory
+	authorizator:
+		class: Nette\Security\Permission
+		factory: @authorizatorFactory::create()
+
+# security:
+# 	users:
+# 		admin: secret  # user 'admin', password 'secret'

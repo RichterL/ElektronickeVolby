@@ -1,0 +1,17 @@
+{block content}
+
+{dump}
+
+{foreach $users as $userItem}
+	<p>
+		{$userItem->name} | <a class="ajax" n:href="edit! $userItem->id">Edit</a>
+	</p>
+{/foreach}
+
+<a n:href="showUserForm!"> Add new user</a>
+{snippet userFormSnippet}
+	{if !empty($showUserForm)}
+		{control userForm}
+	{/if}
+{/snippet}
+{/block}
