@@ -12,14 +12,15 @@
 		"nette/database": "^3.1",
 		"nette/di": "^3.0",
 		"nette/finder": "^2.5",
-		"nette/forms": "^3.1",
+		"nette/forms": "^3.0",
 		"nette/http": "^3.1",
 		"nette/mail": "^3.1",
 		"nette/robot-loader": "^3.3",
 		"nette/security": "^3.1",
 		"nette/utils": "^3.2",
 		"latte/latte": "^2.9",
-		"tracy/tracy": "^2.8"
+		"tracy/tracy": "^2.8",
+		"contributte/forms-bootstrap": "^0.3.2"
 	},
 	"require-dev": {
 		"nette/tester": "^2.3",
