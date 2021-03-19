@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Testing key</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/js/crypto/sodium-plus.min.js"></script>
+<script>
+(async function() {
+    if (!window.sodium) window.sodium = await SodiumPlus.auto();
+
+    // You can now use the sodium object here.
+
+    // Just some example code to ensure it's running:
+    let random = await sodium.randombytes_buf(32);
+    let hash = await sodium.crypto_generichash('hello world');
+    console.log({
+        'random': random.toString('hex'),
+        'hash': hash.toString('hex')
+    });
+})();
+</script>
+</head>
+  <body>
+  </body>
+</html>
