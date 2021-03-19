@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Testing key</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="/js/crypto/jsbn.js"></script>
+  <script src="/js/crypto/jsbn2.js"></script>
+  <script src="/js/crypto/secure-random.js"></script>
+  <script src="/js/crypto/js-sha256@latest.js"></script>
+  <script src="/js/crypto/rsa.js"></script>
+
+	<script>
+	async function digestMessage(message) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return hash;
+}
+
+function messageToHash(message) {
+  const messageHash = jsSha256(message);
+  console.log("hash: " + messageHash);
+  return messageHash;
+}
+
+function messageToHashInt(message) {
+  const messageHash = messageToHash(message);
+  const messageBig = new BigInteger(messageHash, 16);
+  return messageBig;
+}
+
+function blind({ message, key, N, E }) {
+  const messageHash = messageToHashInt(message);
+  console.log("messageHashInt: " + messageHash.toString());
+  N = key ? key.keyPair.n : new BigInteger(N.toString());
+  E = key
+    ? new BigInteger(key.keyPair.e.toString())
+    : new BigInteger(E.toString());
+
+  const bigOne = new BigInteger('1');
+  let gcd;
+  let r;
+  do {
+    r = new BigInteger(secureRandom(64)).mod(N);
+    gcd = r.gcd(N);
+  } while (
+    !gcd.equals(bigOne) ||
+    r.compareTo(N) >= 0 ||
+    r.compareTo(bigOne) <= 0
+  );
+  const blinded = messageHash.multiply(r.modPow(E, N)).mod(N);
+  return {
+    blinded,
+    r,
+  };
+}
+
+function unblind({ signed, key, r, N }) {
+  r = new BigInteger(r.toString());
+  N = key ? key.keyPair.n : new BigInteger(N.toString());
+  signed = new BigInteger(signed.toString());
+  const unblinded = signed.multiply(r.modInverse(N)).mod(N);
+  return unblinded;
+}
+
+
+
+		var E = {$e};
+		var N = {$n};
+		var message = "Hello World!";
+	var blinded = blind({ "message": message, "N": {$n}, "E": {$e} });
+
+	// Example POST method implementation:
+async function postData(url = '', data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+    credentials: 'same-origin', // include, *same-origin, omit
+    headers: {
+      'Content-Type': 'application/json'
+      // 'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    redirect: 'follow', // manual, *follow, error
+    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+    body: JSON.stringify(data) // body data type must match "Content-Type" header
+  });
+  return response.json(); // parses JSON response into native JavaScript objects
+}
+
+postData({link sign!}, { 'blinded': blinded })
+  .then(data => {
+    console.log(data); // JSON data parsed by `data.json()` call
+	console.log("signed_64: "+ data.signed);
+	let signed = atob(data.signed);
+	console.log("signed: "+signed);
+	var unblinded = unblind({ "signed": signed, "r": blinded.r, "N": {$n} });
+	console.log(unblinded);
+	console.log(unblinded.toString());
+	postData({link decrypt!}, { "unblinded": unblinded, "message": message })
+	.then(data => {
+		console.log(data);
+	});
+  });
+
+	</script>
+
+</head>
+  <body>
+  </body>
+</html>

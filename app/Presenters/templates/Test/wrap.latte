@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Testing key</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="/js/crypto/jsbn.js"></script>
+  <script src="/js/crypto/jsbn2.js"></script>
+  <script src="/js/crypto/secure-random.js"></script>
+  <script src="/js/crypto/js-sha256@latest.js"></script>
+  <script src="/js/crypto/rsa.js"></script>
+  <script src="/js/crypto/main.js"></script>
+
+	<script>
+
+
+	async function getPublicKey() {
+		const key = await postData({link getPublicEncryptionKey!});
+		return key
+	}
+
+	async function getPrivateKey() {
+		const key = await postData({link getPrivateKey!});
+		return key
+	}
+
+	let iv;
+	let keys;
+	let x;
+	var message;
+	var msg;
+
+	async function main() {
+		keys = await getKeys()
+		console.log(keys)
+		message = 'Příliš žluťoučký kůň úpěl ďábelské ódy!'
+		{* let message = 'Hello World!' *}
+		let encrypted = await AESencrypt({
+			'key': keys.AESkey,
+			'message': message
+		})
+
+		console.log('encrypted')
+		console.log(encrypted)
+
+
+		let encodedKey = arrayBufferToBase64(await window.crypto.subtle.exportKey('raw', keys.AESkey))
+		console.log('encodedKey')
+		console.log(encodedKey)
+		let data = {
+			'key': encodedKey,
+			'iv': arrayBufferToBase64(iv)
+		}
+
+		console.log(String.fromCharCode.apply(null, new Uint8Array(await window.crypto.subtle.exportKey('raw', keys.AESkey))))
+		console.log(data)
+		let wrappedKey = await RSAencrypt({
+			'key': keys.publicCryptoKey,
+			'message': new TextEncoder().encode(JSON.stringify(data))
+		})
+
+		postData({link save!}, {'key': arrayBufferToBase64(wrappedKey), 'message': encrypted}).then(response => {
+			console.log(response);
+			msg = response.decryptedMessage
+
+		})
+
+		{* postData({link decrypt!}, { 'message': arrayBufferToBase64(wrappedKey) }).then(data => {
+			console.log(data)
+			console.log(JSON.parse(data.decrypted));
+			x = JSON.parse(data.decrypted)
+			let importedKey = window.crypto.subtle.importKey(
+				"raw",
+				base64ToArrayBuffer(x.key),
+				{
+					name: "AES-GCM",
+					length: 256,
+				},
+				true,
+				["encrypt", "decrypt"]
+			).then(importedKey => {
+				console.log(importedKey)
+				AESdecrypt({
+					'key': importedKey,
+					'ciphertext': encrypted,
+					'iv': base64ToArrayBuffer(x.iv)
+				}).then(decrypted => {
+					console.log('decrypted')
+					console.log(decrypted)
+				})
+
+
+			})
+
+		}); *}
+	}
+	main()
+
+	</script>
+
+</head>
+  <body>
+  </body>
+</html>
