@@ -4,9 +4,12 @@
 
 {foreach $users as $userItem}
 	<p>
-		{$userItem->name} | <a class="ajax" n:href="edit! $userItem->id">Edit</a>
+		{$userItem->getName()} {$userItem->surname} ({$userItem->getEmail()}) | <a class="ajax" n:href="edit! $userItem->getId()">Edit</a>
 	</p>
 {/foreach}
+
+{control usersGrid}
+{dump $users}
 
 <a n:href="showUserForm!"> Add new user</a>
 {snippet userFormSnippet}

@@ -11,14 +11,14 @@ class AuthorizatorFactory
 
 	private $model;
 
-	public function __construct(AclModel $model) {
+	public function __construct(AclModel $model)
+	{
 		$this->model = $model;
 	}
 
 	public function create(): Authorizator
 	{
 		$authorizator = new Permission();
-
 
 		foreach ($this->model->getRoles() as $roleId => $role) {
 			$authorizator->addRole($role->key, $role->parent ?? null);
@@ -29,10 +29,10 @@ class AuthorizatorFactory
 
 		$rules = $this->model->getRules();
 		foreach ($rules as $ruleId => $rule) {
-			$role = $rule->ref('roles')->key;
-			$resource = $rule->ref('resources')->key;
-			$privilege = $rule->ref('privileges')->key;
-			switch($rule->type) {
+			$role = $rule->ref('role')->key;
+			$resource = $rule->ref('resource')->key;
+			$privilege = $rule->ref('privilege')->key;
+			switch ($rule->type) {
 				case self::RULE_TYPE_ALLOW:
 					$authorizator->allow($role, $resource, $privilege);
 					break;

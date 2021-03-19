@@ -1,0 +1,17 @@
+{block content}
+<h1>Resources</h1>
+
+{foreach $resources as $id => $resource}
+	<p>
+		{$resource->name} | <a n:href=":edit $resource->id">Edit</a>
+	</p>
+{/foreach}
+
+<a n:href="showResourceForm!" class="ajax">Add new resource</a>
+{snippet resourceFormSnippet}
+	{if !empty($showResourceForm)}
+		{control resourceForm}
+	{/if}
+{/snippet}
+{/block}
+
