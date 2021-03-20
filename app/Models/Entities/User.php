@@ -8,8 +8,8 @@ use Models\Entities\Role\Role;
 class User extends Entity
 {
 	protected int $id = 0;
-	protected string $username;
-	protected string $password;
+	protected ?string $username = null;
+	protected ?string $password = null;
 	protected string $name;
 	protected string $surname;
 	protected string $email;
@@ -34,7 +34,7 @@ class User extends Entity
 
 	public function getUsername(): string
 	{
-		return $this->username;
+		return $this->username ?? $this->email;
 	}
 
 	public function setUsername(string $username): self
@@ -44,7 +44,7 @@ class User extends Entity
 		return $this;
 	}
 
-	public function getPassword(): string
+	public function getPassword(): ?string
 	{
 		return $this->password;
 	}

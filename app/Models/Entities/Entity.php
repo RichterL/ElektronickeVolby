@@ -27,7 +27,7 @@ abstract class Entity
 		if (method_exists($this, $method)) {
 			return $this->$method() ?? null;
 		}
-		if (property_exists($this, $key)) {
+		if (property_exists($this, $key) && isset($this->$key)) {
 			return $this->$key ?? null;
 		}
 	}
