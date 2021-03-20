@@ -16,6 +16,8 @@ di:
 		parameters: no
 		tags: no
 
+extensions:
+	dibi: Dibi\Bridges\Nette\DibiExtension22
 
 services:
 	router: App\Router\RouterFactory::createRouter
@@ -26,6 +28,14 @@ services:
 		class: Nette\Security\Permission
 		factory: @authorizatorFactory::create()
 
-# security:
-# 	users:
-# 		admin: secret  # user 'admin', password 'secret'
+	# data mappers
+	privilegeMapper: Models\Mappers\Db\PrivilegeMapper
+	iResourceMapper: Models\Mappers\Db\ResourceMapper
+	roleMapper : Models\Mappers\RoleMapper
+	userMapper : Models\Mappers\UserMapper
+
+	# repositories
+	privilegeRepository: Repositories\PrivilegeRepository
+	resourceRepository: Repositories\ResourceRepository
+	roleRepository: Repositories\RoleRepository
+	userRepository : Repositories\UserRepository
