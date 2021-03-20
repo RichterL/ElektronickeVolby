@@ -10,24 +10,7 @@
 
 <body>
 	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
-	<a n:href="Sign:out">Sign out</a>
-	<ul>
-		<li>
-			<a href="{link Homepage:}">Homepage</a>
-		</li>
-		<li>
-			<a href="{link Users:}">Users</a>
-		</li>
-		<li>
-			<a href="{link Roles:}">Roles</a>
-		</li>
-		<li>
-			<a href="{link Resources:}" id="nav-link-resources">Resources</a>
-		</li>
-		<li>
-			<a href="{link Resources:edit 2}">Resources - edit</a>
-		</li>
-	</ul>
+	{control menu}
 	{include content}
 
 	{block scripts}

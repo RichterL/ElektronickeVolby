@@ -12,7 +12,7 @@ use Nette;
 use Nette\Application\UI\Form;
 use Repositories\RoleRepository;
 
-final class RolesPresenter extends Nette\Application\UI\Presenter
+final class RolesPresenter extends DefaultPresenter
 {
 	private Nette\Database\Explorer $database;
 	private RoleRepository $repository;

@@ -12,7 +12,7 @@ use Nette\Application\UI\Form;
 use Repositories\ResourceRepository;
 use Repositories\PrivilegeRepository;
 
-final class ResourcesPresenter extends Nette\Application\UI\Presenter
+final class ResourcesPresenter extends DefaultPresenter
 {
 	private ResourceRepository $repository;
 	private PrivilegeRepository $privilegeRepository;
