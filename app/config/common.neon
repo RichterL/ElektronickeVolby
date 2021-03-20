@@ -19,7 +19,18 @@ di:
 
 services:
 	router: App\Router\RouterFactory::createRouter
-	authenticator: PasswordAuthenticator
+
+	# ldap settings from parameters: of local.neon
+	ldap: LDAP\Service(%ldap.server%, %ldap.baseDn%)
+
+	# set available authenticators
+	-
+		factory: LdapAuthenticator
+		autowired: self
+	-
+		factory: PasswordAuthenticator
+		autowired: self
+
 	- Models\AclModel
 	authorizatorFactory : AuthorizatorFactory
 	authorizator:
