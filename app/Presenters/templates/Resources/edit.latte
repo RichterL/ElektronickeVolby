@@ -1,0 +1,37 @@
+{block title}
+Edit resource - {$resource->name}
+{/block}
+{block content}
+	{snippet resourceFormSnippet}
+		{if !empty($showResourceForm)}
+			{control resourceForm}
+		{else}
+			Name : {$resource->name} <br>
+			Key : {$resource->key} <br>
+			<a n:href="editResource!" class="ajax">Edit</a>
+		{/if}
+	{/snippet}
+
+
+	List of privileges assigned to {$resource->name}
+	<ul>
+		{foreach $resource->privileges as $privilege}
+			<li>{$privilege->name}</li>
+		{/foreach}
+	</ul>
+
+	<a n:href="showPrivilegeForm!" n:if="empty($showPrivilegeForm)" class="ajax"> Add new privilege</a>
+	{snippet privilegeFormSnippet}
+		{if !empty($showPrivilegeForm)}
+			{control privilegeForm}
+		{/if}
+	{/snippet}
+{/block}
+
+{block scripts}
+<script>
+var element = document.getElementById('nav-link-resources')
+element.classList.add('c-active')
+element.closest('.c-sidebar-nav-dropdown').classList.add('c-show')
+</script>
+{/block}

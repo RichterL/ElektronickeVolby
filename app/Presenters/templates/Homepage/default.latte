@@ -1,5 +1,12 @@
+{block content}
 <h1>Hello World!</h1>
+<a n:href="Sign:out" n:if="$user->isLoggedIn()">Odhlasit</a><br>
 
+<ul>
+	<li n:if="$user->isAllowed('roles', 'view')"><a n:href="Roles:">ACL - Roles</a></li>
+	<li n:if="$user->isAllowed('users', 'view')"><a n:href="Users:">ACL - Users</a></li>
+</ul>
 Excepteur labore minim est et culpa mollit consectetur consectetur. Dolor adipisicing in consequat enim proident nulla exercitation do deserunt. Incididunt aliqua laborum nulla ea culpa officia. Reprehenderit labore pariatur officia deserunt ea ipsum excepteur cillum non et deserunt sunt est aliqua. Lorem enim pariatur reprehenderit officia anim officia dolor.
 
 Minim deserunt reprehenderit dolor eu eiusmod eu deserunt ea do esse. Quis mollit velit pariatur qui aute aliqua qui labore incididunt officia. Excepteur occaecat ipsum esse velit culpa quis aute qui reprehenderit incididunt. Dolore amet nulla magna eu eu culpa sint aliqua irure laboris.
+{/block}

@@ -16,6 +16,37 @@ di:
 		parameters: no
 		tags: no
 
+extensions:
+	dibi: Dibi\Bridges\Nette\DibiExtension22
 
 services:
 	router: App\Router\RouterFactory::createRouter
+
+	# ldap settings from parameters: of local.neon
+	ldap: LDAP\Service(%ldap.server%, %ldap.baseDn%)
+
+	# set available authenticators
+	-
+		factory: LdapAuthenticator
+		autowired: self
+	-
+		factory: PasswordAuthenticator
+		autowired: self
+
+	- Models\AclModel
+	authorizatorFactory : AuthorizatorFactory
+	authorizator:
+		class: Nette\Security\Permission
+		factory: @authorizatorFactory::create()
+
+	# data mappers
+	privilegeMapper: Models\Mappers\Db\PrivilegeMapper
+	iResourceMapper: Models\Mappers\Db\ResourceMapper
+	roleMapper : Models\Mappers\RoleMapper
+	userMapper : Models\Mappers\UserMapper
+
+	# repositories
+	privilegeRepository: Repositories\PrivilegeRepository
+	resourceRepository: Repositories\ResourceRepository
+	roleRepository: Repositories\RoleRepository
+	userRepository : Repositories\UserRepository
