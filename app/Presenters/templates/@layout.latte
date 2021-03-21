@@ -7,12 +7,47 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 
 	<title>{ifset title}{include title|stripHtml} | {/ifset}Nette Web</title>
+	<link rel="stylesheet" href="/vendors/@coreui/coreui/css/coreui.min.css" crossorigin="anonymous">
+	<link rel="stylesheet" href="/vendors/@coreui/icons/css/free.min.css">
+
+
 </head>
 
-<body>
+<body class="c-app">
 	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
-	{control menu}
-	{include content}
+	<div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+		<div class="c-sidebar-brand">UTB</div>
+		{control menu}
+	</div>
+	<div class="c-wrapper">
+		<header class="c-header c-header-light c-header-fixed">
+			<button class="c-header-toggler c-class-toggler d-lg-none mfe-auto" type="button" data-target="#sidebar" data-class="c-sidebar-show">
+				<svg class="c-icon c-icon-lg">
+					<use xlink:href="/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
+				</svg>
+			</button>
+			<a class="c-header-brand d-lg-none" href="#">
+				<svg width="118" height="46" alt="CoreUI Logo">
+					<use xlink:href="/assets/brand/coreui.svg#full"></use>
+				</svg>
+			</a>
+			<button class="c-header-toggler c-class-toggler mfs-3 d-md-down-none" type="button" data-target="#sidebar" data-class="c-sidebar-lg-show" responsive="true">
+				<svg class="c-icon c-icon-lg">
+					<use xlink:href="/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
+				</svg>
+			</button>
+		</header>
+		<div class="c-body">
+			<main class="c-main">
+				<div class="container-fluid">
+					{include content}
+				</div>
+			</main>
+		</div>
+		<footer class="c-footer">
+			footer
+		</footer>
+	</div>
 
 	{block scripts}
 	{/block}
@@ -21,5 +56,13 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', () => naja.initialize());
 	</script>
+	<script src="/vendors/@coreui/coreui/js/coreui.bundle.min.js"></script>
+
+	{* <script src="vendors/@coreui/utils/js/coreui-utils.js"></script>
+	<script src="js/main.js"></script> *}
+	{* <!-- Optional JavaScript -->
+	<!-- Popper.js first, then CoreUI JS -->
+	<script src="https://unpkg.com/@popperjs/core@2"></script>
+	<script src="https://unpkg.com/@coreui/coreui/dist/js/coreui.min.js"></script> *}
 </body>
 </html>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
+use Contributte\FormsBootstrap\BootstrapForm;
 use Models\Entities\Resource\Privilege;
 use Models\Entities\Resource\PrivilegeAlreadyExistsException;
 use Models\Entities\Resource\Resource;
@@ -75,7 +76,7 @@ final class ResourcesPresenter extends DefaultPresenter
 
 	public function createComponentResourceForm(): Form
 	{
-		$form = new Form();
+		$form = new BootstrapForm();
 		$form->addHidden('id');
 		$form->addText('name', 'Name')->setRequired();
 		$form->addText('key', 'Key')->setRequired();
@@ -109,7 +110,7 @@ final class ResourcesPresenter extends DefaultPresenter
 
 	public function createComponentPrivilegeForm(): Form
 	{
-		$form = new Form();
+		$form = new BootstrapForm();
 		$form->addHidden('id');
 		$form->addHidden('resourceId')->setValue($this->getParameter('resourceId'));
 		$form->addText('name', 'Name')->setRequired();

@@ -10,7 +10,9 @@
 <a n:href="showResourceForm!" class="ajax">Add new resource</a>
 {snippet resourceFormSnippet}
 	{if !empty($showResourceForm)}
-		{control resourceForm}
+		<div class="card"><div class="card-body">
+			{control resourceForm}
+		</div></div>
 	{/if}
 {/snippet}
 {/block}
