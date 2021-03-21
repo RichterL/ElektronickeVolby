@@ -20,6 +20,13 @@ class Menu extends Control
 			'privilege' => 'view',
 		],
 		[
+			'name' => 'Roles',
+			'link' => 'Roles:',
+			'icon' => null,
+			'resource' => 'roles',
+			'privilege' => 'view',
+		],
+		[
 			'name' => 'Resources',
 			'link' => 'Resources:',
 			'icon' => null,

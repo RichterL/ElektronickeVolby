@@ -60,7 +60,7 @@ final class ResourcesPresenter extends DefaultPresenter
 			$this->error('Resource not found');
 		}
 		$this->handleShowResourceForm();
-		$this['resourceForm']->setDefaults($resource->toArray());
+		$this->getForm('resourceForm')->setDefaults($resource->toArray());
 	}
 
 	public function handleEditPrivilege(int $privilegeId)

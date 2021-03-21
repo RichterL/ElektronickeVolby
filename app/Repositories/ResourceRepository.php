@@ -32,6 +32,16 @@ class ResourceRepository
 		return $this->resourceMapper->findAll();
 	}
 
+	public function getIdNamePairs()
+	{
+		$resources = $this->resourceMapper->findAll();
+		$pairs = [];
+		foreach ($resources as $resource) {
+			$pairs[$resource->id] = $resource->name;
+		}
+		return $pairs;
+	}
+
 	public function save(Resource $resource): bool
 	{
 		return $this->resourceMapper->save($resource);

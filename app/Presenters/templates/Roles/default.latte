@@ -1,12 +1,9 @@
 {block content}
 <h1>Roles</h1>
 
-
-
-
 {foreach $roles as $id => $role}
 	<p>
-		{$role->name} | <a class="ajax" n:href="edit! $role->id">Edit</a>
+		{$role->name} | <a n:href=":edit $role->id">Edit</a>
 	</p>
 {/foreach}
 
