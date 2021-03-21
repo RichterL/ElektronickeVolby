@@ -15,54 +15,27 @@
 
 <body class="c-app">
 	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
-	<div class="c-sidebar c-sidebar-lg-show">
+	<div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
 		<div class="c-sidebar-brand">UTB</div>
-		<ul class="c-sidebar-nav">
-		<li class="c-sidebar-nav-title">Nav Title</li>
-		<li class="c-sidebar-nav-item">
-		<a class="c-sidebar-nav-link" href="#">
-			<i class="c-sidebar-nav-icon cil-speedometer"></i> Nav item
-		</a>
-		</li>
-		<li class="c-sidebar-nav-item">
-			<a class="c-sidebar-nav-link" href="#">
-				<i class="c-sidebar-nav-icon cil-speedometer"></i> With badge
-				<span class="badge badge-primary">NEW</span>
-			</a>
-		</li>
-		<li class="c-sidebar-nav-dropdown">
-			<a class="c-sidebar-nav-link c-sidebar-nav-dropdown-toggle" href="#">
-				<i class="c-sidebar-nav-icon cil-people"></i> Users
-			</a>
-			<ul class="c-sidebar-nav-dropdown-items">
-				<li class="c-sidebar-nav-item">
-					<a class="c-sidebar-nav-link" href="{link Users:}"><i class="c-sidebar-nav-icon"></i> Users</a>
-				</li>
-				<li class="c-sidebar-nav-item">
-					<a class="c-sidebar-nav-link" href="{link Roles:}"><i class="c-sidebar-nav-icon"></i> Roles</a>
-				</li>
-				<li class="c-sidebar-nav-item">
-					<a class="c-sidebar-nav-link" href="#"><i class="c-sidebar-nav-icon"></i> Resources</a>
-				</li>
-			</ul>
-		</li>
-
-		<li class="c-sidebar-nav-item mt-auto">
-			<a class="c-sidebar-nav-link c-sidebar-nav-link-success" href="https://coreui.io">
-				<i class="c-sidebar-nav-icon cil-cloud-download"></i> Download CoreUI</a>
-		</li>
-		<li class="c-sidebar-nav-item">
-			<a class="c-sidebar-nav-link c-sidebar-nav-link-danger" href="https://coreui.io/pro/">
-				<i class="c-sidebar-nav-icon cil-layers"></i> Try CoreUI
-				<strong>PRO</strong>
-			</a>
-		</li>
-	</ul>
-	<button class="c-sidebar-minimizer c-brand-minimizer" type="button"></button>
+		{control menu}
 	</div>
 	<div class="c-wrapper">
-		<header class="c-header">
-			header
+		<header class="c-header c-header-light c-header-fixed">
+			<button class="c-header-toggler c-class-toggler d-lg-none mfe-auto" type="button" data-target="#sidebar" data-class="c-sidebar-show">
+				<svg class="c-icon c-icon-lg">
+					<use xlink:href="/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
+				</svg>
+			</button>
+			<a class="c-header-brand d-lg-none" href="#">
+				<svg width="118" height="46" alt="CoreUI Logo">
+					<use xlink:href="/assets/brand/coreui.svg#full"></use>
+				</svg>
+			</a>
+			<button class="c-header-toggler c-class-toggler mfs-3 d-md-down-none" type="button" data-target="#sidebar" data-class="c-sidebar-lg-show" responsive="true">
+				<svg class="c-icon c-icon-lg">
+					<use xlink:href="/vendors/@coreui/icons/svg/free.svg#cil-menu"></use>
+				</svg>
+			</button>
 		</header>
 		<div class="c-body">
 			<main class="c-main">
@@ -79,7 +52,6 @@
 	{block scripts}
 	{/block}
 	<script src="https://nette.github.io/resources/js/3/netteForms.min.js"></script>
-	{/block}
 	<script src="/js/Naja.min.js"></script>
 	<script>
 		document.addEventListener('DOMContentLoaded', () => naja.initialize());

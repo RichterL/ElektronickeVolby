@@ -1,7 +1,39 @@
-<ul>
-{foreach $items as $item}
-<li>
-	<a href="{plink $item['link']}">{$item['name']}</a>
-</li>
-{/foreach}
-</ul>
+{define menuLink, $item, $toggle}
+	<a class="c-sidebar-nav-link" id="nav-link-{=lcfirst($item['name'])}" href="{plink $item['link']}">
+		<i n:if="!empty($item['icon'])" class="c-sidebar-nav-icon {$item['icon']}"></i> {$item['name']}
+	</a>
+{/define}
+
+{define menuItem, $values}
+	{if empty($values['childs'])}
+		<li class="c-sidebar-nav-item">
+			{include menuLink, $values}
+		</li>
+	{else}
+		<li class="c-sidebar-nav-dropdown">
+			<a class="c-sidebar-nav-link c-sidebar-nav-dropdown-toggle" href="#">
+				<i n:if="!empty($values['icon'])" class="c-sidebar-nav-icon {$values['icon']}"></i> {$values['name']}
+			</a>
+			<ul class="c-sidebar-nav-dropdown-items">
+				{foreach $values['childs'] as $child}
+					{include menuItem, $child}
+				{/foreach}
+			</ul>
+		</li>
+	{/if}
+{/define}
+
+{block menu}
+
+		<ul class="c-sidebar-nav">
+			<li class="c-sidebar-nav-title">Nav Title</li>
+			{foreach $items as $item}
+				{include menuItem, $item}
+			{/foreach}
+			<li class="c-sidebar-nav-item mt-auto">
+				<a href="{plink Sign:out}" class="c-sidebar-nav-link c-sidebar-nav-link-danger">
+					<i class="c-sidebar-nav-icon cil-cloud-download"></i> Sign out</a>
+			</li>
+		</ul>
+
+{/block}

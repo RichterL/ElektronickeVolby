@@ -10,7 +10,9 @@
 <a n:href="showRoleForm!" class="ajax">Add new role</a>
 {snippet roleFormSnippet}
 	{if !empty($showRoleForm)}
-		{control roleForm}
+		<div class="card"><div class="card-body">
+			{control roleForm}
+		</div></div>
 	{/if}
 {/snippet}
 {/block}

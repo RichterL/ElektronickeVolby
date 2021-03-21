@@ -7,14 +7,32 @@
 		{$userItem->getName()} {$userItem->surname} ({$userItem->getEmail()}) | <a class="ajax" n:href="edit! $userItem->getId()">Edit</a>
 	</p>
 {/foreach}
+<div class="card">
+	<div class="card-header">
+		Users
+		<div class="card-header-actions">
+			<a class="card-header-action btn-minimize" href="#" data-toggle="collapse" data-target="#usersTable" aria-expanded="true">
+				<svg class="c-icon">
+					<use xlink:href="/vendors/@coreui/icons/svg/free.svg#cil-arrow-circle-top"></use>
+				</svg>
+			</a>
+		</div>
+	</div>
+	<div class="card-body collapse show" id="usersTable">
+		<div class="table-responsive-sm">
+			{control usersGrid}
+		</div>
+	</div>
+</div>
 
-{control usersGrid}
 {dump $users}
 
 <a n:href="showUserForm!"> Add new user</a>
 {snippet userFormSnippet}
 	{if !empty($showUserForm)}
-		{control userForm}
+		<div class="card"><div class="card-body">
+			{control userForm}
+		</div></div>
 	{/if}
 {/snippet}
 {/block}

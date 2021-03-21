@@ -23,7 +23,9 @@ Edit resource - {$resource->name}
 	<a n:href="showPrivilegeForm!" n:if="empty($showPrivilegeForm)" class="ajax"> Add new privilege</a>
 	{snippet privilegeFormSnippet}
 		{if !empty($showPrivilegeForm)}
-			{control privilegeForm}
+			<div class="card"><div class="card-body">
+				{control privilegeForm}
+			</div></div>
 		{/if}
 	{/snippet}
 {/block}
