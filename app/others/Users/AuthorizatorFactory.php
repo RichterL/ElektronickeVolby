@@ -3,6 +3,9 @@
 use Models\AclModel;
 use Nette\Security\Authorizator;
 use Nette\Security\Permission;
+use Repositories\PrivilegeRepository;
+use Repositories\ResourceRepository;
+use Repositories\RoleRepository;
 
 class AuthorizatorFactory
 {
@@ -10,15 +13,27 @@ class AuthorizatorFactory
 	const RULE_TYPE_DENY = 2;
 
 	private $model;
+	private RoleRepository $roleRepository;
+	private ResourceRepository $resourceRepository;
+	private PrivilegeRepository $privilegeRepository;
 
-	public function __construct(AclModel $model)
-	{
+	public function __construct(
+		AclModel $model,
+		RoleRepository $roleRepository,
+		ResourceRepository $resourceRepository,
+		PrivilegeRepository $privilegeRepository
+	) {
 		$this->model = $model;
+		$this->roleRepository = $roleRepository;
+		$this->resourceRepository = $resourceRepository;
+		$this->privilegeRepository = $privilegeRepository;
 	}
 
 	public function create(): Authorizator
 	{
 		$authorizator = new Permission();
+
+		// $roles = $this->roleRepository->findAll();
 
 		foreach ($this->model->getRoles() as $roleId => $role) {
 			$authorizator->addRole($role->key, $role->parent ?? null);

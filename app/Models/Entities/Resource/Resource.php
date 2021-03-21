@@ -10,7 +10,7 @@ use Models\Entities\Entity;
 /**
  * @property string $name
  * @property string $key
- * @property Privilege[] $privileges
+ * @property PrivilegeCollection $privileges
  */
 
 class Resource extends Entity
@@ -18,8 +18,7 @@ class Resource extends Entity
 	protected ?int $id = null;
 	protected string $name;
 	protected string $key;
-	/** @var Privilege[] */
-	protected array $privileges;
+	protected PrivilegeCollection $privileges;
 
 	public function __construct()
 	{

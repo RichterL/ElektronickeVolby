@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Models\Entities\Role;
 
 use Models\Entities\Entity;
+use Models\Entities\Rule\RuleCollection;
 
 class Role extends Entity
 {
@@ -12,6 +13,7 @@ class Role extends Entity
 	protected string $name;
 	protected string $key;
 	protected Role $parent;
+	protected ?RuleCollection $rules = null;
 
 	public function __construct()
 	{
@@ -37,6 +39,11 @@ class Role extends Entity
 	{
 		$this->parent = $parent;
 		return $this;
+	}
+
+	public function addRules(RuleCollection $ruleCollection)
+	{
+		$this->rules = $ruleCollection;
 	}
 
 	public function toArray(): array

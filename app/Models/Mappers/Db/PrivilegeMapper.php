@@ -7,9 +7,9 @@ namespace Models\Mappers\Db;
 use dibi;
 use Exception;
 use Models\Entities\Resource\Privilege;
+use Models\Entities\Resource\PrivilegeCollection;
 use Models\Entities\Resource\Resource;
 use Models\Mappers\BaseMapper;
-use Models\Mappers\IResourceMapper;
 use Models\Tables;
 
 class PrivilegeMapper extends BaseMapper
@@ -58,10 +58,13 @@ class PrivilegeMapper extends BaseMapper
 	}
 
 	/** @var Privilege[] */
-	public function findRelated(Resource $resource): array
+	public function findRelated(Resource $resource): PrivilegeCollection
 	{
-		$privileges = [];
-		$result = $this->dibi->select(array_keys(self::MAP))->from($this->table)->where('resource_id = %i', $resource->getId())->fetchAssoc('id,=');
+		$privileges = new PrivilegeCollection();
+		$result = $this->dibi->select(array_keys(self::MAP))
+			->from($this->table)
+			->where('resource_id = %i', $resource->getId())
+			->fetchAssoc('id,=');
 		foreach ($result as $id => $values) {
 			$privileges[] = $this->create($values)->setId($id);
 		}

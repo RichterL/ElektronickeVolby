@@ -48,6 +48,10 @@ abstract class Entity
 
 	public function __isset(string $key): bool
 	{
+		$method = 'get' . ucfirst($key);
+		if (method_exists($this, $method)) {
+			return !empty($this->$method());
+		}
 		$ret = isset($this->$key);
 		return $ret;
 	}
