@@ -50,6 +50,7 @@ final class UsersPresenter extends DefaultPresenter
 			$this->error('User not found');
 		}
 		$this['userForm']->setDefaults($user->toArray());
+		$this->template->userEdit = true;
 		$this->redrawControl('userFormSnippet');
 	}
 
@@ -71,11 +72,20 @@ final class UsersPresenter extends DefaultPresenter
 		$datasource = $this->aclModel->getUsersDatasource();
 
 		$grid->setDataSource($datasource);
-		$grid->addColumnText('username', 'Username');
-		$grid->addColumnText('email', 'E-mail');
-		$grid->addColumnText('name', 'Name');
-		$grid->addColumnText('surname', 'Surname');
+		$grid->addColumnText('username', 'Username')
+			->setFilterText();
+		$grid->addColumnText('email', 'E-mail')
+			->setFilterText();
+		$grid->addColumnText('name', 'Name')
+			->setFilterText();
+		$grid->addColumnText('surname', 'Surname')
+			->setFilterText();
 		$grid->addColumnText('role', 'Role');
+		$grid->addAction('edit', '', 'edit!', ['userId' => 'id'])
+		->setIcon('edit')
+		->setClass('btn btn-xs btn-warning ajax');
+		$grid->addToolbarButton('showUserForm!', 'Add new user')
+			->setClass('btn btn-sm btn-primary ajax');
 	}
 
 	public function createComponentUserForm(): Form
