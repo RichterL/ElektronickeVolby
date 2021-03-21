@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
+use Contributte\FormsBootstrap\BootstrapForm;
 use LdapAuthenticator;
 use Nette;
 use Nette\Application\UI\Form;
@@ -24,7 +25,7 @@ final class SignPresenter extends Nette\Application\UI\Presenter
 
 	protected function createComponentSignInForm(): Form
 	{
-		$form = new Form();
+		$form = new BootstrapForm();
 		$form->addText('username', 'Login:')
 			->setRequired('Toto pole je povinne');
 		$form->addPassword('password', 'Heslo:')
