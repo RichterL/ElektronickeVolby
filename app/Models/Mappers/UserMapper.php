@@ -51,14 +51,13 @@ class UserMapper extends BaseMapper
 	{
 		$data = [];
 		foreach (self::MAP as $property => $key) {
-			if (isset($user->$property)) {
-				$data[$key] = $user->$property;
-			}
+			$data[$key] = $user->$property;
 		}
-		unset($data['id']);
+		$data = array_filter($data);
+		unset($data['id']); // necessary?
 		$id = $user->getId();
 		if (empty($id)) {
-			$id = $this->dibi->insert($this->table, $user->toArray())->execute(dibi::IDENTIFIER);
+			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
 			if (!$id) {
 				throw new Exception('insert failed');
 			}
@@ -72,17 +71,19 @@ class UserMapper extends BaseMapper
 
 	public function save(User $user): bool
 	{
-		foreach ($user->getRoles() as $role) {
-			$data[] = [
-				'user_id' => $user->getId(),
-				'role_id' => $role->getId(),
-			];
-		}
 		try {
 			$this->dibi->begin();
 			$this->saveData($user);
+			foreach ($user->getRoles() as $role) {
+				$data[] = [
+					'user_id' => $user->getId(),
+					'role_id' => $role->getId(),
+				];
+			}
 			$this->dibi->delete($this->userRolesTable)->where('user_id = %i', $user->getId())->execute();
-			$this->dibi->insert($this->userRolesTable, $data)->execute();
+			foreach ($data as $item) {
+				$this->dibi->insert($this->userRolesTable, $item)->execute();
+			}
 			$this->dibi->commit();
 		} catch (\Throwable $th) {
 			throw $th;

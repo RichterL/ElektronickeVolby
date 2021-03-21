@@ -12,7 +12,7 @@ use Nette\Application\UI\Form;
 use Repositories\ResourceRepository;
 use Repositories\PrivilegeRepository;
 
-final class ResourcesPresenter extends Nette\Application\UI\Presenter
+final class ResourcesPresenter extends DefaultPresenter
 {
 	private ResourceRepository $repository;
 	private PrivilegeRepository $privilegeRepository;
@@ -60,7 +60,7 @@ final class ResourcesPresenter extends Nette\Application\UI\Presenter
 			$this->error('Resource not found');
 		}
 		$this->handleShowResourceForm();
-		$this['resourceForm']->setDefaults($resource->toArray());
+		$this->getForm('resourceForm')->setDefaults($resource->toArray());
 	}
 
 	public function handleEditPrivilege(int $privilegeId)

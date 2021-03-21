@@ -2,8 +2,7 @@
 
 namespace LDAP;
 
-use ErrorException;
-use stdClass;
+use Tracy\Logger;
 
 class Service extends \Nette\DI\CompilerExtension
 {
@@ -61,6 +60,11 @@ class Service extends \Nette\DI\CompilerExtension
 
 	public function handleErrors(int $errno, string $errstr, ?string $errfile = null, ?int $errline = null)
 	{
+		if ($errstr == "ldap_bind(): Unable to bind to server: Can't contact LDAP server") {
+			$this->log('LDAP server unreachable');
+			throw new NoConnectionException('Unable to connect to LDAP server');
+		}
+
 		if (!(error_reporting() & $errno)) {
 			// This error code is not included in error_reporting
 			return;
@@ -72,5 +76,11 @@ class Service extends \Nette\DI\CompilerExtension
 		}
 
 		throw new LdapException($errstr, 0, $errno, $errfile, $errline);
+	}
+
+	public function log(string $message)
+	{
+		$logger = new Logger(APP_DIR . '/../log/');
+		$logger->log($message, Logger::CRITICAL);
 	}
 }

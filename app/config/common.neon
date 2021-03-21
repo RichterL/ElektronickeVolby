@@ -39,14 +39,19 @@ services:
 		class: Nette\Security\Permission
 		factory: @authorizatorFactory::create()
 
+	# factories
+	- Models\Entities\Rule\RuleFactory
+
 	# data mappers
 	privilegeMapper: Models\Mappers\Db\PrivilegeMapper
 	iResourceMapper: Models\Mappers\Db\ResourceMapper
 	roleMapper : Models\Mappers\RoleMapper
 	userMapper : Models\Mappers\UserMapper
+	iRuleMapper: Models\Mappers\Db\RuleMapper
 
 	# repositories
 	privilegeRepository: Repositories\PrivilegeRepository
 	resourceRepository: Repositories\ResourceRepository
 	roleRepository: Repositories\RoleRepository
 	userRepository : Repositories\UserRepository
+	ruleRepository: Repositories\RuleRepository

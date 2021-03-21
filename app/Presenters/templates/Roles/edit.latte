@@ -1,0 +1,46 @@
+{block title}
+Edit role - {$role->name}
+{/block}
+{block content}
+	{snippet roleFormSnippet}
+		{if !empty($showRoleForm)}
+			{control roleForm}
+		{else}
+			Name : {$role->name} <br>
+			Key : {$role->key} <br>
+			<a n:href="editRole!" class="ajax">Edit</a>
+		{/if}
+	{/snippet}
+
+	{snippet rulesListSnippet}
+		{dump $role->rules}
+		List of rules assigned to {$role->name}
+		<ul>
+			{foreach $role->rules as $rule}
+				<li>
+					{$rule->resource->name}:{$rule->privilege->name} ({$rule->type->getName()})
+					<a n:href="editRule! $rule->id">Edit</a>
+				</li>
+			{/foreach}
+		</ul>
+	{/snippet}
+
+
+	{snippet ruleFormSnippet}
+		<a n:href="showRuleForm!" n:if="empty($showRuleForm)" class="ajax"> Add new rule</a>
+		{if !empty($showRuleForm)}
+			{dump $showRuleForm}
+		{/if}
+		{if !empty($showRuleForm)}
+			{control ruleForm}
+		{/if}
+	{/snippet}
+{/block}
+
+{block scripts}
+<script>
+var element = document.getElementById('nav-link-roles')
+element.classList.add('c-active')
+element.closest('.c-sidebar-nav-dropdown').classList.add('c-show')
+</script>
+{/block}

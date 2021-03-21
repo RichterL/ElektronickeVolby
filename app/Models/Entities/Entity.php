@@ -27,7 +27,7 @@ abstract class Entity
 		if (method_exists($this, $method)) {
 			return $this->$method() ?? null;
 		}
-		if (property_exists($this, $key)) {
+		if (property_exists($this, $key) && isset($this->$key)) {
 			return $this->$key ?? null;
 		}
 	}
@@ -48,6 +48,10 @@ abstract class Entity
 
 	public function __isset(string $key): bool
 	{
+		$method = 'get' . ucfirst($key);
+		if (method_exists($this, $method)) {
+			return !empty($this->$method());
+		}
 		$ret = isset($this->$key);
 		return $ret;
 	}

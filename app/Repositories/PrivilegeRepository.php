@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Repositories;
 
 use Models\Entities\Resource\Privilege;
+use Models\Entities\Resource\PrivilegeCollection;
 use Models\Entities\Resource\Resource;
 use Models\Mappers\Db\PrivilegeMapper;
 
@@ -22,7 +23,7 @@ class PrivilegeRepository
 		return $this->privilegeMapper->findOne(['id' => $privilegeId]);
 	}
 
-	public function findByResource(Resource $resource): array
+	public function findByResource(Resource $resource): PrivilegeCollection
 	{
 		return $this->privilegeMapper->findRelated($resource);
 	}

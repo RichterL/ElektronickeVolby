@@ -16,7 +16,7 @@ use Repositories\UserRepository;
 use Ublaboo\DataGrid\DataGrid;
 use Ublaboo\NetteDatabaseDataSource\NetteDatabaseDataSource;
 
-final class UsersPresenter extends Nette\Application\UI\Presenter
+final class UsersPresenter extends DefaultPresenter
 {
 	private Nette\Database\Explorer $database;
 	private AclModel $aclModel;

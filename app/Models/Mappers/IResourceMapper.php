@@ -2,8 +2,6 @@
 
 namespace Models\Mappers;
 
-use IBaseMapper;
-use Models\Entities\Resource\IResource;
 use Models\Entities\Resource\Resource;
 
 interface IResourceMapper
