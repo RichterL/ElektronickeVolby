@@ -10,6 +10,7 @@ class Bootstrap
 {
 	public static function boot(): Configurator
 	{
+		define('APP_DIR', __DIR__);
 		$configurator = new Configurator;
 
 		$configurator->setDebugMode(true); // enable for your remote IP
