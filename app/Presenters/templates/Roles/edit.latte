@@ -3,13 +3,16 @@ Edit role - {$role->name}
 {/block}
 {block content}
 	{snippet roleFormSnippet}
-		{if !empty($showRoleForm)}
-			{control roleForm}
-		{else}
-			Name : {$role->name} <br>
-			Key : {$role->key} <br>
-			<a n:href="editRole!" class="ajax">Edit</a>
-		{/if}
+		<div class="card"><div class="card-body">
+
+			{if !empty($showRoleForm)}
+				{control roleForm}
+			{else}
+				Name : {$role->name} <br>
+				Key : {$role->key} <br>
+				<a n:href="editRole!" class="ajax">Edit</a>
+			{/if}
+		</div></div>
 	{/snippet}
 
 	{snippet rulesListSnippet}
@@ -19,7 +22,7 @@ Edit role - {$role->name}
 			{foreach $role->rules as $rule}
 				<li>
 					{$rule->resource->name}:{$rule->privilege->name} ({$rule->type->getName()})
-					<a n:href="editRule! $rule->id">Edit</a>
+					<a n:href="editRule! $rule->id" class="ajax">Edit</a>
 				</li>
 			{/foreach}
 		</ul>
@@ -29,10 +32,9 @@ Edit role - {$role->name}
 	{snippet ruleFormSnippet}
 		<a n:href="showRuleForm!" n:if="empty($showRuleForm)" class="ajax"> Add new rule</a>
 		{if !empty($showRuleForm)}
-			{dump $showRuleForm}
-		{/if}
-		{if !empty($showRuleForm)}
-			{control ruleForm}
+			<div class="card"><div class="card-body">
+				{control ruleForm}
+			</div></div>
 		{/if}
 	{/snippet}
 {/block}
