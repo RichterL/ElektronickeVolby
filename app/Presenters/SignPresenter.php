@@ -26,11 +26,15 @@ final class SignPresenter extends Nette\Application\UI\Presenter
 	protected function createComponentSignInForm(): Form
 	{
 		$form = new BootstrapForm();
-		$form->addText('username', 'Login:')
-			->setRequired('Toto pole je povinne');
-		$form->addPassword('password', 'Heslo:')
-			->setRequired('Heslo je nutne vyplnit!');
-		$form->addSubmit('submit', 'Prihlasit');
+		$form->setHtmlAttribute('class', 'form-signin');
+		$form->addText('username', 'Login')
+			->setRequired('Login cannot be empty!')
+			->setHtmlAttribute('placeholder', 'Login');
+		$form->addPassword('password', 'Password')
+			->setRequired('Password cannot be empty!')
+			->setHtmlAttribute('placeholder', 'Password');
+		$form->addSubmit('submit', 'Sign in')
+			->setBtnClass('btn btn-lg btn-primary btn-block text-uppercase');
 		$form->onSuccess[] = [$this, 'signInFormSuccess'];
 		return $form;
 	}
