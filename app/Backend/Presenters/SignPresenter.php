@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Presenters;
+namespace App\Backend\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
 use LdapAuthenticator;
