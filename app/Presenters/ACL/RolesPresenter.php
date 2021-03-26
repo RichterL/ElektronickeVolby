@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Presenters;
 
+use App\Controls\Bootstrap\Card;
+use App\Controls\Bootstrap\CardForm;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
 use Contributte\FormsBootstrap\Inputs\SelectInput;
@@ -115,19 +117,33 @@ final class RolesPresenter extends DefaultPresenter
 		$this->redrawControl('ruleFormSnippet');
 	}
 
-	public function createComponentRoleForm(): Form
+	public function createComponentRoleForm($name)
 	{
-		$form = new BootstrapForm();
-		$form->renderMode = RenderMode::SIDE_BY_SIDE_MODE;
+		$card = new Card($name);
+		$card->addHeader()->addMinimize();
+		$form = $card->addForm($name);
 		$form->addHidden('id');
 		$form->addText('name', 'Name')->setRequired();
 		$form->addText('key', 'Key')->setRequired();
 		$form->addSubmit('submit', 'Save');
 		$form->addButton('Cancel', Html::el('a')->href($this->link('hideRoleForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
 		$form->onSuccess[] = [$this, 'roleFormSuccess'];
-
-		return $form;
+		return $card;
 	}
+
+	// public function createComponentRoleForm(): Form
+	// {
+	// 	$form = new BootstrapForm();
+	// 	$form->renderMode = RenderMode::SIDE_BY_SIDE_MODE;
+	// 	$form->addHidden('id');
+	// 	$form->addText('name', 'Name')->setRequired();
+	// 	$form->addText('key', 'Key')->setRequired();
+	// 	$form->addSubmit('submit', 'Save');
+	// 	$form->addButton('Cancel', Html::el('a')->href($this->link('hideRoleForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
+	// 	$form->onSuccess[] = [$this, 'roleFormSuccess'];
+
+	// 	return $form;
+	// }
 
 	public function roleFormSuccess(Form $form, array $values): void
 	{
@@ -147,7 +163,7 @@ final class RolesPresenter extends DefaultPresenter
 	public function createComponentRuleForm()
 	{
 		$form = new BootstrapForm();
-		$form->renderMode = RenderMode::SIDE_BY_SIDE_MODE;
+		$form->renderMode = RenderMode::VERTICAL_MODE;
 		$form->setAjax();
 		$form->addHidden('id');
 		$form->addHidden('role')->setValue((int) $this->getParameter('roleId'));
@@ -181,8 +197,12 @@ final class RolesPresenter extends DefaultPresenter
 			$form->addSelect('privilege', 'Privilege', $privileges);
 			$form->addRadioList('type', 'Type', [Rule\Type::ALLOW => 'Allow', Rule\Type::DENY => 'Deny']);
 			$form->removeComponent($form->getComponent('cancel'));
-			$form->addSubmit('submit', 'Submit');
-			$form->addButton('Cancel', Html::el('a')->href($this->link('hideRuleForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
+			$row = $form->addRow();
+			$cell = $row->addCell(1);
+			$cell->addSubmit('submit', 'Submit');
+			$cell->addButton('cancel', Html::el('a')->href($this->link('hideRuleForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
+			// $form->addSubmit('submit', 'Submit');
+			// $form->addButton('Cancel', Html::el('a')->href($this->link('hideRuleForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
 			$this->handleShowRuleForm();
 		}
 

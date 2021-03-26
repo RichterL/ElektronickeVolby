@@ -6,13 +6,13 @@
 		{$role->name} | <a n:href=":edit $role->id">Edit</a>
 	</p>
 {/foreach}
-
+{* {control cardForm} *}
 <a n:href="showRoleForm!" class="ajax">Add new role</a>
 {snippet roleFormSnippet}
 	{if !empty($showRoleForm)}
-		<div class="card"><div class="card-body">
+		{* <div class="card"><div class="card-body"> *}
 			{control roleForm}
-		</div></div>
+		{* </div></div> *}
 	{/if}
 {/snippet}
 {/block}
