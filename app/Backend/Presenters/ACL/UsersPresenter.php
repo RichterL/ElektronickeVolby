@@ -6,31 +6,21 @@ namespace App\Backend\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
-use Models\AclModel;
 use Models\Entities\User;
-use Models\Tables;
-use Nette;
 use Nette\Application\UI\Form;
 use Repositories\RoleRepository;
 use Repositories\UserRepository;
 use Ublaboo\DataGrid\DataGrid;
-use Ublaboo\NetteDatabaseDataSource\NetteDatabaseDataSource;
 
 final class UsersPresenter extends DefaultPresenter
 {
-	private Nette\Database\Explorer $database;
-	private AclModel $aclModel;
 	private UserRepository $userRepository;
 	private RoleRepository $roleRepository;
 
 	public function __construct(
-		Nette\Database\Explorer $database,
-		AclModel $aclModel,
 		UserRepository $userRepository,
 		RoleRepository $roleRepository
 	) {
-		$this->aclModel = $aclModel;
-		$this->database = $database;
 		$this->userRepository = $userRepository;
 		$this->roleRepository = $roleRepository;
 	}
@@ -69,7 +59,7 @@ final class UsersPresenter extends DefaultPresenter
 	public function createComponentUsersGrid(string $name)
 	{
 		$grid = new DataGrid($this, $name);
-		$datasource = $this->aclModel->getUsersDatasource();
+		$datasource = $this->userRepository->getDataSource();
 
 		$grid->setDataSource($datasource);
 		$grid->addColumnText('username', 'Username')
@@ -80,7 +70,7 @@ final class UsersPresenter extends DefaultPresenter
 			->setFilterText();
 		$grid->addColumnText('surname', 'Surname')
 			->setFilterText();
-		$grid->addColumnText('role', 'Role');
+		$grid->addColumnText('roles', 'Roles');
 		$grid->addAction('edit', '', 'edit!', ['userId' => 'id'])
 		->setIcon('edit')
 		->setClass('btn btn-xs btn-warning ajax');

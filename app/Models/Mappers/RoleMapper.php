@@ -10,7 +10,7 @@ use Exception;
 use Models\Entities\Role\Role;
 use Models\Entities\User;
 use Models\Mappers\BaseMapper;
-use Models\Tables;
+use Models\Mappers\Db\Tables;
 
 class RoleMapper extends BaseMapper
 {

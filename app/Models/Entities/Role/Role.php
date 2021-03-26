@@ -7,12 +7,19 @@ namespace Models\Entities\Role;
 use Models\Entities\Entity;
 use Models\Entities\Rule\RuleCollection;
 
+/**
+ * @property int|null $id
+ * @property string $name
+ * @property string $key
+ * @property Role|null $parent
+ * @property RuleCollection|null $rules
+ */
 class Role extends Entity
 {
 	protected ?int $id = null;
 	protected string $name;
 	protected string $key;
-	protected Role $parent;
+	protected ?Role $parent;
 	protected ?RuleCollection $rules = null;
 
 	public function __construct()
@@ -28,11 +35,6 @@ class Role extends Entity
 	{
 		$this->id = $id;
 		return $this;
-	}
-
-	public function getParent(): ?Role
-	{
-		return $this->parent ?? null;
 	}
 
 	public function setParent(Role $parent): self
@@ -52,7 +54,7 @@ class Role extends Entity
 			'id' => $this->getId(),
 			'name' => $this->name,
 			'key' => $this->key,
-			'parent' => $this->getParent(),
+			'parent' => $this->parent->getId(),
 		];
 	}
 }

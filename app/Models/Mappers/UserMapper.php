@@ -10,7 +10,7 @@ use ErrorException;
 use Exception;
 use Models\Entities\Role\Role;
 use Models\Entities\User;
-use Models\Tables;
+use Models\Mappers\Db\Tables;
 
 class UserMapper extends BaseMapper
 {
@@ -90,5 +90,14 @@ class UserMapper extends BaseMapper
 			return false;
 		}
 		return true;
+	}
+
+	public function getDataSource()
+	{
+		return $this->dibi->select('u.`id`, u.`username`, u.`email`, u.`name`, u.`surname`, u.`full_name`, GROUP_CONCAT(ar.`key`) AS `roles`')
+			->from('%n u', Tables::USERS)
+			->leftJoin('%n ur', Tables::USERS_ROLES)->on('ur.user_id = u.id')
+			->leftJoin('%n ar', Tables::ACL_ROLES)->on('ur.role_id = ar.id')
+			->groupBy('u.`id`');
 	}
 }

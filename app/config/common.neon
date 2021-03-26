@@ -33,7 +33,6 @@ services:
 		factory: PasswordAuthenticator
 		autowired: self
 
-	- Models\AclModel
 	authorizatorFactory : AuthorizatorFactory
 	authorizator:
 		class: Nette\Security\Permission

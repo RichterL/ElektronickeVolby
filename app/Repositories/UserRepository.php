@@ -40,4 +40,9 @@ class UserRepository
 	{
 		return $this->userMapper->saveData($user);
 	}
+
+	public function getDataSource()
+	{
+		return $this->userMapper->getDataSource();
+	}
 }

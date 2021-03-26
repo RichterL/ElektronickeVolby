@@ -29,9 +29,16 @@ class RoleRepository
 		return $role;
 	}
 
-	public function findAll()
+	public function findAll(bool $includeRules = false)
 	{
-		return $this->roleMapper->findAll();
+		$roles = $this->roleMapper->findAll();
+		if ($includeRules) {
+			foreach ($roles as $role) {
+				$rules = $this->ruleMapper->findRelated($role);
+				$role->addRules($rules);
+			}
+		}
+		return $roles;
 	}
 
 	public function getIdNamePairs()

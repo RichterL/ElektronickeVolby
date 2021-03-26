@@ -10,7 +10,6 @@ use Models\Entities\Resource\Privilege;
 use Models\Entities\Resource\PrivilegeCollection;
 use Models\Entities\Resource\Resource;
 use Models\Mappers\BaseMapper;
-use Models\Tables;
 
 class PrivilegeMapper extends BaseMapper
 {

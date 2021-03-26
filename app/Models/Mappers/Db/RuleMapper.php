@@ -14,7 +14,6 @@ use Models\Entities\Rule\Type;
 use Models\Mappers\BaseMapper;
 use Models\Mappers\IRuleMapper;
 use Models\Mappers\RoleMapper;
-use Models\Tables;
 use Utils\ValueObject\ValueObject;
 
 class RuleMapper extends BaseMapper implements IRuleMapper
