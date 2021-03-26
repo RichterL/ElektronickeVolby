@@ -9,7 +9,7 @@ use Models\Entities\Rule\RuleCollection;
 
 class Role extends Entity
 {
-	protected int $id;
+	protected ?int $id = null;
 	protected string $name;
 	protected string $key;
 	protected Role $parent;
