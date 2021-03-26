@@ -1,18 +1,16 @@
 <?php
-
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace Models\Mappers\Db;
 
 use dibi;
 use Dibi\Row;
 use Exception;
 use Models\Entities\Role\Role;
 use Models\Entities\User;
-use Models\Mappers\BaseMapper;
-use Models\Mappers\Db\Tables;
+use Models\Mappers\IRoleMapper;
 
-class RoleMapper extends BaseMapper
+class RoleMapper extends BaseMapper implements IRoleMapper
 {
 	const MAP = [
 		'id' => 'id',

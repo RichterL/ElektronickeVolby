@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Repositories;
 
 use Models\Entities\Role\Role;
+use Models\Mappers\IRoleMapper;
 use Models\Mappers\IRuleMapper;
-use Models\Mappers\RoleMapper;
 
 class RoleRepository
 {
-	private RoleMapper $roleMapper;
+	private IRoleMapper $roleMapper;
 	private IRuleMapper $ruleMapper;
 
-	public function __construct(RoleMapper $roleMapper, IRuleMapper $ruleMapper)
+	public function __construct(IRoleMapper $roleMapper, IRuleMapper $ruleMapper)
 	{
 		$this->roleMapper = $roleMapper;
 		$this->ruleMapper = $ruleMapper;

@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Models\Mappers\Db;
@@ -8,7 +7,6 @@ use dibi;
 use Dibi\Connection;
 use Exception;
 use Models\Entities\Resource\Resource;
-use Models\Mappers\BaseMapper;
 use Models\Mappers\IResourceMapper;
 
 class ResourceMapper extends BaseMapper implements IResourceMapper

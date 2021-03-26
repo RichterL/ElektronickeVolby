@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Models\Mappers\Db;
@@ -11,9 +10,7 @@ use Models\Entities\Role\Role;
 use Models\Entities\Rule\Rule;
 use Models\Entities\Rule\RuleCollection;
 use Models\Entities\Rule\Type;
-use Models\Mappers\BaseMapper;
 use Models\Mappers\IRuleMapper;
-use Models\Mappers\RoleMapper;
 use Utils\ValueObject\ValueObject;
 
 class RuleMapper extends BaseMapper implements IRuleMapper

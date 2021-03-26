@@ -1,8 +1,7 @@
 <?php
-
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace Models\Mappers\Db;
 
 use dibi;
 use Dibi\Connection;
@@ -11,8 +10,9 @@ use Exception;
 use Models\Entities\Role\Role;
 use Models\Entities\User;
 use Models\Mappers\Db\Tables;
+use Models\Mappers\IUserMapper;
 
-class UserMapper extends BaseMapper
+class UserMapper extends BaseMapper implements IUserMapper
 {
 	const MAP = [
 		'id' => 'id',

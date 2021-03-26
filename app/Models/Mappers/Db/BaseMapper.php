@@ -1,15 +1,11 @@
 <?php
-
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace Models\Mappers\Db;
 
 use Dibi\Connection;
 use Dibi\Row;
-use IBaseMapper;
-use Models\Entities\DbEntity;
 use Models\Entities\Entity;
-use Models\Entities\IEntity;
 use Nette\InvalidStateException;
 
 abstract class BaseMapper

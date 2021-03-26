@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Repositories;
 
 use Models\Entities\User;
-use Models\Mappers\UserMapper;
+use Models\Mappers\IUserMapper;
 
 class UserRepository
 {
-	private UserMapper $userMapper;
+	private IUserMapper $userMapper;
 
-	public function __construct(UserMapper $userMapper)
+	public function __construct(IUserMapper $userMapper)
 	{
 		$this->userMapper = $userMapper;
 	}

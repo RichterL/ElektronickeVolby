@@ -7,13 +7,13 @@ namespace Repositories;
 use Models\Entities\Resource\Privilege;
 use Models\Entities\Resource\PrivilegeCollection;
 use Models\Entities\Resource\Resource;
-use Models\Mappers\Db\PrivilegeMapper;
+use Models\Mappers\IPrivilegeMapper;
 
 class PrivilegeRepository
 {
-	private PrivilegeMapper $privilegeMapper;
+	private IPrivilegeMapper $privilegeMapper;
 
-	public function __construct(PrivilegeMapper $privilegeMapper)
+	public function __construct(IPrivilegeMapper $privilegeMapper)
 	{
 		$this->privilegeMapper = $privilegeMapper;
 	}
