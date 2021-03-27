@@ -8,7 +8,7 @@ use Models\Entities\Role\Role;
 use Models\Mappers\IRoleMapper;
 use Models\Mappers\IRuleMapper;
 
-class RoleRepository
+class RoleRepository extends BaseRepository
 {
 	private IRoleMapper $roleMapper;
 	private IRuleMapper $ruleMapper;
@@ -31,14 +31,16 @@ class RoleRepository
 
 	public function findAll(bool $includeRules = false)
 	{
-		$roles = $this->roleMapper->findAll();
-		if ($includeRules) {
-			foreach ($roles as $role) {
-				$rules = $this->ruleMapper->findRelated($role);
-				$role->addRules($rules);
+		return $this->cache->load('role.findAll', function () use ($includeRules) {
+			$roles = $this->roleMapper->findAll();
+			if ($includeRules) {
+				foreach ($roles as $role) {
+					$rules = $this->ruleMapper->findRelated($role);
+					$role->addRules($rules);
+				}
 			}
-		}
-		return $roles;
+			return $roles;
+		});
 	}
 
 	public function getIdNamePairs()

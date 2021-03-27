@@ -19,8 +19,15 @@ di:
 extensions:
 	dibi: Dibi\Bridges\Nette\DibiExtension22
 
+decorator:
+		Repositories\BaseRepository:
+			setup:
+				- setCache(@repositoryCache)
+
 services:
 	router: App\Router\RouterFactory::createRouter
+	# cache.storage: Nette\Caching\Storages\DevNullStorage
+	repositoryCache: Nette\Caching\Cache(namespace: 'repositoryCache')
 
 	# ldap settings from parameters: of local.neon
 	ldap: LDAP\Service(%ldap.server%, %ldap.baseDn%)
@@ -42,10 +49,10 @@ services:
 	- Models\Entities\Rule\RuleFactory
 
 	# data mappers
-	privilegeMapper: Models\Mappers\Db\PrivilegeMapper
+	iprivilegeMapper: Models\Mappers\Db\PrivilegeMapper
 	iResourceMapper: Models\Mappers\Db\ResourceMapper
-	roleMapper : Models\Mappers\RoleMapper
-	userMapper : Models\Mappers\UserMapper
+	iroleMapper : Models\Mappers\Db\RoleMapper
+	iuserMapper : Models\Mappers\Db\UserMapper
 	iRuleMapper: Models\Mappers\Db\RuleMapper
 
 	# repositories
