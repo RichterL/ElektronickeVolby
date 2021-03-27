@@ -8,9 +8,11 @@ use Exception;
 use Models\Entities\Entity;
 
 /**
+ * @property int|null $id
  * @property string $name
  * @property string $key
  * @property PrivilegeCollection $privileges
+ * @property Resource|null $parent
  */
 
 class Resource extends Entity
@@ -19,6 +21,7 @@ class Resource extends Entity
 	protected string $name;
 	protected string $key;
 	protected PrivilegeCollection $privileges;
+	protected ?Resource $parent = null;
 
 	public function __construct()
 	{
@@ -52,6 +55,7 @@ class Resource extends Entity
 			'id' => $this->getId(),
 			'name' => $this->name,
 			'key' => $this->key,
+			'parent' => $this->parent->getId(),
 		];
 	}
 }

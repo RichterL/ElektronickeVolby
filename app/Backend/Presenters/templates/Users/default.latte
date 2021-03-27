@@ -1,0 +1,34 @@
+{block content}
+
+<div class="card mb-5">
+	<div class="card-header position-relative">
+		Users
+		<a class="float-right stretched-link" href="#" data-toggle="collapse" data-target="#usersTable" aria-expanded="true">
+			<i class="fa fa-chevron-up"></i>
+		</a>
+	</div>
+	<div class="card-body collapse show" id="usersTable">
+		<div class="table-responsive">
+			{control usersGrid}
+		</div>
+	</div>
+</div>
+
+{snippet userFormSnippet}
+	{if !empty($showUserForm)}
+		<div class="col-lg-9 col-xl-5 px-0">
+			<div class="card">
+				<div class="card-header position-relative">
+					{if empty($userEdit)}Add new user{else}Edit user{/if}
+					<a class="float-right stretched-link" href="#" data-toggle="collapse" data-target="#userForm" aria-expanded="true">
+						<i class="fa fa-chevron-up"></i>
+					</a>
+				</div>
+				<div class="card-body collapse show" id="userForm">
+					{control userForm}
+				</div>
+			</div>
+		</div>
+	{/if}
+{/snippet}
+{/block}

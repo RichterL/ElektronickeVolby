@@ -7,7 +7,7 @@ namespace Repositories;
 use Models\Entities\Resource\Resource;
 use Models\Mappers\IResourceMapper;
 
-class ResourceRepository
+class ResourceRepository extends BaseRepository
 {
 	private IResourceMapper $resourceMapper;
 
@@ -29,7 +29,9 @@ class ResourceRepository
 	/** @return Resource[] */
 	public function findAll(): array
 	{
-		return $this->resourceMapper->findAll();
+		return $this->cache->load('resource.findAll', function () {
+			return $this->resourceMapper->findAll();
+		});
 	}
 
 	public function getIdNamePairs()

@@ -1,0 +1,26 @@
+{* Signin form by SmartBootstrap https://startbootstrap.com/snippets/login *}
+{block content}
+<div class="container">
+	<div class="row">
+		<div class="col-sm-9 col-md-7 col-lg-5 mt-auto mx-auto">
+			<div class="card card-signin my-5">
+				<div class="card-body">
+					<h3 n:block=title class="mx-auto text-center card-title">Sign in</h3>
+					{form signInForm}
+						<div class="form-label-group">
+							{input username}
+							{label username}
+						</div>
+
+						<div class="form-label-group">
+							{input password}
+							{label password}
+						</div>
+						{input submit}
+					{/form}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{/block}

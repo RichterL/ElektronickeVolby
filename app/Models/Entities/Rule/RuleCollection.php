@@ -61,4 +61,13 @@ class RuleCollection implements \IteratorAggregate, \ArrayAccess
 		}
 		return $tmp;
 	}
+
+	public function getByTypes()
+	{
+		$tmp = [];
+		foreach ($this->items as $item) {
+			$tmp[$item->type->getName()][$item->resource->key][] = $item->privilege->key;
+		}
+		return $tmp;
+	}
 }

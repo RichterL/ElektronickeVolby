@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Models\Mappers\Db;
@@ -8,9 +7,7 @@ use dibi;
 use Dibi\Connection;
 use Exception;
 use Models\Entities\Resource\Resource;
-use Models\Mappers\BaseMapper;
 use Models\Mappers\IResourceMapper;
-use Models\Tables;
 
 class ResourceMapper extends BaseMapper implements IResourceMapper
 {
@@ -18,6 +15,7 @@ class ResourceMapper extends BaseMapper implements IResourceMapper
 		'id' => 'id',
 		'name' => 'name',
 		'key' => 'key',
+		'parent' => 'parent',
 	];
 
 	protected $table = Tables::ACL_RESOURCES;
@@ -36,6 +34,9 @@ class ResourceMapper extends BaseMapper implements IResourceMapper
 			$resource->setId($data['id']);
 			$resource->key = $data['key'];
 			$resource->name = $data['name'];
+			if (!empty($data['parent'])) {
+				$resource->parent = $this->findOne(['id' => $data['parent']]);
+			}
 		}
 		$resource->privileges = $this->privilegeMapper->findRelated($resource);
 		return $resource;
@@ -46,7 +47,11 @@ class ResourceMapper extends BaseMapper implements IResourceMapper
 		$data = [];
 		foreach (self::MAP as $property => $key) {
 			if (isset($resource->$property)) {
-				$data[$key] = $resource->$property;
+				$propertyValue = $resource->$property;
+				if ($propertyValue instanceof Resource) {
+					$propertyValue = $propertyValue->getId();
+				}
+				$data[$key] = $propertyValue;
 			}
 		}
 		unset($data['id']);

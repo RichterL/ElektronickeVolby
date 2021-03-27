@@ -9,6 +9,9 @@ use Models\Entities\Role\Role;
 
 /**
  * @property int $id
+ * @property Role $role
+ * @property Resource $resource
+ * @property Privilege $privilege
  * @property Type $type
  */
 

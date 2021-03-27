@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Models\Mappers\Db;
@@ -9,10 +8,9 @@ use Exception;
 use Models\Entities\Resource\Privilege;
 use Models\Entities\Resource\PrivilegeCollection;
 use Models\Entities\Resource\Resource;
-use Models\Mappers\BaseMapper;
-use Models\Tables;
+use Models\Mappers\IPrivilegeMapper;
 
-class PrivilegeMapper extends BaseMapper
+class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 {
 	const MAP = [
 		'id' => 'id',

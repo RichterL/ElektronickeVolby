@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Repositories;
 
 use Models\Entities\Role\Role;
+use Models\Mappers\IRoleMapper;
 use Models\Mappers\IRuleMapper;
-use Models\Mappers\RoleMapper;
 
-class RoleRepository
+class RoleRepository extends BaseRepository
 {
-	private RoleMapper $roleMapper;
+	private IRoleMapper $roleMapper;
 	private IRuleMapper $ruleMapper;
 
-	public function __construct(RoleMapper $roleMapper, IRuleMapper $ruleMapper)
+	public function __construct(IRoleMapper $roleMapper, IRuleMapper $ruleMapper)
 	{
 		$this->roleMapper = $roleMapper;
 		$this->ruleMapper = $ruleMapper;
@@ -29,9 +29,18 @@ class RoleRepository
 		return $role;
 	}
 
-	public function findAll()
+	public function findAll(bool $includeRules = false)
 	{
-		return $this->roleMapper->findAll();
+		return $this->cache->load('role.findAll', function () use ($includeRules) {
+			$roles = $this->roleMapper->findAll();
+			if ($includeRules) {
+				foreach ($roles as $role) {
+					$rules = $this->ruleMapper->findRelated($role);
+					$role->addRules($rules);
+				}
+			}
+			return $roles;
+		});
 	}
 
 	public function getIdNamePairs()
