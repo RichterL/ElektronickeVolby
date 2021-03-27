@@ -100,4 +100,16 @@ class UserMapper extends BaseMapper implements IUserMapper
 			->leftJoin('%n ar', Tables::ACL_ROLES)->on('ur.role_id = ar.id')
 			->groupBy('u.`id`');
 	}
+
+	/** parent concrete implementetions */
+	public function findOne(array $filter = []): ?User
+	{
+		return parent::findOne($filter);
+	}
+
+	/** @return User[] */
+	public function findAll(): array
+	{
+		return parent::findAll();
+	}
 }
