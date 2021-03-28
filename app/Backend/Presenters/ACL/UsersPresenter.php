@@ -39,7 +39,7 @@ final class UsersPresenter extends DefaultPresenter
 		if (!$user) {
 			$this->error('User not found');
 		}
-		$this['userForm']->setDefaults($user->toArray());
+		$this['userForm']->setValues($user->toArray());
 		$this->template->userEdit = true;
 		$this->redrawControl('userFormSnippet');
 	}
@@ -72,8 +72,11 @@ final class UsersPresenter extends DefaultPresenter
 			->setFilterText();
 		$grid->addColumnText('roles', 'Roles');
 		$grid->addAction('edit', '', 'edit!', ['userId' => 'id'])
-		->setIcon('edit')
-		->setClass('btn btn-xs btn-warning ajax');
+			->setIcon('edit')
+			->setClass('btn btn-sm btn-warning ajax text-white');
+		$grid->addAction('delete', '', 'delete!')
+			->setIcon('trash')
+			->setClass('btn btn-sm btn-danger ajax');
 		$grid->addToolbarButton('showUserForm!', 'Add new user')
 			->setClass('btn btn-sm btn-primary ajax');
 	}
@@ -120,6 +123,19 @@ final class UsersPresenter extends DefaultPresenter
 			$this->flashMessage('User saved.');
 		} else {
 			$this->error('saving failed!');
+		}
+	}
+
+	public function handleDelete(int $id)
+	{
+		$user = $this->userRepository->findById($id);
+		if (!$user) {
+			$this->flashMessage('User wasn\'t found!', 'error');
+			return;
+		}
+		if ($this->userRepository->delete($user)) {
+			$this->flashMessage('User id ' . $id . ' deleted', 'success');
+			$this->getGrid('usersGrid')->reload();
 		}
 	}
 }

@@ -85,11 +85,6 @@ class ElectionMapper extends BaseMapper implements IElectionMapper
 		return true;
 	}
 
-	public function delete(Election $election): bool
-	{
-		return (bool) $this->dibi->delete($this->table)->where('id = %i', $election->getId())->execute(dibi::AFFECTED_ROWS);
-	}
-
 	/** parent concrete implementetions */
 	public function findOne(array $filter = []): ?Election
 	{

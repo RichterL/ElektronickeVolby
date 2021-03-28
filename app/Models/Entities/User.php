@@ -5,9 +5,8 @@ namespace Models\Entities;
 
 use Models\Entities\Role\Role;
 
-class User extends Entity
+class User extends Entity implements IdentifiedById
 {
-	protected int $id = 0;
 	protected ?string $username = null;
 	protected ?string $password = null;
 	protected string $name;
@@ -16,20 +15,11 @@ class User extends Entity
 	/** @var Role[] */
 	protected array $roles = [];
 
+	use \Models\Traits\Entity\HasId;
+
 	public function __construct()
 	{
 		$this->email = '';
-	}
-
-	public function getId(): int
-	{
-		return $this->id;
-	}
-
-	public function setId(int $id): self
-	{
-		$this->id = $id;
-		return $this;
 	}
 
 	public function getUsername(): string

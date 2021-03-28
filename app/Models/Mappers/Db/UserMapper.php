@@ -99,9 +99,7 @@ class UserMapper extends BaseMapper implements IUserMapper
 	/** parent concrete implementetions */
 	public function findOne(array $filter = []): ?User
 	{
-		return $this->cache->load('user.findOne', function () use ($filter) {
-			return parent::findOne($filter);
-		});
+		return parent::findOne($filter);
 	}
 
 	/** @return User[] */

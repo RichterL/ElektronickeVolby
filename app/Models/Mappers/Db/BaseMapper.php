@@ -3,9 +3,11 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use dibi;
 use Dibi\Connection;
 use Dibi\Row;
 use Models\Entities\Entity;
+use Models\Entities\IdentifiedById;
 use Nette\InvalidStateException;
 
 abstract class BaseMapper
@@ -90,6 +92,11 @@ abstract class BaseMapper
 		foreach (static::DATA_TYPES as $key => $type) {
 			$result->setType($key, $type);
 		}
+	}
+
+	public function delete(IdentifiedById $entity): bool
+	{
+		return (bool) $this->dibi->delete($this->table)->where('id = %i', $entity->getId())->execute(dibi::AFFECTED_ROWS);
 	}
 
 	abstract public function create(array $data = []): Entity;
