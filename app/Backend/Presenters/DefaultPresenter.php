@@ -12,6 +12,14 @@ use Ublaboo\DataGrid\DataGrid;
 
 abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 {
+	public function checkRequirements($element): void
+	{
+		if (!$this->getUser()->isLoggedIn()) {
+			$this->redirect('Sign:in');
+		}
+		parent::checkRequirements($element);
+	}
+
 	public function createComponentMenu()
 	{
 		return new Menu();
