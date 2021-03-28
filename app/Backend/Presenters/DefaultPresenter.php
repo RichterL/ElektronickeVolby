@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Nette;
 use Nette\Application\UI\Form;
 use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 {
@@ -28,6 +29,13 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 	protected function getForm(string $name): Form
 	{
 		return $this->getConcreteComponent(Form::class, $name);
+	}
+
+	public function addGrid(string $name, IDataSource $dataSource)
+	{
+		$grid = new \Utils\DataGrid\DataGrid($dataSource);
+		$this->addComponent($grid->getOriginal(), $name);
+		return $grid;
 	}
 
 	public function getGrid(string $name): DataGrid

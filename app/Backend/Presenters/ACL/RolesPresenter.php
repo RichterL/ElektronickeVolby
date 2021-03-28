@@ -16,6 +16,10 @@ use Repositories\PrivilegeRepository;
 use Repositories\ResourceRepository;
 use Repositories\RoleRepository;
 use Repositories\RuleRepository;
+use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
+use Utils\DataGrid\Action;
+use Utils\DataGrid\Column;
+use Utils\DataGrid\ToolbarButton;
 
 final class RolesPresenter extends DefaultPresenter
 {
@@ -39,13 +43,6 @@ final class RolesPresenter extends DefaultPresenter
 		$this->ruleFactory = $ruleFactory;
 	}
 
-	public function actionDefault()
-	{
-		if (!$this->getUser()->isLoggedIn()) {
-			$this->redirect('Sign:in');
-		}
-	}
-
 	public function renderDefault(): void
 	{
 		$roles = $this->repository->findAll();
@@ -61,6 +58,17 @@ final class RolesPresenter extends DefaultPresenter
 		$this->template->role = $role;
 	}
 
+	public function createComponentRolesGrid()
+	{
+		$this->addGrid('rolesGrid', $this->repository->getDataSource())
+			->addColumn(Column::NUMBER, 'id', 'id')
+			->addColumn(Column::TEXT, 'name', 'Name')
+			->addColumn(Column::TEXT, 'key', 'Key')
+			->addAction(Action::EDIT, 'editRole!', ['roleId' => 'id'])
+			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete role %s?', 'name'), 'deleteRole!', ['roleId' => 'id'])
+			->addToolbarButton(ToolbarButton::ADD, 'Add new role', 'showRoleForm!');
+	}
+
 	public function handleEditRole(int $roleId)
 	{
 		$roleId = (int) $this->getParameter('roleId');
@@ -72,6 +80,11 @@ final class RolesPresenter extends DefaultPresenter
 		$form = $this->getForm('roleForm');
 		$form->setDefaults($role->toArray());
 		$this->handleShowRoleForm();
+	}
+
+	public function handleDeleteRole(int $roleId)
+	{
+		// code...
 	}
 
 	public function handleEditRule(int $ruleId)

@@ -9,6 +9,7 @@ use Exception;
 use Models\Entities\Role\Role;
 use Models\Entities\User;
 use Models\Mappers\IRoleMapper;
+use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 class RoleMapper extends BaseMapper implements IRoleMapper
 {
@@ -70,6 +71,12 @@ class RoleMapper extends BaseMapper implements IRoleMapper
 
 		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
 		return true;
+	}
+
+	public function getDataSource(): DibiFluentDataSource
+	{
+		$fluent = $this->dibi->select('*')->from($this->table);
+		return new DibiFluentDataSource($fluent, 'id');
 	}
 
 	/** parent concrete implementetions */

@@ -1,0 +1,15 @@
+<div class="card mb-5">
+	<div class="card-header position-relative">
+		{block header}Card header{/block}
+		<a class="float-right stretched-link" href="#" data-toggle="collapse" data-target="#{$gridName}" aria-expanded="true">
+			<i class="fa fa-chevron-up"></i>
+		</a>
+	</div>
+	<div class="card-body collapse show" id="{$gridName}">
+		<div class="table-responsive">
+			{block body}
+				{control $gridName}
+			{/block}
+		</div>
+	</div>
+</div>

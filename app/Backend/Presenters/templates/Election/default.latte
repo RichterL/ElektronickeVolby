@@ -1,18 +1,7 @@
 {block content}
-<div class="card mb-5">
-	<div class="card-header position-relative">
-		Elections
-		<a class="float-right stretched-link" href="#" data-toggle="collapse" data-target="#electionsGrid" aria-expanded="true">
-			<i class="fa fa-chevron-up"></i>
-		</a>
-	</div>
-	<div class="card-body collapse show" id="electionsGrid">
-		<div class="table-responsive">
-			{control electionsGrid}
-		</div>
-	</div>
-</div>
-{dump}
+{embed ../defines/gridCard.latte gridName: electionsGrid}
+	{block header}Elections{/block}
+{/embed}
 {snippet electionFormSnippet}
 	{if !empty($showElectionForm)}
 		<div class="col-lg-9 col-xl-5 px-0">

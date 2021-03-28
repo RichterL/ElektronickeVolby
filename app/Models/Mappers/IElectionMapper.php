@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Models\Mappers;
 
 use Models\Entities\Election\Election;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IElectionMapper
 {
@@ -13,7 +14,7 @@ interface IElectionMapper
 
 	public function findAll(): array;
 
-	public function getDataSource();
+	public function getDataSource(): IDataSource;
 
 	public function save(Election $election): bool;
 
