@@ -187,3 +187,9 @@
     margin-left: -15rem;
   }
 }
+
+/* CUSTOM CSS */
+
+.datagrid {
+	padding: 0;
+}

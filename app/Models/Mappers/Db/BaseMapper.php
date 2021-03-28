@@ -11,14 +11,27 @@ use Nette\InvalidStateException;
 abstract class BaseMapper
 {
 	protected $dibi;
+	protected $cache;
 	protected $table;
 
-	public function __construct(Connection $dibi)
+	protected const MAP = [];
+	protected const DATA_TYPES = [];
+
+	public function setDibi(Connection $dibi)
+	{
+		$this->dibi = $dibi;
+	}
+
+	public function setCache(\Nette\Caching\Cache $cache)
+	{
+		$this->cache = $cache;
+	}
+
+	public function init()
 	{
 		if (empty($this->table)) {
 			throw new InvalidStateException('No database table defined for ' . get_called_class() . '!');
 		}
-		$this->dibi = $dibi;
 	}
 
 	//abstract public function create(array $data = []): DbEntity;
@@ -34,7 +47,10 @@ abstract class BaseMapper
 
 	public function findOne(array $filter = []): ?Entity
 	{
-		$data = $this->dibi->select('*')->from($this->table)->where($filter)->fetch();
+		static::applyMapToFilter($filter);
+		$result = $this->dibi->select('*')->from($this->table)->where($filter)->execute();
+		static::applyDataTypes($result);
+		$data = $result->fetch();
 		if (empty($data)) {
 			return null;
 		}
@@ -44,12 +60,36 @@ abstract class BaseMapper
 	public function findAll(): array
 	{
 		$all = [];
-		$rows = $this->dibi->select('*')->from($this->table)->fetchAll();
+		$result = $this->dibi->select('*')->from($this->table)->execute();
+		static::applyDataTypes($result);
+		$rows = $result->fetchAll();
 		/** @var Row */
 		foreach ($rows as $row) {
 			$all[] = $this->create($row->toArray());
 		}
 		return $all;
+	}
+
+	public static function applyMapToFilter(?array &$filter = []): void
+	{
+		if (empty($filter)) {
+			return;
+		}
+
+		foreach ($filter as $property => $value) {
+			if (static::MAP[$property] == $property) {
+				continue;
+			}
+			$filter[static::MAP[$property]] = $value;
+			unset($filter[$property]);
+		}
+	}
+
+	public static function applyDataTypes(\Dibi\Result $result): void
+	{
+		foreach (static::DATA_TYPES as $key => $type) {
+			$result->setType($key, $type);
+		}
 	}
 
 	abstract public function create(array $data = []): Entity;

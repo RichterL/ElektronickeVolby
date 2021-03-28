@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Models\Mappers\Db;
 
 use dibi;
-use Dibi\Connection;
 use Exception;
 use Models\Entities\Role\Role;
 use Models\Entities\Rule\Rule;
@@ -29,12 +28,10 @@ class RuleMapper extends BaseMapper implements IRuleMapper
 	private PrivilegeMapper $privilegeMapper;
 
 	public function __construct(
-		Connection $dibi,
 		RoleMapper $roleMapper,
 		ResourceMapper $resourceMapper,
 		PrivilegeMapper $privilegeMapper
 	) {
-		parent::__construct($dibi);
 		$this->roleMapper = $roleMapper;
 		$this->resourceMapper = $resourceMapper;
 		$this->privilegeMapper = $privilegeMapper;

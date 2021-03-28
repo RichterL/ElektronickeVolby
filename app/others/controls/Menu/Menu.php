@@ -41,6 +41,10 @@ class Menu extends Control
 				],
 			],
 		],
+		[
+			'name' => 'Elections',
+			'link' => 'Election:',
+		],
 	];
 
 	public function render()

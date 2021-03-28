@@ -4,10 +4,7 @@ declare(strict_types=1);
 namespace Models\Mappers\Db;
 
 use dibi;
-use Dibi\Connection;
-use ErrorException;
 use Exception;
-use Models\Entities\Role\Role;
 use Models\Entities\User;
 use Models\Mappers\Db\Tables;
 use Models\Mappers\IUserMapper;
@@ -27,13 +24,12 @@ class UserMapper extends BaseMapper implements IUserMapper
 	protected $userRolesTable = Tables::USERS_ROLES;
 	private $roleMapper;
 
-	public function __construct(Connection $dibi, RoleMapper $roleMapper)
+	public function __construct(RoleMapper $roleMapper)
 	{
-		parent::__construct($dibi);
 		$this->roleMapper = $roleMapper;
 	}
 
-	public function create(array $data = []): User
+	public function create(array $data = [], $includeRoles = false): User
 	{
 		$user = new User();
 		if (!empty($data)) {
@@ -43,7 +39,6 @@ class UserMapper extends BaseMapper implements IUserMapper
 				}
 			}
 		}
-		$user->setRoles($this->roleMapper->findRelated($user));
 		return $user;
 	}
 
@@ -104,7 +99,9 @@ class UserMapper extends BaseMapper implements IUserMapper
 	/** parent concrete implementetions */
 	public function findOne(array $filter = []): ?User
 	{
-		return parent::findOne($filter);
+		return $this->cache->load('user.findOne', function () use ($filter) {
+			return parent::findOne($filter);
+		});
 	}
 
 	/** @return User[] */
