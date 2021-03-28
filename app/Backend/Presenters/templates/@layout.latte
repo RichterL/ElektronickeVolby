@@ -101,13 +101,40 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 	<script>
 		$(function () {
-			$.nette.init();
-
 			$("#menu-toggle").click(function(e) {
 				e.preventDefault();
 				$("#wrapper").toggleClass("toggled");
 			});
+			(function($, undefined) {
+
+			$.nette.ext('spinner', {
+				init: function () {
+					this.speed = 400;
+				},
+				start: function () {
+					this.counter++;
+					if (this.counter === 1) {
+						$('.ajax-spinner').fadeIn(this.speed);
+						$('.ajax-spinner-backdrop').fadeIn(this.speed);
+					}
+				},
+				complete: function () {
+					this.counter--;
+					if (this.counter <= 0) {
+						$('.ajax-spinner').fadeOut(this.speed);
+						$('.ajax-spinner-backdrop').fadeOut(this.speed);
+					}
+				}
+			}, {
+				speed: undefined,
+				counter: 0
+			});
+
+			})(jQuery);
+			$.nette.init();
 		});
+		document.querySelectorAll(".ajax-spinner").forEach((el)=>{ el.style.display = "none"})
+		document.querySelectorAll(".ajax-spinner-backdrop").forEach((el)=>{ el.style.display = "none"})
 	</script>
 	{snippet flashes}
 		<script>
@@ -118,3 +145,11 @@
 	{/snippet}
 </body>
 </html>
+{define spinner}
+	<div class="ajax-spinner justify-content-center">
+		<div class="spinner-grow text-warning" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+	<div class="ajax-spinner-backdrop"></div>
+{/define}

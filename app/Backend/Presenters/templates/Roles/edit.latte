@@ -32,17 +32,12 @@ Edit role - {$role->name}
 	{snippet ruleFormSnippet}
 		<a n:href="showRuleForm!" n:if="empty($showRuleForm)" class="ajax"> Add new rule</a>
 		{if !empty($showRuleForm)}
-			<div class="card"><div class="card-body">
-				{control ruleForm}
-			</div></div>
+			<div class="card">
+				<div class="card-body">
+					{control ruleForm}
+					{include spinner}
+				</div>
+			</div>
 		{/if}
 	{/snippet}
-{/block}
-
-{block scripts}
-<script>
-var element = document.getElementById('nav-link-roles')
-element.classList.add('c-active')
-element.closest('.c-sidebar-nav-dropdown').classList.add('c-show')
-</script>
 {/block}
