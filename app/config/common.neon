@@ -23,11 +23,17 @@ decorator:
 		Repositories\BaseRepository:
 			setup:
 				- setCache(@repositoryCache)
+		Models\Mappers\Db\BaseMapper:
+			setup:
+				- setDibi()
+				- setCache(@mapperCache)
+				- init()
 
 services:
 	router: App\Router\RouterFactory::createRouter
 	# cache.storage: Nette\Caching\Storages\DevNullStorage
 	repositoryCache: Nette\Caching\Cache(namespace: 'repositoryCache')
+	mapperCache: Nette\Caching\Cache(namespace: 'mapperCache')
 
 	# ldap settings from parameters: of local.neon
 	ldap: LDAP\Service(%ldap.server%, %ldap.baseDn%)

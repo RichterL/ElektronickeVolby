@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Models\Mappers\Db;
 
 use dibi;
-use Dibi\Connection;
 use Exception;
 use Models\Entities\Resource\Resource;
 use Models\Mappers\IResourceMapper;
@@ -21,9 +20,8 @@ class ResourceMapper extends BaseMapper implements IResourceMapper
 	protected $table = Tables::ACL_RESOURCES;
 	private PrivilegeMapper $privilegeMapper;
 
-	public function __construct(Connection $dibi, PrivilegeMapper $privilegeMapper)
+	public function __construct(PrivilegeMapper $privilegeMapper)
 	{
-		parent::__construct($dibi);
 		$this->privilegeMapper = $privilegeMapper;
 	}
 
