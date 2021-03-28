@@ -85,6 +85,8 @@ class ResourceMapper extends BaseMapper implements IResourceMapper
 	/** @var Resource[] */
 	public function findAll(): array
 	{
-		return parent::findAll();
+		return $this->cache->load('resource.findAll', function () {
+			return parent::findAll();
+		});
 	}
 }

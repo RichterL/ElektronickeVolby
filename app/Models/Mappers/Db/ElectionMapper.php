@@ -54,12 +54,6 @@ class ElectionMapper extends BaseMapper implements IElectionMapper
 		return $election;
 	}
 
-	public function getDataSource(): DibiFluentDataSource
-	{
-		$fluent = $this->dibi->select('*')->from($this->table);
-		return new DibiFluentDataSource($fluent, 'id');
-	}
-
 	public function save(Election $election): bool
 	{
 		$data = [];

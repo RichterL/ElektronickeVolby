@@ -73,12 +73,6 @@ class RoleMapper extends BaseMapper implements IRoleMapper
 		return true;
 	}
 
-	public function getDataSource(): DibiFluentDataSource
-	{
-		$fluent = $this->dibi->select('*')->from($this->table);
-		return new DibiFluentDataSource($fluent, 'id');
-	}
-
 	/** parent concrete implementetions */
 	public function findOne(array $filter = []): ?Role
 	{
@@ -88,6 +82,8 @@ class RoleMapper extends BaseMapper implements IRoleMapper
 	/** @return Role[] */
 	public function findAll(): array
 	{
-		return parent::findAll();
+		return $this->cache->load('role.findAll', function () {
+			return parent::findAll();
+		});
 	}
 }

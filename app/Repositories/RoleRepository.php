@@ -59,6 +59,11 @@ class RoleRepository extends BaseRepository
 		return $this->roleMapper->save($role);
 	}
 
+	public function delete(Role $role): bool
+	{
+		return $this->roleMapper->delete($role);
+	}
+
 	public function getDataSource(): IDataSource
 	{
 		return $this->roleMapper->getDataSource();

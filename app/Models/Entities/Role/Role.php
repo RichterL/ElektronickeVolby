@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Models\Entities\Role;
 
 use Models\Entities\Entity;
+use Models\Entities\IdentifiedById;
 use Models\Entities\Rule\RuleCollection;
+use Models\Traits\Entity\HasId;
 
 /**
  * @property int|null $id
@@ -14,28 +16,15 @@ use Models\Entities\Rule\RuleCollection;
  * @property Role|null $parent
  * @property RuleCollection|null $rules
  */
-class Role extends Entity
+class Role extends Entity implements IdentifiedById
 {
 	protected ?int $id = null;
 	protected string $name;
 	protected string $key;
-	protected ?Role $parent;
+	protected ?Role $parent = null;
 	protected ?RuleCollection $rules = null;
 
-	public function __construct()
-	{
-	}
-
-	public function getId()
-	{
-		return $this->id;
-	}
-
-	public function setId($id): self
-	{
-		$this->id = $id;
-		return $this;
-	}
+	use HasId;
 
 	public function setParent(Role $parent): self
 	{
@@ -54,7 +43,12 @@ class Role extends Entity
 			'id' => $this->getId(),
 			'name' => $this->name,
 			'key' => $this->key,
-			'parent' => $this->parent->getId(),
+			'parent' => $this->parent ? $this->parent->getId() : null,
 		];
+	}
+
+	public function __toString(): string
+	{
+		return $this->key;
 	}
 }

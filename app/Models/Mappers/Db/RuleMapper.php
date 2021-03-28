@@ -101,6 +101,8 @@ class RuleMapper extends BaseMapper implements IRuleMapper
 	/** @return Rule[] */
 	public function findAll(): array
 	{
-		return parent::findAll();
+		return $this->cache->load('rule.findAll', function () {
+			return parent::findAll();
+		});
 	}
 }

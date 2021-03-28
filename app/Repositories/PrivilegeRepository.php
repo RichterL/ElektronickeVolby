@@ -23,6 +23,11 @@ class PrivilegeRepository
 		return $this->privilegeMapper->findOne(['id' => $privilegeId]);
 	}
 
+	public function findAll(): PrivilegeCollection
+	{
+		return $this->privilegeMapper->findAll();
+	}
+
 	public function findByResource(Resource $resource): PrivilegeCollection
 	{
 		return $this->privilegeMapper->findRelated($resource);

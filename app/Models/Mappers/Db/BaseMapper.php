@@ -9,6 +9,7 @@ use Dibi\Row;
 use Models\Entities\Entity;
 use Models\Entities\IdentifiedById;
 use Nette\InvalidStateException;
+use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 abstract class BaseMapper
 {
@@ -59,7 +60,7 @@ abstract class BaseMapper
 		return $this->create($data->toArray());
 	}
 
-	public function findAll(): array
+	public function findAll(): iterable
 	{
 		$all = [];
 		$result = $this->dibi->select('*')->from($this->table)->execute();
@@ -97,6 +98,15 @@ abstract class BaseMapper
 	public function delete(IdentifiedById $entity): bool
 	{
 		return (bool) $this->dibi->delete($this->table)->where('id = %i', $entity->getId())->execute(dibi::AFFECTED_ROWS);
+	}
+
+	public function getDataSource(array $filter = []): DibiFluentDataSource
+	{
+		$fluent = $this->dibi->select('*')->from($this->table);
+		if (!empty($filter)) {
+			$fluent->where($filter);
+		}
+		return new DibiFluentDataSource($fluent, 'id');
 	}
 
 	abstract public function create(array $data = []): Entity;

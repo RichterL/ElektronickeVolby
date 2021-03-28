@@ -16,6 +16,8 @@ interface IRoleMapper
 
 	public function save(Role $role): bool;
 
+	public function delete(Role $role): bool;
+
 	public function getDataSource(): IDataSource;
 
 	public function findOne(array $filter = []): ?Role;

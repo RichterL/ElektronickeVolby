@@ -17,6 +17,5 @@ interface IPrivilegeMapper
 
 	public function findOne(array $filter = []): ?Privilege;
 
-	/** @return Privilege[] */
-	public function findAll(): array;
+	public function findAll(): PrivilegeCollection;
 }

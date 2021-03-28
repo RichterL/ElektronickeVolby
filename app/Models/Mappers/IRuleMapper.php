@@ -6,6 +6,7 @@ namespace Models\Mappers;
 use Models\Entities\Role\Role;
 use Models\Entities\Rule\Rule;
 use Models\Entities\Rule\RuleCollection;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IRuleMapper
 {
@@ -18,5 +19,9 @@ interface IRuleMapper
 
 	public function findRelated(Role $role): RuleCollection;
 
-	public function save(Rule $resource): bool;
+	public function save(Rule $rule): bool;
+
+	public function delete(Rule $rule): bool;
+
+	public function getDataSource(): IDataSource;
 }

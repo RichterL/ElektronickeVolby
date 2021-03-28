@@ -15,13 +15,14 @@ use Models\Entities\Role\Role;
  * @property Type $type
  */
 
-class Rule extends Entity
+class Rule extends Entity implements \Models\Entities\IdentifiedById
 {
-	protected ?int $id = null;
 	protected Role $role;
 	protected Resource $resource;
 	protected Privilege $privilege;
 	protected Type $type;
+
+	use \Models\Traits\Entity\HasId;
 
 	public function __construct(string $name = null, string $key = null)
 	{
@@ -31,17 +32,6 @@ class Rule extends Entity
 		if ($key) {
 			$this->key = $key;
 		}
-	}
-
-	public function setId(int $id): self
-	{
-		$this->id = $id;
-		return $this;
-	}
-
-	public function getId(): ?int
-	{
-		return $this->id;
 	}
 
 	public function getRoleId(): ?int
