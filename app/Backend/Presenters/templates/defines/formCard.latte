@@ -1,0 +1,15 @@
+<div class="col-lg-9 col-xl-5 px-0">
+	<div class="card mb-5">
+		<div class="card-header position-relative">
+			{block header}Card header{/block}
+			<a class="float-right stretched-link" href="#" data-toggle="collapse" data-target="#{$formName}" aria-expanded="true">
+				<i class="fa fa-chevron-up"></i>
+			</a>
+		</div>
+		<div class="card-body collapse show" id="{$formName}">
+			{block body}
+				{control $formName}
+			{/block}
+		</div>
+	</div>
+</div>

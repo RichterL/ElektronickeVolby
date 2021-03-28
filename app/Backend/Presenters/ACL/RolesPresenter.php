@@ -10,6 +10,7 @@ use Contributte\FormsBootstrap\Inputs\SelectInput;
 use Models\Entities\Role\Role;
 use Models\Entities\Rule;
 use Models\Entities\Rule\RuleFactory;
+use Models\Entities\Rule\Type;
 use Nette\Application\UI\Form;
 use Nette\Utils\Html;
 use Repositories\PrivilegeRepository;
@@ -23,7 +24,7 @@ use Utils\DataGrid\ToolbarButton;
 
 final class RolesPresenter extends DefaultPresenter
 {
-	private RoleRepository $repository;
+	private RoleRepository $roleRepository;
 	private ResourceRepository $resourceRepository;
 	private PrivilegeRepository $privilegeRepository;
 	private RuleRepository $ruleRepository;
@@ -36,7 +37,7 @@ final class RolesPresenter extends DefaultPresenter
 		RuleRepository $ruleRepository,
 		RuleFactory $ruleFactory
 	) {
-		$this->repository = $roleRepository;
+		$this->roleRepository = $roleRepository;
 		$this->resourceRepository = $resourceRepository;
 		$this->privilegeRepository = $privilegeRepository;
 		$this->ruleRepository = $ruleRepository;
@@ -45,13 +46,13 @@ final class RolesPresenter extends DefaultPresenter
 
 	public function renderDefault(): void
 	{
-		$roles = $this->repository->findAll();
+		$roles = $this->roleRepository->findAll();
 		$this->template->roles = $roles;
 	}
 
-	public function renderEdit(int $roleId)
+	public function renderEdit(int $id)
 	{
-		$role = $this->repository->findById($roleId, true);
+		$role = $this->roleRepository->findById($id);
 		if (!$role) {
 			$this->error('Role not found');
 		}
@@ -60,19 +61,35 @@ final class RolesPresenter extends DefaultPresenter
 
 	public function createComponentRolesGrid()
 	{
-		$this->addGrid('rolesGrid', $this->repository->getDataSource())
+		$this->addGrid('rolesGrid', $this->roleRepository->getDataSource())
 			->addColumn(Column::NUMBER, 'id', 'id')
 			->addColumn(Column::TEXT, 'name', 'Name')
 			->addColumn(Column::TEXT, 'key', 'Key')
-			->addAction(Action::EDIT, 'editRole!', ['roleId' => 'id'])
-			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete role %s?', 'name'), 'deleteRole!', ['roleId' => 'id'])
+			->addAction(Action::VIEW, ':edit', null, false)
+			->addAction(Action::EDIT, 'editRole!')
+			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete role %s?', 'name'), 'deleteRole!')
 			->addToolbarButton(ToolbarButton::ADD, 'Add new role', 'showRoleForm!');
 	}
 
-	public function handleEditRole(int $roleId)
+	public function createComponentRulesGrid()
 	{
-		$roleId = (int) $this->getParameter('roleId');
-		$role = $this->repository->findById($roleId);
+		$roles = $this->roleRepository->getIdNamePairs();
+		$resources = $this->resourceRepository->getIdNamePairs();
+		$privileges = $this->privilegeRepository->findAll()->getIdNamePairs();
+		$this->addGrid('rulesGrid', $this->ruleRepository->getDataSource(['role_id' => $this->getParameter('id')]))
+			->addColumn(Column::NUMBER, 'id', 'id')
+			->addColumn(Column::TEXT_MULTISELECT, 'role_id', 'Role', $roles)
+			->addColumn(Column::TEXT_MULTISELECT, 'resource_id', 'Resource', $resources)
+			->addColumn(Column::TEXT_MULTISELECT, 'type', 'Type', [Type::ALLOW => 'allow', Type::DENY => 'deny'])
+			->addColumn(Column::TEXT, 'privilege_id', 'Privilege', $privileges)
+			->addAction(Action::EDIT, 'editRule!', ['ruleId' => 'id'])
+			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete rule #%s?', 'id'), 'deleteRule!', ['ruleId' => 'id'])
+			->addToolbarButton(ToolbarButton::ADD, 'Add new rule', 'showRuleForm!');
+	}
+
+	public function handleEditRole(int $id)
+	{
+		$role = $this->roleRepository->findById($id);
 		if (!$role) {
 			$this->error('Role not found');
 		}
@@ -82,9 +99,17 @@ final class RolesPresenter extends DefaultPresenter
 		$this->handleShowRoleForm();
 	}
 
-	public function handleDeleteRole(int $roleId)
+	public function handleDeleteRole(int $id)
 	{
-		// code...
+		$role = $this->roleRepository->findById($id);
+		if (!$role) {
+			$this->flashMessage('Role not found!', 'error');
+			return;
+		}
+		if ($this->roleRepository->delete($role)) {
+			$this->flashMessage('Role id ' . $id . ' deleted', 'success');
+			$this->getGrid('rolesGrid')->reload();
+		}
 	}
 
 	public function handleEditRule(int $ruleId)
@@ -102,6 +127,20 @@ final class RolesPresenter extends DefaultPresenter
 		$this->ruleFormRefresh($form, $values);
 		$form->setValues($values);
 		$this->handleShowRuleForm();
+		$this->template->ruleEdit = true;
+	}
+
+	public function handleDeleteRule(int $ruleId)
+	{
+		$rule = $this->ruleRepository->findById($ruleId);
+		if (!$rule) {
+			$this->flashMessage('Rule not found!', 'error');
+			return;
+		}
+		if ($this->ruleRepository->delete($rule)) {
+			$this->flashMessage('Rule id ' . $ruleId . ' deleted', 'success');
+			$this->getGrid('rulesGrid')->reload();
+		}
 	}
 
 	public function handleShowRoleForm()
@@ -147,12 +186,12 @@ final class RolesPresenter extends DefaultPresenter
 		$roleId = (int) $values['id'];
 		unset($values['id']);
 		if ($roleId) {
-			$role = $this->repository->findById($roleId);
+			$role = $this->roleRepository->findById($roleId);
 		} else {
 			$role = new Role();
 		}
 		$role->setValues($values);
-		if ($this->repository->save($role)) {
+		if ($this->roleRepository->save($role)) {
 			$this->flashMessage('Role saved.');
 		}
 	}

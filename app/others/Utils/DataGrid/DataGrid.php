@@ -18,7 +18,7 @@ class DataGrid
 		$this->grid->setDataSource($dataSource);
 	}
 
-	public function addAction(string $type, ?string $destination = null, ?array $params = null): self
+	public function addAction(string $type, ?string $destination = null, ?array $params = null, bool $ajax = true): self
 	{
 		if (!Action::isValid($type)) {
 			throw new InvalidArgumentException('Action ' . $type . ' is not defined');
@@ -27,22 +27,24 @@ class DataGrid
 		switch ($type) {
 			case Action::VIEW:
 				$action->setIcon('eye')
-					->setTitle('View details')
-					->setClass('btn btn-sm btn-info text-white');
+					->setTitle('View details');
+				$class = 'btn btn-sm btn-info text-white';
 				break;
 			case Action::EDIT:
 				$action->setIcon('edit')
-					->setTitle('Edit')
-					->setClass('btn btn-sm btn-warning ajax text-white');
+					->setTitle('Edit');
+				$class = 'btn btn-sm btn-warning text-white';
 				break;
 			case Action::DELETE:
 				$action->setIcon('trash')
-					->setTitle('Delete')
-					->setClass('btn btn-sm btn-danger ajax');
+					->setTitle('Delete');
+				$class = 'btn btn-sm btn-danger';
 				break;
 			default:
 				throw new InvalidArgumentException('Action ' . $type . ' is not defined');
 		}
+		$class .= $ajax ? ' ajax' : '';
+		$action->setClass($class);
 		return $this;
 	}
 
@@ -60,7 +62,13 @@ class DataGrid
 				$this->grid->addColumnNumber($key, $title);
 				break;
 			case Column::TEXT:
-				$this->grid->addColumnText($key, $title);
+				$this->grid->addColumnText($key, $title)
+					->setReplacement($items);
+				break;
+			case Column::TEXT_MULTISELECT:
+				$this->grid->addColumnText($key, $title)
+					->setReplacement($items)
+					->setFilterMultiSelect($items);
 				break;
 			case Column::BOOL:
 				$this->grid->addColumnText($key, $title)

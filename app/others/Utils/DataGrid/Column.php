@@ -7,6 +7,7 @@ class Column
 {
 	const NUMBER = 'number';
 	const TEXT = 'text';
+	const TEXT_MULTISELECT = 'text-multiselect';
 	const BOOL = 'bool';
 	const DATETIME = 'datetime';
 }

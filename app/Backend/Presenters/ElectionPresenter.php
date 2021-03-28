@@ -46,7 +46,7 @@ final class ElectionPresenter extends DefaultPresenter
 			->addColumn(Column::BOOL, 'secret', 'Secret')
 			->addColumn(Column::DATETIME, 'start', 'Start')
 			->addColumn(Column::DATETIME, 'end', 'End')
-			->addAction(Action::VIEW, ':view')
+			->addAction(Action::VIEW, ':view', null, false)
 			->addAction(Action::EDIT, 'edit!')
 			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete election %s?', 'title'), 'delete!')
 			->addToolbarButton(ToolbarButton::ADD, 'Create new election', 'showElectionForm!');
