@@ -60,6 +60,7 @@ services:
 	iroleMapper : Models\Mappers\Db\RoleMapper
 	iuserMapper : Models\Mappers\Db\UserMapper
 	iRuleMapper: Models\Mappers\Db\RuleMapper
+	iElectionMapper: Models\Mappers\Db\ElectionMapper
 
 	# repositories
 	privilegeRepository: Repositories\PrivilegeRepository
@@ -67,3 +68,4 @@ services:
 	roleRepository: Repositories\RoleRepository
 	userRepository : Repositories\UserRepository
 	ruleRepository: Repositories\RuleRepository
+	electionRepository: Repositories\ElectionRepository
