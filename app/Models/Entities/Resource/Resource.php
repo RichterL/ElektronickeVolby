@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Models\Entities\Resource;
 
-use Exception;
 use Models\Entities\Entity;
+use Models\Entities\IdentifiedById;
+use Models\Traits\Entity\HasId;
 
 /**
  * @property int|null $id
@@ -15,7 +16,7 @@ use Models\Entities\Entity;
  * @property Resource|null $parent
  */
 
-class Resource extends Entity
+class Resource extends Entity implements IdentifiedById
 {
 	protected ?int $id = null;
 	protected string $name;
@@ -23,20 +24,7 @@ class Resource extends Entity
 	protected PrivilegeCollection $privileges;
 	protected ?Resource $parent = null;
 
-	public function __construct()
-	{
-	}
-
-	public function getId(): ?int
-	{
-		return $this->id;
-	}
-
-	public function setId(int $id): self
-	{
-		$this->id = $id;
-		return $this;
-	}
+	use HasId;
 
 	public function addPrivilege(Privilege $privilege, bool $rewrite = false): self
 	{
@@ -55,7 +43,7 @@ class Resource extends Entity
 			'id' => $this->getId(),
 			'name' => $this->name,
 			'key' => $this->key,
-			'parent' => $this->parent->getId(),
+			'parent' => $this->parent ? $this->parent->getId() : null,
 		];
 	}
 }

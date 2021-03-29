@@ -1,0 +1,30 @@
+{var $fullWidth = $fullWidth ?? true}
+{var $includeHeader = $includeHeader ?? true}
+{var $collapsible = $collapsible ?? true}
+
+{define collapsibleControls}
+	<div class="window-icons float-right">
+		<a class="mx-1" href="#" data-toggle="collapse" data-target="#{$cardName}" aria-expanded="true">
+			<i class="fa fa-minus"></i>
+		</a>
+	</div>
+{/define}
+{define headerBlock}
+	<div class="card-header position-relative">
+		{block header}Card header{/block}
+
+		{if $collapsible}
+			{include collapsibleControls}
+		{/if}
+	</div>
+{/define}
+<div n:tag-if="!$fullWidth" class="col-lg-9 col-xl-5 px-0">
+	<div class="card mb-5">
+		{if $includeHeader}
+			{include headerBlock}
+		{/if}
+		<div n:class="card-body, $collapsible ? 'collapse show'" id="{$cardName}">
+			{block body}Card body{/block}
+		</div>
+	</div>
+</div>

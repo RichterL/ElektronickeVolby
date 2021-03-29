@@ -7,9 +7,9 @@
 
 {snippet roleFormSnippet}
 	{if !empty($showRoleForm)}
-		<div class="card"><div class="card-body">
-			{control roleForm}
-		</div></div>
+		{embed ../defines/formCard.latte, formName: roleForm}
+			{block header}{if empty($roleEdit)}Add new{else}Edit{/if} role{/block}
+		{/embed}
 	{/if}
 {/snippet}
 {/block}

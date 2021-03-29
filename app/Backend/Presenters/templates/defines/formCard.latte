@@ -1,14 +1,30 @@
-<div class="col-lg-9 col-xl-5 px-0">
-	<div class="card mb-5">
-		<div class="card-header position-relative">
-			{block header}Card header{/block}
-			<a class="float-right stretched-link" href="#" data-toggle="collapse" data-target="#{$formName}" aria-expanded="true">
-				<i class="fa fa-chevron-up"></i>
+{var $fullWidth = $fullWidth ?? false}
+{var $collapsible = $collapsible ?? true}
+{var $hideable = $hideable ?? true}
+{var $includeHeader = $includeHeader ?? ($collapsible || $hideable)}
+{var $handleHide = 'hide' . ucfirst($formName) .'!'}
+
+{define headerBlock}
+	<div n:if="$includeHeader" class="card-header position-relative">
+		{block header}Card header{/block}
+		<div n:if="$collapsible || $hideable" class="window-icons float-right">
+			<a n:if="collapsible" class="mx-1" href="#" data-toggle="collapse" data-target="#{$formName}" aria-expanded="true">
+				<i class="fa fa-minus"></i>
+			</a>
+			<a n:if="$hideable" class="mx-1 ajax" n:href="$handleHide">
+				<i class="fa fa-times"></i>
 			</a>
 		</div>
-		<div class="card-body collapse show" id="{$formName}">
+	</div>
+{/define}
+
+<div n:tag-if="!$fullWidth" class="col-lg-9 col-xl-5 px-0">
+	<div class="card mb-5">
+		{include headerBlock}
+		<div n:class="card-body, $collapsible ? 'collapse show'" id="{$formName}">
 			{block body}
 				{control $formName}
+				{include spinner from ../@layout.latte}
 			{/block}
 		</div>
 	</div>

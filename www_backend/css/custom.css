@@ -192,6 +192,7 @@
 
 .datagrid {
 	padding: 0;
+	min-height: 400px;
 }
 
 div.ajax-spinner-backdrop {
@@ -209,4 +210,13 @@ div.ajax-spinner {
 	top:50%;
 	left:50%;
 	transform: translate(-50%, -50%);
+}
+
+#sidebar-wrapper .list-group-item {
+	background: white;
+	transition: background 1s ease;
+}
+
+#sidebar-wrapper .list-group-item:hover {
+	background: rgba(255,255,255,0.5);
 }

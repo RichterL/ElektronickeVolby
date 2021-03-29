@@ -65,6 +65,11 @@ class DataGrid
 				$this->grid->addColumnText($key, $title)
 					->setReplacement($items);
 				break;
+			case Column::FILTERTEXT:
+				$this->grid->addColumnText($key, $title)
+					->setReplacement($items)
+					->setFilterText();
+				break;
 			case Column::TEXT_MULTISELECT:
 				$this->grid->addColumnText($key, $title)
 					->setReplacement($items)

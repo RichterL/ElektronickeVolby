@@ -132,9 +132,8 @@
 
 			})(jQuery);
 			$.nette.init();
+			$('.ajax-spinner, .ajax-spinner-backdrop').fadeOut(400);
 		});
-		document.querySelectorAll(".ajax-spinner").forEach((el)=>{ el.style.display = "none"})
-		document.querySelectorAll(".ajax-spinner-backdrop").forEach((el)=>{ el.style.display = "none"})
 	</script>
 	{snippet flashes}
 		<script>

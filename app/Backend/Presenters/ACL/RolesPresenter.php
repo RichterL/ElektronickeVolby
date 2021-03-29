@@ -97,6 +97,7 @@ final class RolesPresenter extends DefaultPresenter
 		$form = $this->getForm('roleForm');
 		$form->setDefaults($role->toArray());
 		$this->handleShowRoleForm();
+		$this->template->roleEdit = true;
 	}
 
 	public function handleDeleteRole(int $id)
