@@ -10,7 +10,10 @@ use Models\Entities\User;
 use Nette\Application\UI\Form;
 use Repositories\RoleRepository;
 use Repositories\UserRepository;
-use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
+use Utils\DataGrid\Action;
+use Utils\DataGrid\Column;
+use Utils\DataGrid\ToolbarButton;
 
 final class UsersPresenter extends DefaultPresenter
 {
@@ -32,14 +35,14 @@ final class UsersPresenter extends DefaultPresenter
 		}
 	}
 
-	public function handleEdit(int $userId)
+	public function handleEdit(int $id)
 	{
 		$this->template->showUserForm = true;
-		$user = $this->userRepository->findById($userId);
+		$user = $this->userRepository->findById($id);
 		if (!$user) {
 			$this->error('User not found');
 		}
-		$this['userForm']->setDefaults($user->toArray());
+		$this['userForm']->setValues($user->toArray());
 		$this->template->userEdit = true;
 		$this->redrawControl('userFormSnippet');
 	}
@@ -58,24 +61,20 @@ final class UsersPresenter extends DefaultPresenter
 
 	public function createComponentUsersGrid(string $name)
 	{
-		$grid = new DataGrid($this, $name);
-		$datasource = $this->userRepository->getDataSource();
-
-		$grid->setDataSource($datasource);
-		$grid->addColumnText('username', 'Username')
-			->setFilterText();
-		$grid->addColumnText('email', 'E-mail')
-			->setFilterText();
-		$grid->addColumnText('name', 'Name')
-			->setFilterText();
-		$grid->addColumnText('surname', 'Surname')
-			->setFilterText();
-		$grid->addColumnText('roles', 'Roles');
-		$grid->addAction('edit', '', 'edit!', ['userId' => 'id'])
-		->setIcon('edit')
-		->setClass('btn btn-xs btn-warning ajax');
-		$grid->addToolbarButton('showUserForm!', 'Add new user')
-			->setClass('btn btn-sm btn-primary ajax');
+		$roles = $this->roleRepository->getIdNamePairs();
+		$this->addGrid('usersGrid', $this->userRepository->getDataSource())
+			->addColumn(Column::FILTERTEXT, 'username', 'Username')
+			->addColumn(Column::FILTERTEXT, 'email', 'E-mail')
+			->addColumn(Column::TEXT, 'name', 'Name')
+			->addColumn(Column::FILTERTEXT, 'surname', 'Surname')
+			->addColumn(Column::TEXT, 'roles', 'Roles')
+			->addAction(Action::EDIT, 'edit!')
+			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete user %s', 'username'), 'delete!')
+			->addToolbarButton(ToolbarButton::ADD, 'Add new user', 'showUserForm!');
+		$this->getGrid('usersGrid')->addFilterMultiSelect('roles', 'roles', $roles)
+			->setCondition(function (\Dibi\Fluent $fluent, $value) {
+				$fluent->where('ar.id IN (%s)', $value);
+			});
 	}
 
 	public function createComponentUserForm(): Form
@@ -120,6 +119,19 @@ final class UsersPresenter extends DefaultPresenter
 			$this->flashMessage('User saved.');
 		} else {
 			$this->error('saving failed!');
+		}
+	}
+
+	public function handleDelete(int $id)
+	{
+		$user = $this->userRepository->findById($id);
+		if (!$user) {
+			$this->flashMessage('User wasn\'t found!', 'error');
+			return;
+		}
+		if ($this->userRepository->delete($user)) {
+			$this->flashMessage('User id ' . $id . ' deleted', 'success');
+			$this->getGrid('usersGrid')->reload();
 		}
 	}
 }

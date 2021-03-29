@@ -6,6 +6,7 @@ namespace Repositories;
 
 use Models\Entities\Resource\Resource;
 use Models\Mappers\IResourceMapper;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ResourceRepository extends BaseRepository
 {
@@ -47,5 +48,15 @@ class ResourceRepository extends BaseRepository
 	public function save(Resource $resource): bool
 	{
 		return $this->resourceMapper->save($resource);
+	}
+
+	public function getDataSource(): IDataSource
+	{
+		return $this->resourceMapper->getDataSource();
+	}
+
+	public function delete(Resource $resource): bool
+	{
+		return $this->resourceMapper->delete($resource);
 	}
 }

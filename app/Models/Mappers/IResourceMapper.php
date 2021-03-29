@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Models\Mappers;
 
 use Models\Entities\Resource\Resource;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IResourceMapper
 {
@@ -15,4 +16,8 @@ interface IResourceMapper
 	public function findAll(): array;
 
 	public function save(Resource $resource): bool;
+
+	public function getDataSource(array $filter = []): IDataSource;
+
+	public function delete(Resource $resource): bool;
 }

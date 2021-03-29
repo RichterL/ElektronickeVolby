@@ -12,7 +12,7 @@
 						<a n:class="nav-link, ajax, $selectedTab == 'voterList' ? active" n:href="showVoterList!">Voter list</a>
 					</li>
 					<li class="nav-item dropdown ml-auto">
-						<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+						<a class="nav-link dropdown-toggle text-muted" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
 							<i class="fa fa-cog"></i>
 						</a>
 						<div class="dropdown-menu dropdown-menu-right">
@@ -32,6 +32,7 @@
 					{default}
 						{include electionCardBody from '_base.latte'}
 				{/switch}
+				{include spinner}
 			</div>
 		</div>
 	{/snippet}

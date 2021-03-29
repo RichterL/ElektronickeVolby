@@ -75,9 +75,17 @@ class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 		return parent::findOne($filter);
 	}
 
-	/** @return Privilege[] */
-	public function findAll(): array
+	public function findAll(): PrivilegeCollection
 	{
-		return parent::findAll();
+		return $this->cache->load('privilege.findAll', function () {
+			$privileges = new PrivilegeCollection();
+			$result = $this->dibi->select(array_keys(self::MAP))
+				->from($this->table)
+				->fetchAssoc('id,=');
+			foreach ($result as $id => $values) {
+				$privileges[] = $this->create($values)->setId($id);
+			}
+			return $privileges;
+		});
 	}
 }

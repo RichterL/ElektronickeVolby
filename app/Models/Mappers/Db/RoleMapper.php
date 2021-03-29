@@ -9,6 +9,7 @@ use Exception;
 use Models\Entities\Role\Role;
 use Models\Entities\User;
 use Models\Mappers\IRoleMapper;
+use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 class RoleMapper extends BaseMapper implements IRoleMapper
 {
@@ -81,6 +82,8 @@ class RoleMapper extends BaseMapper implements IRoleMapper
 	/** @return Role[] */
 	public function findAll(): array
 	{
-		return parent::findAll();
+		return $this->cache->load('role.findAll', function () {
+			return parent::findAll();
+		});
 	}
 }

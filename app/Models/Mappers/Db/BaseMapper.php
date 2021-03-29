@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use dibi;
 use Dibi\Connection;
 use Dibi\Row;
 use Models\Entities\Entity;
+use Models\Entities\IdentifiedById;
 use Nette\InvalidStateException;
+use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 abstract class BaseMapper
 {
@@ -57,7 +60,7 @@ abstract class BaseMapper
 		return $this->create($data->toArray());
 	}
 
-	public function findAll(): array
+	public function findAll(): iterable
 	{
 		$all = [];
 		$result = $this->dibi->select('*')->from($this->table)->execute();
@@ -90,6 +93,20 @@ abstract class BaseMapper
 		foreach (static::DATA_TYPES as $key => $type) {
 			$result->setType($key, $type);
 		}
+	}
+
+	public function delete(IdentifiedById $entity): bool
+	{
+		return (bool) $this->dibi->delete($this->table)->where('id = %i', $entity->getId())->execute(dibi::AFFECTED_ROWS);
+	}
+
+	public function getDataSource(array $filter = []): DibiFluentDataSource
+	{
+		$fluent = $this->dibi->select('*')->from($this->table);
+		if (!empty($filter)) {
+			$fluent->where($filter);
+		}
+		return new DibiFluentDataSource($fluent, 'id');
 	}
 
 	abstract public function create(array $data = []): Entity;

@@ -8,6 +8,7 @@ use Models\Entities\Resource\Privilege;
 use Models\Entities\Resource\PrivilegeCollection;
 use Models\Entities\Resource\Resource;
 use Models\Mappers\IPrivilegeMapper;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class PrivilegeRepository
 {
@@ -23,6 +24,11 @@ class PrivilegeRepository
 		return $this->privilegeMapper->findOne(['id' => $privilegeId]);
 	}
 
+	public function findAll(): PrivilegeCollection
+	{
+		return $this->privilegeMapper->findAll();
+	}
+
 	public function findByResource(Resource $resource): PrivilegeCollection
 	{
 		return $this->privilegeMapper->findRelated($resource);
@@ -31,5 +37,15 @@ class PrivilegeRepository
 	public function save(Resource $resource, Privilege $privilege)
 	{
 		return $this->privilegeMapper->save($resource, $privilege);
+	}
+
+	public function delete(Privilege $privilege): bool
+	{
+		return $this->privilegeMapper->delete($privilege);
+	}
+
+	public function getDataSource(array $filter = []): IDataSource
+	{
+		return $this->privilegeMapper->getDataSource($filter);
 	}
 }

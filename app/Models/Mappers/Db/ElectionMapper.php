@@ -8,6 +8,7 @@ use Exception;
 use Models\Entities\Election\Election;
 use Models\Entities\User;
 use Models\Mappers\IElectionMapper;
+use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 class ElectionMapper extends BaseMapper implements IElectionMapper
 {
@@ -53,11 +54,6 @@ class ElectionMapper extends BaseMapper implements IElectionMapper
 		return $election;
 	}
 
-	public function getDataSource()
-	{
-		return $this->dibi->select('*')->from($this->table);
-	}
-
 	public function save(Election $election): bool
 	{
 		$data = [];
@@ -83,11 +79,6 @@ class ElectionMapper extends BaseMapper implements IElectionMapper
 
 		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
 		return true;
-	}
-
-	public function delete(Election $election): bool
-	{
-		return (bool) $this->dibi->delete($this->table)->where('id = %i', $election->getId())->execute(dibi::AFFECTED_ROWS);
 	}
 
 	/** parent concrete implementetions */

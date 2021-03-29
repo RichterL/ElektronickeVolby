@@ -5,22 +5,28 @@ declare(strict_types=1);
 namespace App\Backend\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
+use Contributte\FormsBootstrap\Enums\RenderMode;
 use Models\Entities\Resource\Privilege;
 use Models\Entities\Resource\PrivilegeAlreadyExistsException;
 use Models\Entities\Resource\Resource;
 use Nette;
 use Nette\Application\UI\Form;
+use Nette\Utils\Html;
 use Repositories\ResourceRepository;
 use Repositories\PrivilegeRepository;
+use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
+use Utils\DataGrid\Action;
+use Utils\DataGrid\Column;
+use Utils\DataGrid\ToolbarButton;
 
 final class ResourcesPresenter extends DefaultPresenter
 {
-	private ResourceRepository $repository;
+	private ResourceRepository $resourceRepository;
 	private PrivilegeRepository $privilegeRepository;
 
 	public function __construct(ResourceRepository $resourceRepository, PrivilegeRepository $privilegeRepository)
 	{
-		$this->repository = $resourceRepository;
+		$this->resourceRepository = $resourceRepository;
 		$this->privilegeRepository = $privilegeRepository;
 	}
 
@@ -31,37 +37,71 @@ final class ResourcesPresenter extends DefaultPresenter
 		}
 	}
 
-	public function actionEdit(int $resourceId)
+	public function actionEdit(int $id)
 	{
 	}
 
 	public function renderDefault(): void
 	{
-		$resources = $this->repository->findAll();
+		$resources = $this->resourceRepository->findAll();
 		$this->template->resources = $resources;
 	}
 
-	public function renderEdit(int $resourceId)
+	public function renderEdit(int $id)
 	{
-		//$this->template->showResourceForm = true;
-		$resource = $this->repository->findById($resourceId);
+		$resource = $this->resourceRepository->findById($id);
 		if (!$resource) {
 			$this->error('Resource not found');
 		}
 		$this->template->resource = $resource;
-		//$this->template->privileges = $this->privilegeRepository->findByResource($resource);
-		//$this['resourceForm']->setDefaults($resource->toArray());
 	}
 
-	public function handleEditResource()
+	public function createComponentResourcesGrid()
 	{
-		$resourceId = (int) $this->getParameter('resourceId');
-		$resource = $this->repository->findById($resourceId);
+		$this->addGrid('resourcesGrid', $this->resourceRepository->getDataSource())
+			->addColumn(Column::NUMBER, 'id', 'id')
+			->addColumn(Column::TEXT, 'name', 'Name')
+			->addColumn(Column::TEXT, 'key', 'Key')
+			->addAction(Action::VIEW, ':edit', null, false)
+			->addAction(Action::EDIT, 'editResource!')
+			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete resource %s?', 'name'), 'deleteResource!')
+			->addToolbarButton(ToolbarButton::ADD, 'Add new resource', 'showResourceForm!');
+	}
+
+	public function createComponentPrivilegesGrid()
+	{
+		$resources = $this->resourceRepository->getIdNamePairs();
+		$this->addGrid('privilegesGrid', $this->privilegeRepository->getDataSource(['resource_id' => $this->getParameter('id')]))
+			->addColumn(Column::NUMBER, 'id', 'id')
+			->addColumn(Column::TEXT_MULTISELECT, 'resource_id', 'Resource', $resources)
+			->addColumn(Column::FILTERTEXT, 'name', 'Name')
+			->addColumn(Column::FILTERTEXT, 'key', 'Key')
+			->addAction(Action::EDIT, 'editPrivilege!', ['privilegeId' => 'id'])
+			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete privilege %s?', 'name'), 'deletePrivilege!', ['privilegeId' => 'id'])
+			->addToolbarButton(ToolbarButton::ADD, 'Add new privilege', 'showPrivilegeForm!');
+	}
+
+	public function handleEditResource(int $id)
+	{
+		$resource = $this->resourceRepository->findById($id);
 		if (!$resource) {
 			$this->error('Resource not found');
 		}
 		$this->handleShowResourceForm();
 		$this->getForm('resourceForm')->setDefaults($resource->toArray());
+		$this->template->resourceEdit = true;
+	}
+
+	public function handleDeleteResource(int $id)
+	{
+		$resource = $this->resourceRepository->findById($id);
+		if (!$resource) {
+			$this->error('Resource not found!');
+		}
+		if ($this->resourceRepository->delete($resource)) {
+			$this->flashMessage('Role id ' . $id . ' deleted', 'success');
+			$this->getGrid('resourcesGrid')->reload();
+		}
 	}
 
 	public function handleEditPrivilege(int $privilegeId)
@@ -71,16 +111,31 @@ final class ResourcesPresenter extends DefaultPresenter
 			$this->error('Privilege not found');
 		}
 		$this->handleShowPrivilegeForm();
+		$this->template->editPrivilege = true;
 		$this['privilegeForm']->setDefaults($privilege->toArray());
+	}
+
+	public function handleDeletePrivilege(int $privilegeId)
+	{
+		$privilege = $this->privilegeRepository->findById($privilegeId);
+		if (!$privilege) {
+			$this->error('Resource not found!');
+		}
+		if ($this->privilegeRepository->delete($privilege)) {
+			$this->flashMessage('Privilege id ' . $privilegeId . ' deleted', 'success');
+			$this->getGrid('privilegesGrid')->reload();
+		}
 	}
 
 	public function createComponentResourceForm(): Form
 	{
 		$form = new BootstrapForm();
+		$form->setRenderMode(RenderMode::SIDE_BY_SIDE_MODE);
 		$form->addHidden('id');
 		$form->addText('name', 'Name')->setRequired();
 		$form->addText('key', 'Key')->setRequired();
 		$form->addSubmit('submit', 'Save');
+		$form->addButton('Cancel', Html::el('a')->href($this->link('hideResourceForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
 		$form->onSuccess[] = [$this, 'resourceFormSuccess'];
 
 		return $form;
@@ -91,13 +146,13 @@ final class ResourcesPresenter extends DefaultPresenter
 		$resourceId = (int) $values['id'];
 		unset($values['id']);
 		if ($resourceId) {
-			$resource = $this->repository->findById($resourceId);
+			$resource = $this->resourceRepository->findById($resourceId);
 		} else {
 			$resource = new Resource();
 		}
 		$resource->setValues($values);
-		if ($this->repository->save($resource)) {
-			$this->flashMessage('Resource saved.');
+		if ($this->resourceRepository->save($resource)) {
+			$this->flashMessage('Resource saved.', 'success');
 		}
 		//$this->redrawControl('resourceFormSnippet');
 	}
@@ -108,11 +163,17 @@ final class ResourcesPresenter extends DefaultPresenter
 		$this->redrawControl('resourceFormSnippet');
 	}
 
+	public function handleHideResourceForm()
+	{
+		$this->template->showResourceForm = false;
+		$this->redrawControl('resourceFormSnippet');
+	}
+
 	public function createComponentPrivilegeForm(): Form
 	{
 		$form = new BootstrapForm();
 		$form->addHidden('id');
-		$form->addHidden('resourceId')->setValue($this->getParameter('resourceId'));
+		$form->addHidden('resourceId')->setValue($this->getParameter('id'));
 		$form->addText('name', 'Name')->setRequired();
 		$form->addText('key', 'Key')->setRequired();
 		$form->addSubmit('submit', 'Save');
@@ -132,15 +193,21 @@ final class ResourcesPresenter extends DefaultPresenter
 			$privilege = new Privilege();
 		}
 		$privilege->setValues($values);
-		$resource = $this->repository->findById($resourceId);
+		$resource = $this->resourceRepository->findById($resourceId);
 		if ($this->privilegeRepository->save($resource, $privilege)) {
-			$this->flashMessage('Privilege saved.');
+			$this->flashMessage('Privilege saved.', 'success');
 		}
 	}
 
 	public function handleShowPrivilegeForm()
 	{
 		$this->template->showPrivilegeForm = true;
+		$this->redrawControl('privilegeFormSnippet');
+	}
+
+	public function handleHidePrivilegeForm()
+	{
+		$this->template->showPrivilegeForm = false;
 		$this->redrawControl('privilegeFormSnippet');
 	}
 }

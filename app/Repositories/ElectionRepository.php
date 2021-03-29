@@ -6,6 +6,7 @@ namespace Repositories;
 
 use Models\Entities\Election\Election;
 use Models\Mappers\IElectionMapper;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ElectionRepository
 {
@@ -27,7 +28,7 @@ class ElectionRepository
 		return $this->electionMapper->findAll();
 	}
 
-	public function getDataSource()
+	public function getDataSource(): IDataSource
 	{
 		return $this->electionMapper->getDataSource();
 	}

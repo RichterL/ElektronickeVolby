@@ -1,39 +1,37 @@
-{block title}
-Edit resource - {$resource->name}
-{/block}
+
 {block content}
+	{block title}
+		<h1>Resource - {$resource->name}</h1>
+	{/block}
 	{snippet resourceFormSnippet}
+
 		{if !empty($showResourceForm)}
-			{control resourceForm}
+			{embed ../defines/formCard.latte, formName: resourceForm, includeHeader:false, fullWidth: true}
+			{/embed}
 		{else}
-			Name : {$resource->name} <br>
-			Key : {$resource->key} <br>
-			<a n:href="editResource!" class="ajax">Edit</a>
+			{embed ../defines/simpleCard.latte, cardName: resourceInfo, includeHeader: false, collapsible: false}
+				{block header}
+					header override
+				{/block}
+				{block body}
+					Name : {$resource->name} <br>
+					Key : {$resource->key} <br>
+					<a n:href="editResource!" class="ajax">Edit</a>
+				{/block}
+			{/embed}
 		{/if}
 	{/snippet}
 
+	{embed ../defines/gridCard.latte, gridName: privilegesGrid}
+		{block header}Privileges{/block}
+	{/embed}
 
-	List of privileges assigned to {$resource->name}
-	<ul>
-		{foreach $resource->privileges as $privilege}
-			<li>{$privilege->name}</li>
-		{/foreach}
-	</ul>
 
-	<a n:href="showPrivilegeForm!" n:if="empty($showPrivilegeForm)" class="ajax"> Add new privilege</a>
 	{snippet privilegeFormSnippet}
 		{if !empty($showPrivilegeForm)}
-			<div class="card"><div class="card-body">
-				{control privilegeForm}
-			</div></div>
+			{embed ../defines/formCard.latte, formName: privilegeForm}
+				{block header}{if empty($editPrivilege)}Add new{else}Edit{/if} privilege{/block}
+			{/embed}
 		{/if}
 	{/snippet}
-{/block}
-
-{block scripts}
-<script>
-var element = document.getElementById('nav-link-resources')
-element.classList.add('c-active')
-element.closest('.c-sidebar-nav-dropdown').classList.add('c-show')
-</script>
 {/block}

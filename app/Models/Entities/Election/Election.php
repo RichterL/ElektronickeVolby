@@ -6,6 +6,7 @@ namespace Models\Entities\Election;
 use Constants;
 use InvalidArgumentException;
 use Models\Entities\Entity;
+use Models\Entities\IdentifiedById;
 use Models\Entities\User;
 
 /**
@@ -19,9 +20,8 @@ use Models\Entities\User;
  * @property \DateTimeInterface $createdAt
  * @property User $createdBy
  */
-class Election extends Entity
+class Election extends Entity implements IdentifiedById
 {
-	protected ?int $id = null;
 	protected string $title;
 	protected string $description;
 	protected bool $active;
@@ -31,16 +31,7 @@ class Election extends Entity
 	protected \DateTimeInterface $createdAt;
 	protected User $createdBy;
 
-	public function getId(): ?int
-	{
-		return $this->id;
-	}
-
-	public function setId(int $id): self
-	{
-		$this->id = $id;
-		return $this;
-	}
+	use \Models\Traits\Entity\HasId;
 
 	public function setStart($from): self
 	{

@@ -1,18 +1,14 @@
 {block content}
-<h1>Resources</h1>
+{block title}<h1>Resources</h1>{/block}
 
-{foreach $resources as $id => $resource}
-	<p>
-		{$resource->name} | <a n:href=":edit $resource->id">Edit</a>
-	</p>
-{/foreach}
-
-<a n:href="showResourceForm!" class="ajax">Add new resource</a>
+{embed ../defines/gridCard.latte, gridName: resourcesGrid}
+	{block header}Resources{/block}
+{/embed}
 {snippet resourceFormSnippet}
 	{if !empty($showResourceForm)}
-		<div class="card"><div class="card-body">
-			{control resourceForm}
-		</div></div>
+		{embed ../defines/formCard.latte, formName: resourceForm}
+			{block header}{if empty($resourceEdit)}Add new{else}Edit{/if} resource{/block}
+		{/embed}
 	{/if}
 {/snippet}
 {/block}

@@ -15,6 +15,8 @@ interface IUserMapper
 
 	public function getDataSource();
 
+	public function delete(User $user): bool;
+
 	public function findOne(array $filter = []): ?User;
 
 	/** @return User[] */

@@ -7,6 +7,7 @@ namespace Repositories;
 use Models\Entities\Role\Role;
 use Models\Mappers\IRoleMapper;
 use Models\Mappers\IRuleMapper;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class RoleRepository extends BaseRepository
 {
@@ -56,5 +57,15 @@ class RoleRepository extends BaseRepository
 	public function save(Role $role): bool
 	{
 		return $this->roleMapper->save($role);
+	}
+
+	public function delete(Role $role): bool
+	{
+		return $this->roleMapper->delete($role);
+	}
+
+	public function getDataSource(): IDataSource
+	{
+		return $this->roleMapper->getDataSource();
 	}
 }

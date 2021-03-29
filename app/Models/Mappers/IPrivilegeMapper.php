@@ -6,6 +6,7 @@ namespace Models\Mappers;
 use Models\Entities\Resource\Privilege;
 use Models\Entities\Resource\PrivilegeCollection;
 use Models\Entities\Resource\Resource;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IPrivilegeMapper
 {
@@ -17,6 +18,9 @@ interface IPrivilegeMapper
 
 	public function findOne(array $filter = []): ?Privilege;
 
-	/** @return Privilege[] */
-	public function findAll(): array;
+	public function findAll(): PrivilegeCollection;
+
+	public function getDataSource(): IDataSource;
+
+	public function delete(Privilege $privilege): bool;
 }

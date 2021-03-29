@@ -1,18 +1,15 @@
 {block content}
-<h1>Roles</h1>
+<h1>{block title}Roles{/block}</h1>
 
-{foreach $roles as $id => $role}
-	<p>
-		{$role->name} | <a n:href=":edit $role->id">Edit</a>
-	</p>
-{/foreach}
+{embed ../defines/gridCard.latte gridName: rolesGrid}
+	{block header}Roles{/block}
+{/embed}
 
-<a n:href="showRoleForm!" class="ajax">Add new role</a>
 {snippet roleFormSnippet}
 	{if !empty($showRoleForm)}
-		<div class="card"><div class="card-body">
-			{control roleForm}
-		</div></div>
+		{embed ../defines/formCard.latte, formName: roleForm}
+			{block header}{if empty($roleEdit)}Add new{else}Edit{/if} role{/block}
+		{/embed}
 	{/if}
 {/snippet}
 {/block}

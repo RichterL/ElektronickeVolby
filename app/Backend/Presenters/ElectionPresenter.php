@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Backend\Presenters;
 
+use Constants;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
 use Models\Entities\Election\Election;
@@ -11,6 +12,9 @@ use Repositories\ElectionRepository;
 use Repositories\UserRepository;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Ublaboo\DataGrid\DataGrid;
+use Utils\DataGrid\Action;
+use Utils\DataGrid\Column;
+use Utils\DataGrid\ToolbarButton;
 
 final class ElectionPresenter extends DefaultPresenter
 {
@@ -36,24 +40,16 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function createComponentElectionsGrid()
 	{
-		$grid = new DataGrid();
-		$grid->setDataSource($this->electionRepository->getDataSource());
-		$grid->addColumnText('title', 'Title');
-		$grid->addColumnText('active', 'Active')->setReplacement(['false', 'true']);
-		$grid->addColumnDateTime('start', 'Start')->setFilterDateRange();
-		$grid->addAction('view', '', ':view')
-			->setIcon('eye')
-			->setClass('btn btn-sm btn-info text-white');
-		$grid->addAction('edit', '', 'edit!')
-			->setIcon('edit')
-			->setClass('btn btn-sm btn-warning ajax text-white');
-		$grid->addAction('delete', '', 'delete!')
-			->setConfirmation(new StringConfirmation('Do you really want to delete row %s?', 'id'))
-			->setIcon('trash')
-			->setClass('btn btn-sm btn-danger ajax');
-		$grid->addToolbarButton('showElectionForm!', 'Create new election')
-			->setClass('btn btn-sm btn-primary ajax');
-		return $grid;
+		$this->addGrid('electionsGrid', $this->electionRepository->getDataSource())
+			->addColumn(Column::TEXT, 'title', 'Title')
+			->addColumn(Column::BOOL, 'active', 'Active')
+			->addColumn(Column::BOOL, 'secret', 'Secret')
+			->addColumn(Column::DATETIME, 'start', 'Start')
+			->addColumn(Column::DATETIME, 'end', 'End')
+			->addAction(Action::VIEW, ':view', null, false)
+			->addAction(Action::EDIT, 'edit!')
+			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete election %s?', 'title'), 'delete!')
+			->addToolbarButton(ToolbarButton::ADD, 'Create new election', 'showElectionForm!');
 	}
 
 	public function createComponentElectionForm($name)

@@ -8,6 +8,7 @@ use Models\Entities\Role\Role;
 use Models\Entities\Rule\Rule;
 use Models\Entities\Rule\RuleCollection;
 use Models\Mappers\IRuleMapper;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class RuleRepository
 {
@@ -36,5 +37,15 @@ class RuleRepository
 	public function save(Rule $rule): bool
 	{
 		return $this->ruleMapper->save($rule);
+	}
+
+	public function delete(Rule $rule): bool
+	{
+		return $this->ruleMapper->delete($rule);
+	}
+
+	public function getDataSource(array $filter = []): IDataSource
+	{
+		return $this->ruleMapper->getDataSource($filter);
 	}
 }
