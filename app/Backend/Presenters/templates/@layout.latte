@@ -13,10 +13,10 @@
 	{* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.css"> *}
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/happy-inputs@2.0.4/src/happy.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/css/bootstrap-datepicker.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.2.13/assets/datagrid.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.7.1/assets/datagrid.css">
 
 	<!-- Use this css for ajax spinners -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.2.13/assets/datagrid-spinners.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.7.1/assets/datagrid-spinners.css">
 
 	<!-- Include this css when using FilterMultiSelect (silviomoreto.github.io/bootstrap-select) -->
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.15/dist/css/bootstrap-select.css">
@@ -68,8 +68,8 @@
 
 	</div>
 
-	{block scripts}
-	{/block}
+	<script src="/js/Naja.js"></script>
+	<script src="/js/Naja.ext.js"></script>
 
 	<!-- Ublaboo\Datagrid - START -->
 	<script src="https://cdn.jsdelivr.net/npm/happy-inputs@2.1.0/src/nomodule-es5-fallback.js"></script>
@@ -79,62 +79,45 @@
 		happy.init();
 	</script>
 	<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.js"></script>
-	{* <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.js"></script> *}
-	{* <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> *}
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/js/bootstrap-datepicker.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/jquery-ui-sortable@1.0.0/jquery-ui.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/nette.ajax.js@2.3.0/nette.ajax.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.2.13/assets/datagrid.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.7.1/assets/datagrid.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/nette-forms@3.0.4/src/assets/netteForms.min.js"></script>
 
 	<!-- It is recommended to include this JS file with just a few bits. It refreshes URL on non ajax request -->
-	<script src="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.2.13/assets/datagrid-instant-url-refresh.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.7.1/assets/datagrid-instant-url-refresh.js"></script>
 
 	<!-- Use this little extension for ajax spinners -->
-	<script src="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.2.13/assets/datagrid-spinners.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/ublaboo-datagrid@6.7.1/assets/datagrid-spinners.js"></script>
 
 	<!-- Include bootstrap-select.js when using FilterMultiSelect (silviomoreto.github.io/bootstrap-select) -->
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.15/dist/js/bootstrap-select.js"></script>
 	<!-- Ublaboo\Datagrid - END -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
 	<script>
 		$(function () {
+			$('.modal-backdrop').remove()
+
 			$("#menu-toggle").click(function(e) {
 				e.preventDefault();
 				$("#wrapper").toggleClass("toggled");
 			});
-			(function($, undefined) {
 
-			$.nette.ext('spinner', {
-				init: function () {
-					this.speed = 400;
-				},
-				start: function () {
-					this.counter++;
-					if (this.counter === 1) {
-						$('.ajax-spinner').fadeIn(this.speed);
-						$('.ajax-spinner-backdrop').fadeIn(this.speed);
-					}
-				},
-				complete: function () {
-					this.counter--;
-					if (this.counter <= 0) {
-						$('.ajax-spinner').fadeOut(this.speed);
-						$('.ajax-spinner-backdrop').fadeOut(this.speed);
-					}
-				}
-			}, {
-				speed: undefined,
-				counter: 0
-			});
-
-			})(jQuery);
-			$.nette.init();
-			$('.ajax-spinner, .ajax-spinner-backdrop').fadeOut(400);
 		});
+		</script>
+
+	<script type="module">
+		naja.registerExtension(new LoadingIndicatorExtension());
+		naja.registerExtension(new ModalExtension());
+		document.addEventListener('DOMContentLoaded', () => naja.initialize());
 	</script>
+	{snippet scripts}
+		{block scripts}
+		{/block}
+	{/snippet}
 	{snippet flashes}
 		<script>
 			{foreach $flashes as $flash}
@@ -142,13 +125,18 @@
 			{/foreach}
 		</script>
 	{/snippet}
+	{snippet modal}
+        {ifset #modal}
+			{include modal}
+		{/ifset}
+	{/snippet}
 </body>
 </html>
 {define spinner}
-	<div class="ajax-spinner justify-content-center">
+	<div class="ajax-spinner justify-content-center" style="display:none">
 		<div class="spinner-grow text-warning" role="status">
 			<span class="sr-only">Loading...</span>
 		</div>
 	</div>
-	<div class="ajax-spinner-backdrop"></div>
+	<div class="ajax-spinner-backdrop" style="display:none"></div>
 {/define}

@@ -43,7 +43,7 @@ class Menu extends Control
 		],
 		[
 			'name' => 'Elections',
-			'link' => 'Election:',
+			'link' => 'Elections:',
 		],
 	];
 

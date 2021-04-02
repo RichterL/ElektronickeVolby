@@ -1,23 +1,41 @@
 {block content}
-{embed ../defines/gridCard.latte gridName: electionsGrid}
-	{block header}Elections{/block}
-{/embed}
-{snippet electionFormSnippet}
-	{if !empty($showElectionForm)}
-		<div class="col-lg-9 col-xl-5 px-0">
-			<div class="card">
-				<div class="card-header position-relative">
-					{if empty($editElection)}Add new election{else}Edit election{/if}
-					<a class="float-right stretched-link" href="#" data-toggle="collapse" data-target="#electionForm" aria-expanded="true">
-						<i class="fa fa-chevron-up"></i>
-					</a>
-				</div>
-				<div class="card-body collapse show" id="electionForm">
-					{control electionForm}
-					{include spinner}
-				</div>
-			</div>
-		</div>
+{block title}<h1>Election - {$election->title}</h1>{/block}
+	<a n:href="Elections:">Go back</a>
+	{snippet cardSnippet}
+		{embed electionCard.latte, selectedTab: $selectedTab}
+			{block body}
+				{switch $selectedTab}
+					{case overview}
+						{$election->description}
+					{case voterList}
+						This is the voter voter list
+					{case voterFiles}
+						{control voterFilesGrid}
+				{/switch}
+			{/block}
+		{/embed}
+	{/snippet}
+{/block}
+
+{block modal}
+	{if !empty($showModal)}
+		{embed ../defines/modal.latte, classes: "modal-lg modal-dialog-centered"}
+			{block title}Modal{/block}
+			{block body}
+				{control $modalControl}
+			{/block}
+			{block footer}{/block}
+		{/embed}
 	{/if}
-{/snippet}
+{/block}
+
+{block scripts}
+	{include parent}
+	{if !empty($showImportVoterListForm)}
+		<script>
+		$(function () {
+			bsCustomFileInput.init()
+		})
+		</script>
+	{/if}
 {/block}

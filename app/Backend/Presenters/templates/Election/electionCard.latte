@@ -1,0 +1,32 @@
+<div class="card">
+	<div class="card-header">
+		<ul class="nav nav-tabs card-header-tabs">
+			<li class="nav-item">
+				<a n:class="nav-link, ajax, empty($selectedTab) || $selectedTab == overview ? active" n:href=":overview">Overview</a>
+			</li>
+			<li class="nav-item">
+				<a n:class="nav-link, ajax, $selectedTab == 'voterList' ? active" n:href=":voterList">Voter list</a>
+			</li>
+			<li class="nav-item">
+				<a n:class="nav-link, ajax, $selectedTab == 'voterFiles' ? active" n:href=":voterFiles">Voter files</a>
+			</li>
+			<li class="nav-item dropdown ml-auto">
+				<a class="nav-link dropdown-toggle text-muted" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+					<i class="fa fa-cog"></i>
+				</a>
+				<div class="dropdown-menu dropdown-menu-right">
+				<a class="dropdown-item ajax" n:href="importVoterList!" data-naja-history="off">Import voter list</a>
+				<a class="dropdown-item" href="#">Another action</a>
+				<a class="dropdown-item" href="#">Something else here</a>
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="#">Separated link</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div class="card-body">
+		{block body}
+		{/block}
+		{include spinner from ../@layout.latte}
+	</div>
+</div>

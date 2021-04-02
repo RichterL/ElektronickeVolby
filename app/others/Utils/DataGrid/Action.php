@@ -8,11 +8,13 @@ class Action
 	const VIEW = 'view';
 	const EDIT = 'edit';
 	const DELETE = 'delete';
+	const DOWNLOAD = 'download';
 
 	const ALL = [
 		self::VIEW,
 		self::EDIT,
 		self::DELETE,
+		self::DOWNLOAD,
 	];
 
 	public static function isValid(string $type)

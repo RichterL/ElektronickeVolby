@@ -10,7 +10,9 @@ class Tables
 		ACL_RESOURCES = 'acl_resource',
 		ACL_RESOURCE_PRIVILEGE = 'acl_resource_privilege',
 		ACL_RULES = 'acl_rule',
-		ELECTION = 'election';
+		ELECTION = 'election',
+		VOTER = 'voter',
+		VOTER_FILE = 'voter_file';
 
 	const USERS = 'user';
 	const USERS_ROLES = 'user_roles';

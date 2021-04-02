@@ -8,6 +8,7 @@ use App\Controls\Menu;
 use InvalidArgumentException;
 use Nette;
 use Nette\Application\UI\Form;
+use Tracy\Debugger;
 use Ublaboo\DataGrid\DataGrid;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
@@ -21,6 +22,21 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 		parent::checkRequirements($element);
 	}
 
+	public function beforeRender()
+	{
+		Debugger::barDump($this->template->flashes ?? null);
+		Debugger::barDump($this->template->showModal ?? null);
+		Debugger::barDump($this->payload ?? null);
+		if ($this->isAjax()) {
+			$this->redrawControl('flashes');
+			if ((bool) $this->getParameter('isModal')) {
+				$this->payload->showModal = true;
+				$this->payload->modalId = 'myModal';
+				$this->redrawControl('modal');
+			}
+		}
+	}
+
 	public function createComponentMenu()
 	{
 		return new Menu();
@@ -31,9 +47,9 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 		return $this->getConcreteComponent(Form::class, $name);
 	}
 
-	public function addGrid(string $name, IDataSource $dataSource)
+	public function addGrid(string $name, IDataSource $dataSource, string $primaryKey = 'id')
 	{
-		$grid = new \Utils\DataGrid\DataGrid($dataSource);
+		$grid = new \Utils\DataGrid\DataGrid($dataSource, $primaryKey);
 		$this->addComponent($grid->getOriginal(), $name);
 		return $grid;
 	}
