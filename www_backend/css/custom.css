@@ -63,6 +63,29 @@
   }
 }
 
+#sidebar-wrapper [data-toggle=collapse]:before {
+	content: " ";
+    border: solid;
+    border-width: 0 1px 1px 0;
+    border-color: black;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    padding: 4px;
+    transform: rotate(45deg);
+    transition: all 0.2s;
+}
+
+#sidebar-wrapper [data-toggle=collapse]:not(.collapsed):before {
+	transform: rotate(-135deg);
+	top: 1.2rem;
+}
+
+
+.sidebar-dropdown .list-group-item {
+	padding-left: 3rem;
+	border: 0;
+}
 
 /* CUSTOM CSS */
 body {
