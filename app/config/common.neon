@@ -2,9 +2,8 @@ parameters:
 
 
 application:
-	errorPresenter: Error
+	errorPresenter: Core:Error
 	mapping:
-		Error: App\Core\Presenters\*Presenter
 		*: App\*\Presenters\*Presenter
 
 

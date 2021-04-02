@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+ 	<link rel="icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&amp;display=swap" rel="stylesheet">
+	<style>
+	body {
+		background-color: #fafbfc;
+		color: #3b3f42;
+		font-family: Poppins, -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+	}
+	h1 {
+		font-weight: 500;
+	}
+	</style>
+	<title>{ifset title}{include title|stripHtml} | {/ifset}UTB voting system</title>
+</head>
+
+<body>
+<div class="d-flex align-items-center w-100" style="height:100vh">
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-10 col-md-8 col-lg-6 mx-auto">
+				<div class="text-center">
+					{include content}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	{block scripts}
+	{/block}
+</body>
+</html>

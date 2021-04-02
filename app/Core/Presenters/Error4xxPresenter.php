@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Backend\Presenters;
+namespace App\Core\Presenters;
 
 use Nette;
-
 
 final class Error4xxPresenter extends Nette\Application\UI\Presenter
 {
@@ -16,7 +15,6 @@ final class Error4xxPresenter extends Nette\Application\UI\Presenter
 			$this->error();
 		}
 	}
-
 
 	public function renderDefault(Nette\Application\BadRequestException $exception): void
 	{
