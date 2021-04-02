@@ -1,0 +1,126 @@
+/* Signin form inspired by SmartBootstrap https://startbootstrap.com/snippets/login */
+
+body {
+	background-color: #fafcff;
+}
+
+.card-signin {
+	/* border: 0; */
+	border-radius: 0rem;
+	box-shadow: 0 0 0.875rem 0 rgba(42, 49, 66, 0.1);
+}
+
+
+.card-signin .card-title {
+	margin-bottom: 2rem;
+	font-weight: 300;
+	font-size: 1.5rem;
+}
+
+.card-signin .card-body {
+	padding: 2rem;
+}
+
+.form-signin {
+	width: 100%;
+}
+
+.form-signin .btn {
+	font-size: 80%;
+	border-radius: 0rem;
+	letter-spacing: .1rem;
+	font-weight: bold;
+	padding: 1rem;
+	transition: all 0.2s;
+}
+
+.form-signin .form-group {
+	position: relative;
+}
+
+.form-signin .form-group input.form-control {
+	border-radius: 0;
+	height: auto;
+	padding: 0.75rem 1rem;
+	margin-bottom: 2rem;
+}
+
+.form-signin .form-group input.form-control:focus {
+	box-shadow: 0 0 0.5rem 0 rgb(0 123 255 / 25%);
+}
+
+.form-signin .form-group input.form-control:hover:not(:focus) {
+	border-color: #80bdff;
+}
+
+.form-signin .form-group label {
+	position: absolute;
+	top: 0;
+	border:1px solid transparent;
+	padding: 0.75rem 0.75rem;
+	margin-bottom: 0;
+	color: #6c757d;
+	transition: all 0.2s;
+}
+
+.form-signin .form-group input:focus~label {
+	color: #80bdff;
+}
+
+.form-signin .form-group input:not(:placeholder-shown)~label, .form-signin .form-group input:focus~label {
+	top: -10px;
+	margin-left: calc(.75rem - 2px);
+	font-size: 80%;
+	background-color: white;
+	padding: 0 2px;
+}
+
+.form-signin .form-group input::-webkit-input-placeholder {
+	color: transparent;
+	text-shadow: none;
+}
+
+.form-signin .form-group input:-ms-input-placeholder {
+	color: transparent;
+	text-shadow: none;
+}
+
+.form-signin .form-group input::-ms-input-placeholder {
+	color: transparent;
+	text-shadow: none;
+}
+
+.form-signin .form-group input::-moz-placeholder {
+	color: transparent;
+	text-shadow: none;
+}
+
+.form-signin .form-group input::placeholder {
+	color: transparent;
+	text-shadow: none;
+}
+
+/* Fallback for Edge
+-------------------------------------------------- */
+
+@supports (-ms-ime-align: auto) {
+.form-signin .form-group>label {
+  display: none;
+}
+.form-signin .form-group input::-ms-input-placeholder {
+  color: #777;
+}
+}
+
+/* Fallback for IE
+-------------------------------------------------- */
+
+@media all and (-ms-high-contrast: none),
+(-ms-high-contrast: active) {
+.form-signin .form-group>label {
+  display: none;
+}
+.form-signin .form-group input:-ms-input-placeholder {
+  color: #777;
+}
+}
