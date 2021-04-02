@@ -16,6 +16,7 @@ class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 		'id' => 'id',
 		'name' => 'name',
 		'key' => 'key',
+		'resource' => 'resource_id',
 	];
 
 	protected $table = Tables::ACL_RESOURCE_PRIVILEGE;

@@ -11,9 +11,10 @@ class Bootstrap
 	public static function boot(): Configurator
 	{
 		define('APP_DIR', __DIR__);
+		define('TEMP_DIR', APP_DIR . '/../temp');
+
 		$configurator = new Configurator;
 
-		$configurator->setDebugMode(true); // enable for your remote IP
 		$configurator->enableTracy(__DIR__ . '/../log');
 
 		$configurator->setTimeZone('Europe/Prague');

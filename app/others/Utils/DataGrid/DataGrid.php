@@ -12,9 +12,10 @@ class DataGrid
 {
 	private \Ublaboo\DataGrid\DataGrid $grid;
 
-	public function __construct(IDataSource $dataSource)
+	public function __construct(IDataSource $dataSource, string $primaryKey = 'id')
 	{
 		$this->grid = new \Ublaboo\DataGrid\DataGrid();
+		$this->grid->setPrimaryKey($primaryKey);
 		$this->grid->setDataSource($dataSource);
 	}
 
@@ -40,6 +41,11 @@ class DataGrid
 					->setTitle('Delete');
 				$class = 'btn btn-sm btn-danger';
 				break;
+			case Action::DOWNLOAD:
+				$action->setIcon('download')
+					->setTitle('Download');
+				$class = 'btn btn-sm btn-primary text-white';
+				break;
 			default:
 				throw new InvalidArgumentException('Action ' . $type . ' is not defined');
 		}
@@ -59,19 +65,19 @@ class DataGrid
 	{
 		switch ($type) {
 			case Column::NUMBER:
-				$this->grid->addColumnNumber($key, $title);
+				$this->grid->addColumnNumber($key, $title)->setSortable();
 				break;
 			case Column::TEXT:
-				$this->grid->addColumnText($key, $title)
+				$this->grid->addColumnText($key, $title)->setSortable()
 					->setReplacement($items);
 				break;
 			case Column::FILTERTEXT:
-				$this->grid->addColumnText($key, $title)
+				$this->grid->addColumnText($key, $title)->setSortable()
 					->setReplacement($items)
 					->setFilterText();
 				break;
 			case Column::TEXT_MULTISELECT:
-				$this->grid->addColumnText($key, $title)
+				$this->grid->addColumnText($key, $title)->setSortable()
 					->setReplacement($items)
 					->setFilterMultiSelect($items);
 				break;
@@ -81,7 +87,10 @@ class DataGrid
 					->setFilterMultiSelect(['no', 'yes']);
 				break;
 			case Column::DATETIME:
-				$this->grid->addColumnDateTime($key, $title)->setFormat(Constants::DATETIME_FORMAT)->setFilterDateRange();
+				$this->grid->addColumnDateTime($key, $title)
+					->setSortable()
+					->setFormat(Constants::DATETIME_FORMAT)
+					->setFilterDateRange();
 				break;
 			default:
 				throw new InvalidArgumentException('Column ' . $type . ' is not defined');
@@ -99,7 +108,7 @@ class DataGrid
 	{
 		switch ($type) {
 			case ToolbarButton::ADD:
-				$this->grid->addToolbarButton($destination, '')
+				$this->grid->addToolbarButton($destination, $title)
 					->setIcon('plus')
 					->setTitle($title)
 					->setClass('btn btn-sm btn-primary ajax');
