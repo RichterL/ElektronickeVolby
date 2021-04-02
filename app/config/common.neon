@@ -4,6 +4,7 @@ parameters:
 application:
 	errorPresenter: Error
 	mapping:
+		Error: App\Core\Presenters\*Presenter
 		*: App\*\Presenters\*Presenter
 
 
