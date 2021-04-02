@@ -60,7 +60,7 @@ class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 	public function findRelated(Resource $resource): PrivilegeCollection
 	{
 		$privileges = new PrivilegeCollection();
-		$result = $this->dibi->select(array_keys(self::MAP))
+		$result = $this->dibi->select(array_values(self::MAP))
 			->from($this->table)
 			->where('resource_id = %i', $resource->getId())
 			->fetchAssoc('id,=');
