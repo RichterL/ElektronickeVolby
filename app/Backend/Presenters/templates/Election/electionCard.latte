@@ -1,8 +1,14 @@
-<div class="card">
+<div class="card card-election">
 	<div class="card-header">
 		<ul class="nav nav-tabs card-header-tabs">
 			<li class="nav-item">
 				<a n:class="nav-link, ajax, empty($selectedTab) || $selectedTab == overview ? active" n:href=":overview">Overview</a>
+			</li>
+			<li class="nav-item">
+				<a n:class="nav-link, ajax, $selectedTab == 'questions' ? active" n:href=":questions">Questions</a>
+			</li>
+			<li class="nav-item">
+				<a n:class="nav-link, ajax, $selectedTab == 'answers' ? active" n:href=":answers">Answers</a>
 			</li>
 			<li class="nav-item">
 				<a n:class="nav-link, ajax, $selectedTab == 'voterList' ? active" n:href=":voterList">Voter list</a>

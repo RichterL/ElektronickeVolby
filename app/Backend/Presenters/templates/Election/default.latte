@@ -7,8 +7,12 @@
 				{switch $selectedTab}
 					{case overview}
 						{$election->description}
+					{case questions}
+						Questions
+					{case answers}
+						Answers
 					{case voterList}
-						This is the voter voter list
+						{control voterListGrid}
 					{case voterFiles}
 						{control voterFilesGrid}
 				{/switch}

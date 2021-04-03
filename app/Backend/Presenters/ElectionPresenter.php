@@ -12,6 +12,7 @@ use Nette\Application\UI\Form;
 use Repositories\ElectionRepository;
 use Repositories\UserRepository;
 use Repositories\VoterFileRepository;
+use Repositories\VoterRepository;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Ublaboo\DataGrid\DataSource\ArrayDataSource;
 use Utils\DataGrid\Action;
@@ -26,49 +27,69 @@ final class ElectionPresenter extends DefaultPresenter
 	private ElectionRepository $electionRepository;
 	private UserRepository $userRepository;
 	private VoterFileRepository $voterFileRepository;
+	private VoterRepository $voterRepository;
 
-	public function __construct(ElectionRepository $electionRepository, UserRepository $userRepository, VoterFileRepository $voterFileRepository)
-	{
+	public function __construct(
+		ElectionRepository $electionRepository,
+		UserRepository $userRepository,
+		VoterFileRepository $voterFileRepository,
+		VoterRepository $voterRepository
+	) {
 		$this->electionRepository = $electionRepository;
 		$this->userRepository = $userRepository;
 		$this->voterFileRepository = $voterFileRepository;
+		$this->voterRepository = $voterRepository;
 	}
 
-	public function beforeRender()
+	public function startup()
 	{
-		parent::beforeRender();
+		parent::startup();
 		$election = $this->electionRepository->findById((int) $this->getParameter('id'));
 		if (!$election) {
 			$this->error('Election not found!');
 		}
 		$this->election = $election;
-		$this->template->setFile(__DIR__ . '/templates/Election/default.latte');
-		$this->template->election = $election;
 	}
 
-	public function renderOverview(int $id)
+	public function beforeRender()
 	{
-		$this->template->selectedTab = 'overview';
+		parent::beforeRender();
+		$this->template->setFile(__DIR__ . '/templates/Election/default.latte');
+		$this->template->election = $this->election;
+	}
+
+	public function afterRender()
+	{
+		parent::afterRender();
 		if ($this->isAjax()) {
 			$this->redrawControl('cardSnippet');
 		}
 	}
 
-	public function renderVoterFiles(int $id)
+	public function renderOverview()
+	{
+		$this->template->selectedTab = 'overview';
+	}
+
+	public function renderQuestions()
+	{
+		$this->template->selectedTab = 'questions';
+	}
+
+	public function renderAnswers()
+	{
+		$this->template->selectedTab = 'answers';
+	}
+
+	public function renderVoterFiles()
 	{
 		$this->template->voterFiles = $this->voterFileRepository->findRelated($this->election);
 		$this->template->selectedTab = 'voterFiles';
-		if ($this->isAjax()) {
-			$this->redrawControl('cardSnippet');
-		}
 	}
 
-	public function renderVoterList(int $id)
+	public function renderVoterList()
 	{
 		$this->template->selectedTab = 'voterList';
-		if ($this->isAjax()) {
-			$this->redrawControl('cardSnippet');
-		}
 	}
 
 	public function handleDeleteVoterFile(int $voterFileId)
@@ -121,6 +142,13 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->sendResponse(new CsvResponse($voterFile->filename, $voterFile->content));
 	}
 
+	public function handleApplyVoterFile(int $voterFileId)
+	{
+		$voterFile = $this->voterFileRepository->findById($voterFileId);
+		$this->voterRepository->importFromFile($this->election, $voterFile);
+		$this->flashMessage('Voter file applied!', 'success');
+	}
+
 	public function createComponentVoterFilesGrid()
 	{
 		$this->addGrid('voterFilesGrid', $this->voterFileRepository->getDataSource(['election_id' => $this->getParameter('id')]))
@@ -129,9 +157,9 @@ final class ElectionPresenter extends DefaultPresenter
 			->addColumn(Column::DATETIME, 'created_at', 'Created at')
 			->addColumn(Column::TEXT, 'created_by', 'Created by')
 			->addAction(Action::VIEW, 'showVoterFileDetail!', ['voterFileId' => 'id'])
+			->addAction(Action::APPLY, 'applyVoterFile!', ['voterFileId' => 'id'])
 			->addAction(Action::DOWNLOAD, 'downloadVoterFile!', ['voterFileId' => 'id'], false)
 			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete voter file %s?', 'filename'), 'deleteVoterFile!', ['voterFileId' => 'id']);
-		$this->getGrid('voterFilesGrid')->getAction('view')->addAttributes(['data-naja-history' => 'off']);
 	}
 
 	public function createComponentVoterFileDetailGrid()
@@ -155,6 +183,15 @@ final class ElectionPresenter extends DefaultPresenter
 		if ($this->isAjax()) {
 			$this->redrawControl('cardSnippet');
 		}
+	}
+
+	public function createComponentVoterListGrid()
+	{
+		$this->addGrid('voterListGrid', $this->voterRepository->getDataSource(['election_id' => $this->election->getId()]))
+			->addColumn(Column::NUMBER, 'id', 'id')
+			->addColumn(Column::FILTERTEXT, 'email', 'Email')
+			->addColumn(Column::BOOL, 'voted', 'voted')
+			->addColumn(Column::DATETIME, 'timestamp', 'timestamp');
 	}
 
 	public function createComponentImportVoterListForm()
