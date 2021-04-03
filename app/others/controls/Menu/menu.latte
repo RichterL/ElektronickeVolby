@@ -1,7 +1,9 @@
 {define menuLink, $item}
-	<a class="list-group-item" id="nav-link-{=lcfirst($item['name'])}" href="{plink $item['link']}">
-		<i n:if="!empty($item['icon'])" class="{$item['icon']}"></i> {$item['name']}
+	<li class="">
+	<a id="nav-link-{=lcfirst($item['name'])}" href="{plink $item['link']}">
+		<i n:if="!empty($item['icon'])" class="fa fa-{$item['icon']}"></i><span> {$item['name']} </span>
 	</a>
+	</li>
 {/define}
 
 {define menuItem, $values}
@@ -10,29 +12,30 @@
 			{include menuLink, $values}
 
 	{else}
-			<a class="list-group-item collapsed" href="#" data-toggle="collapse" data-target="#nav-link-section-{$values['name']}">
-				<i n:if="!empty($values['icon'])" class="{$values['icon']}"></i> {$values['name']}
+		<li>
+			<a href="#" data-toggle="collapse" class="collapsed" data-target="#nav-link-section-{$values['name']}">
+				<i n:if="!empty($values['icon'])" class="fa fa-{$values['icon']}"></i> <span> {$values['name']}</spam>
 			</a>
-				<div class="collapse sidebar-dropdown" id="nav-link-section-{$values['name']}">
-				{foreach $values['childs'] as $child}
-					{include menuItem, $child}
-				{/foreach}
-				</div>
+			<ul class="list-unstyled collapse sidebar-dropdown" id="nav-link-section-{$values['name']}">
+			{foreach $values['childs'] as $child}
+				{include menuItem, $child}
+			{/foreach}
+			</ul>
 		</li>
 	{/if}
 {/define}
 
 {block menu}
+	<nav>
+		<ul class="list-unstyled">
 
-		<div class="list-group list-group-flush">
-			<div class="list-group-item">Nav Title</div>
 			{foreach $items as $item}
 				{include menuItem, $item}
 			{/foreach}
-			<a href="{plink Sign:out}" class="list-group-item">
-				<i class="c-sidebar-nav-icon cil-cloud-download"></i> Sign out
+			<a href="{plink Sign:out}">
+				<i class="fa fa-sign-out-alt"></i> Sign out
 			</a>
 
 		</div>
-
+	</nav>
 {/block}

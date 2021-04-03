@@ -12,11 +12,11 @@ class Menu extends Control
 		[
 			'name' => 'Homepage',
 			'link' => 'Homepage:',
-			'icon' => 'cil-speedometer',
+			'icon' => 'home',
 		],
 		[
 			'name' => 'ACL',
-			'icon' => 'cil-people',
+			'icon' => 'user-shield',
 			'childs' => [
 				[
 					'name' => 'Users',
@@ -44,6 +44,7 @@ class Menu extends Control
 		[
 			'name' => 'Elections',
 			'link' => 'Elections:',
+			'icon' => 'clipboard',
 		],
 	];
 
