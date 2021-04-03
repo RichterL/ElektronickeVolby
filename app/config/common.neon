@@ -63,6 +63,8 @@ services:
 	iElectionMapper: Models\Mappers\Db\ElectionMapper
 	iVoterFileMapper: Models\Mappers\Db\VoterFileMapper
 	iVoterMapper: Models\Mappers\Db\VoterMapper
+	iQuestionMapper: Models\Mappers\Db\QuestionMapper
+	iAnswerMapper: Models\Mappers\Db\AnswerMapper
 
 	# repositories
 	privilegeRepository: Repositories\PrivilegeRepository
@@ -73,3 +75,5 @@ services:
 	electionRepository: Repositories\ElectionRepository
 	voterFileRepository: Repositories\VoterFileRepository
 	voterRepository: Repositories\VoterRepository
+	questionRepository: Repositories\QuestionRepository
+	answerRepository: Repositories\AnswerRepository

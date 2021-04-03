@@ -12,7 +12,9 @@ class Tables
 		ACL_RULES = 'acl_rule',
 		ELECTION = 'election',
 		VOTER = 'voter',
-		VOTER_FILE = 'voter_file';
+		VOTER_FILE = 'voter_file',
+		QUESTION = 'question',
+		ANSWER = 'answer';
 
 	const USERS = 'user';
 	const USERS_ROLES = 'user_roles';

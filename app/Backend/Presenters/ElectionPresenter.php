@@ -5,11 +5,15 @@ namespace App\Backend\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
+use Models\Entities\Election\Answer;
 use Models\Entities\Election\Election;
+use Models\Entities\Election\Question;
 use Models\Entities\Election\VoterFile;
 use Nette\Application\Responses\CsvResponse;
 use Nette\Application\UI\Form;
+use Repositories\AnswerRepository;
 use Repositories\ElectionRepository;
+use Repositories\QuestionRepository;
 use Repositories\UserRepository;
 use Repositories\VoterFileRepository;
 use Repositories\VoterRepository;
@@ -28,17 +32,23 @@ final class ElectionPresenter extends DefaultPresenter
 	private UserRepository $userRepository;
 	private VoterFileRepository $voterFileRepository;
 	private VoterRepository $voterRepository;
+	private QuestionRepository $questionRepository;
+	private AnswerRepository $answerRepository;
 
 	public function __construct(
 		ElectionRepository $electionRepository,
 		UserRepository $userRepository,
 		VoterFileRepository $voterFileRepository,
-		VoterRepository $voterRepository
+		VoterRepository $voterRepository,
+		QuestionRepository $questionRepository,
+		AnswerRepository $answerRepository
 	) {
 		$this->electionRepository = $electionRepository;
 		$this->userRepository = $userRepository;
 		$this->voterFileRepository = $voterFileRepository;
 		$this->voterRepository = $voterRepository;
+		$this->questionRepository = $questionRepository;
+		$this->answerRepository = $answerRepository;
 	}
 
 	public function startup()
@@ -74,6 +84,8 @@ final class ElectionPresenter extends DefaultPresenter
 	public function renderQuestions()
 	{
 		$this->template->selectedTab = 'questions';
+		$questions = $this->questionRepository->findRelated($this->election);
+		$this->template->questions = $questions;
 	}
 
 	public function renderAnswers()
@@ -192,6 +204,41 @@ final class ElectionPresenter extends DefaultPresenter
 			->addColumn(Column::FILTERTEXT, 'email', 'Email')
 			->addColumn(Column::BOOL, 'voted', 'voted')
 			->addColumn(Column::DATETIME, 'timestamp', 'timestamp');
+	}
+
+	public function createComponentQuestionsGrid()
+	{
+		$grid = $this->addGrid('questionsGrid', $this->questionRepository->getDataSource(['election_id' => $this->election->getId()]))
+			->addColumn(Column::NUMBER, 'id', 'id')
+			->addColumn(Column::FILTERTEXT, 'name', 'Name')
+			->addColumn(Column::FILTERTEXT, 'question', 'Question')
+			->addColumn(Column::BOOL, 'required', 'Required')
+			->addColumn(Column::BOOL, 'multiple', 'Multiple')
+			->getOriginal();
+		$grid->addInlineAdd()
+			->onControlAdd[] = function (\Nette\Forms\Container $container) {
+				$container->addText('name', '');
+				$container->addText('question', '');
+				$container->addSelect('required', '', ['no', 'yes']);
+				$container->addSelect('multiple', '', ['no', 'yes']);
+			};
+		$grid->getInlineAdd()->onSubmit[] = function (\Nette\Utils\ArrayHash $values): void {
+			$question = new Question();
+			$question->setRequired((bool) $values['required'])
+				->setMultiple((bool) $values['multiple'])
+				->setName($values['name'])
+				->setQuestion($values['question'])
+				->setElection($this->election);
+			if ($this->questionRepository->save($question)) {
+				$this->flashMessage('Question saved');
+			}
+		};
+	}
+
+	public function createComponentAnswersGrid()
+	{
+		$this->addGrid('answersGrid', $this->answerRepository->getDataSource(['election_id' => $this->election->getId()]))
+			->addColumn(Column::TEXT, 'question');
 	}
 
 	public function createComponentImportVoterListForm()
