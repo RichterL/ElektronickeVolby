@@ -14,7 +14,7 @@ class Bootstrap
 		define('TEMP_DIR', APP_DIR . '/../temp');
 
 		$configurator = new Configurator;
-
+		$configurator->setDebugMode('31.30.168.141');
 		$configurator->enableTracy(__DIR__ . '/../log');
 
 		$configurator->setTimeZone('Europe/Prague');

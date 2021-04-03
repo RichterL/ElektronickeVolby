@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use Exception;
 use Models\Entities\Election\Election;
 use Models\Entities\Election\VoterFile;
 use Models\Entities\Entity;
@@ -12,6 +13,9 @@ class VoterMapper extends BaseMapper implements IVoterMapper
 {
 	protected $table = Tables::VOTER;
 
+	/**
+	 * requires mysql to run with --secure-file-priv="" or secure-file-priv="" in config
+	 */
 	public function importFromFile(Election $election, VoterFile $voterFile): bool
 	{
 		$this->dibi->begin();
@@ -29,8 +33,8 @@ class VoterMapper extends BaseMapper implements IVoterMapper
 			$this->dibi->commit();
 		} catch (\Dibi\Exception $ex) {
 			$this->dibi->rollback();
+			throw new Exception('Unable to load new voter list: ' . $ex->getMessage());
 		}
-
 		return true;
 	}
 
@@ -48,10 +52,10 @@ class VoterMapper extends BaseMapper implements IVoterMapper
 	{
 		$content = $voterFile->getContent();
 		$now = new \DateTime();
-		if (!is_dir('/tmp/volby/voterFiles/' . $election->getId())) {
-			mkdir('/tmp/volby/voterFiles/' . $election->getId());
+		if (!is_dir(TEMP_DIR . '/voterFiles/' . $election->getId())) {
+			mkdir(TEMP_DIR . '/voterFiles/' . $election->getId(), 0777, true);
 		}
-		$filename = '/tmp/volby/voterFiles/' . $election->getId() . '/' . $now->format('dmy_Hi') . '_' . $voterFile->filename;
+		$filename = TEMP_DIR . '/voterFiles/' . $election->getId() . '/' . $now->format('dmy_Hi') . '_' . $voterFile->filename;
 		if (!file_put_contents($filename, $content)) {
 			throw new \RuntimeException('Saving temporary file failed!');
 		}
