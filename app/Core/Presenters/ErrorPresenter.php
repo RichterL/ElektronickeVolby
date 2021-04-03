@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Backend\Presenters;
+namespace App\Core\Presenters;
 
 use Nette;
 use Nette\Application\Responses;
 use Nette\Http;
 use Tracy\ILogger;
-
 
 final class ErrorPresenter implements Nette\Application\IPresenter
 {
@@ -17,14 +16,12 @@ final class ErrorPresenter implements Nette\Application\IPresenter
 	/** @var ILogger */
 	private $logger;
 
-
 	public function __construct(ILogger $logger)
 	{
 		$this->logger = $logger;
 	}
 
-
-	public function run(Nette\Application\Request $request): Nette\Application\IResponse
+	public function run(Nette\Application\Request $request): Nette\Application\Response
 	{
 		$exception = $request->getParameter('exception');
 

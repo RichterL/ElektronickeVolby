@@ -10,12 +10,14 @@
 			{include menuLink, $values}
 
 	{else}
-			<a class="list-group-item" href="#">
+			<a class="list-group-item collapsed" href="#" data-toggle="collapse" data-target="#nav-link-section-{$values['name']}">
 				<i n:if="!empty($values['icon'])" class="{$values['icon']}"></i> {$values['name']}
 			</a>
+				<div class="collapse sidebar-dropdown" id="nav-link-section-{$values['name']}">
 				{foreach $values['childs'] as $child}
 					{include menuItem, $child}
 				{/foreach}
+				</div>
 		</li>
 	{/if}
 {/define}
