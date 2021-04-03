@@ -17,6 +17,9 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 	public function checkRequirements($element): void
 	{
 		if (!$this->getUser()->isLoggedIn()) {
+			if ($this->isAjax()) {
+				$this->payload->forceRedirect = true;
+			}
 			$this->redirect('Sign:in');
 		}
 		parent::checkRequirements($element);
