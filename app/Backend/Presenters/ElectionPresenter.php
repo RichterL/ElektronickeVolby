@@ -58,29 +58,38 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->template->election = $this->election;
 	}
 
-	public function renderOverview(int $id)
+	public function afterRender()
 	{
-		$this->template->selectedTab = 'overview';
+		parent::afterRender();
 		if ($this->isAjax()) {
 			$this->redrawControl('cardSnippet');
 		}
 	}
 
-	public function renderVoterFiles(int $id)
+	public function renderOverview()
+	{
+		$this->template->selectedTab = 'overview';
+	}
+
+	public function renderQuestions()
+	{
+		$this->template->selectedTab = 'questions';
+	}
+
+	public function renderAnswers()
+	{
+		$this->template->selectedTab = 'answers';
+	}
+
+	public function renderVoterFiles()
 	{
 		$this->template->voterFiles = $this->voterFileRepository->findRelated($this->election);
 		$this->template->selectedTab = 'voterFiles';
-		if ($this->isAjax()) {
-			$this->redrawControl('cardSnippet');
-		}
 	}
 
-	public function renderVoterList(int $id)
+	public function renderVoterList()
 	{
 		$this->template->selectedTab = 'voterList';
-		if ($this->isAjax()) {
-			$this->redrawControl('cardSnippet');
-		}
 	}
 
 	public function handleDeleteVoterFile(int $voterFileId)

@@ -139,6 +139,11 @@ body {
 .card {
 	box-shadow: 0 0 0.875rem 0 rgba(42, 49, 66, 0.1);
 }
+
+.card-election {
+	min-height: 400px;
+}
+
 div.ajax-spinner-backdrop {
 	position: absolute;
     left: 0;
