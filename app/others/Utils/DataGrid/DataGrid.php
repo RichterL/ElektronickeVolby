@@ -19,7 +19,7 @@ class DataGrid
 		$this->grid->setDataSource($dataSource);
 	}
 
-	public function addAction(string $type, ?string $destination = null, ?array $params = null, bool $ajax = true): self
+	public function addAction(string $type, ?string $destination = null, ?array $params = null, bool $ajax = true, bool $keepHistory = false): self
 	{
 		if (!Action::isValid($type)) {
 			throw new InvalidArgumentException('Action ' . $type . ' is not defined');
@@ -46,11 +46,19 @@ class DataGrid
 					->setTitle('Download');
 				$class = 'btn btn-sm btn-primary text-white';
 				break;
+			case Action::APPLY:
+				$action->setIcon('check')
+					->setTitle('Apply');
+				$class = 'btn btn-sm btn-success';
+				break;
 			default:
 				throw new InvalidArgumentException('Action ' . $type . ' is not defined');
 		}
 		$class .= $ajax ? ' ajax' : '';
 		$action->setClass($class);
+		if (!$keepHistory) {
+			$action->setDataAttribute('naja-history', 'off');
+		}
 		return $this;
 	}
 
