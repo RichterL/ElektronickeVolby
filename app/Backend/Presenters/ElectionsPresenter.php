@@ -50,14 +50,19 @@ final class ElectionsPresenter extends DefaultPresenter
 		$form = new BootstrapForm();
 		$form->setRenderMode(RenderMode::SIDE_BY_SIDE_MODE);
 		$form->addHidden('id');
-		$form->addText('title', 'Title');
-		$form->addTextArea('description', 'Description');
+		$form->addText('title', 'Title')->setRequired();
+		$form->addTextArea('description', 'Description')->setRequired();
 		$form->addCheckbox('active', 'Active');
 		$form->addCheckbox('secret', 'Secret');
-		$form->addDateTime('start', 'Start');
-		$form->addDateTime('end', 'End');
+		$form->addDateTime('start', 'Start')->setRequired();
+		$form->addDateTime('end', 'End')->setRequired();
 		$form->addSubmit('submit', 'Submit')->setBtnClass('ajax btn-primary');
 		$form->onSuccess[] = [$this, 'electionFormSuccess'];
+		$form->onError[] = function (BootstrapForm $form) {
+			$this->template->editElection = !empty($form->getUnsafeValues('array')['id']);
+			$this->flashMessage('there were some errors in the form.', 'error');
+			$this->handleShowElectionForm();
+		};
 		return $form;
 	}
 
