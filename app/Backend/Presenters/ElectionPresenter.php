@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Backend\Presenters;
 
+use App\Forms\Election\QuestionForm;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
 use Models\Entities\Election\Answer;
@@ -21,6 +22,7 @@ use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Ublaboo\DataGrid\DataSource\ArrayDataSource;
 use Utils\DataGrid\Action;
 use Utils\DataGrid\Column;
+use Utils\DataGrid\ToolbarButton;
 
 final class ElectionPresenter extends DefaultPresenter
 {
@@ -66,6 +68,7 @@ final class ElectionPresenter extends DefaultPresenter
 		parent::beforeRender();
 		$this->template->setFile(__DIR__ . '/templates/Election/default.latte');
 		$this->template->election = $this->election;
+		$this->redrawControl('formSnippet');
 	}
 
 	public function afterRender()
@@ -161,6 +164,44 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->flashMessage('Voter file applied!', 'success');
 	}
 
+	public function handleEditQuestion(int $questionId)
+	{
+		$question = $this->questionRepository->findById($questionId);
+		if (!$question) {
+			$this->error('Question not found!');
+		}
+		/** @var QuestionForm */
+		$form = $this->getComponent('questionForm');
+		$multiplierValues = [];
+		foreach ($question->getAnswers() as $answer) {
+			$multiplierValues[] = ['answer' => $answer->value];
+		}
+		$form->setMultiplierCopies(count($multiplierValues));
+		$form->setMultiplierValues($multiplierValues);
+		$form->setValues($question->toArray());
+		$this->template->quesitonEdit = true;
+		$this->template->showQuestionForm = true;
+		if ($this->isAjax()) {
+			$this->redrawControl('formSnippet');
+		}
+	}
+
+	public function handleShowQuestionForm()
+	{
+		$this->template->showQuestionForm = true;
+		if ($this->isAjax()) {
+			$this->redrawControl('formSnippet');
+		}
+	}
+
+	public function handleHideQuestionForm()
+	{
+		$this->template->showQuestionForm = false;
+		if ($this->isAjax()) {
+			$this->redrawControl('formSnippet');
+		}
+	}
+
 	public function handleDeleteQuestion(int $questionId)
 	{
 		$question = $this->questionRepository->findById($questionId);
@@ -170,6 +211,23 @@ final class ElectionPresenter extends DefaultPresenter
 
 		if ($this->questionRepository->delete($question)) {
 			$this->flashMessage('Question deleted!', 'success');
+		}
+	}
+
+	public function handleDeleteAnswer(int $answerId)
+	{
+		$answer = $this->answerRepository->findById($answerId);
+		if (!$answer) {
+			$this->error('Answer not found!');
+		}
+		if (!$this->answerRepository->delete($answer)) {
+			$this->flashMessage('delete failed', 'error');
+			return;
+		}
+		$this->flashMessage('answer deleted', 'success');
+		if ($this->isAjax()) {
+			$this->getGrid('answersGrid')->reload();
+			$this->redrawControl('cardSnippet');
 		}
 	}
 
@@ -226,8 +284,11 @@ final class ElectionPresenter extends DefaultPresenter
 			->addColumn(Column::FILTERTEXT, 'question', 'Question')
 			->addColumn(Column::BOOL, 'required', 'Required')
 			->addColumn(Column::BOOL, 'multiple', 'Multiple')
+			->addAction(Action::EDIT, 'editQuestion!', ['questionId' => 'id'])
 			->addAction(Action::DELETE, 'deleteQuestion!', ['questionId' => 'id'])
+			->addToolbarButton(ToolbarButton::ADD, 'Add new question', 'showQuestionForm!')
 			->getOriginal();
+		$grid->setItemsDetail();
 		$grid->addInlineAdd()
 			->onControlAdd[] = function (\Nette\Forms\Container $container) {
 				$container->addText('name', '');
@@ -251,7 +312,10 @@ final class ElectionPresenter extends DefaultPresenter
 	public function createComponentAnswersGrid()
 	{
 		$this->addGrid('answersGrid', $this->answerRepository->getDataSource(['election_id' => $this->election->getId()]))
-			->addColumn(Column::TEXT, 'question');
+			->addColumn(Column::TEXT, 'question_id', 'question id')
+			->addColumn(Column::TEXT, 'question', 'question text')
+			->addColumn(Column::TEXT, 'value', 'answer')
+			->addAction(Action::DELETE, 'deleteAnswer!', ['answerId' => 'id']);
 	}
 
 	public function createComponentImportVoterListForm()
@@ -307,12 +371,22 @@ final class ElectionPresenter extends DefaultPresenter
 			// check any conditions before saving the form
 			// stop saving process by $form->addError()
 		};
-		// $form->onSave = [$this, 'formSuccess']; // this is not necessary probably
-		$form->onAfterSave = function (\Nette\Forms\Form $form, array $values) {
-			$this->flashMessage('saved');
-			$this->redirect(':overview');
+		$form->onError = function () {
+			$this->flashMessage('There were errors in the form', 'warning');
+			$this->handleShowQuestionForm();
 		};
-
+		$form->onEdit = function () {
+			$this->flashMessage('Question saved');
+		};
+		$form->onAdd = function () {
+			$this->flashMessage('Question added');
+		};
+		$form->onSuccess = function () {
+			$this->redirect('this');
+		};
+		$form->onRefresh = function () {
+			$this->template->showQuestionForm = true;
+		};
 		return $form;
 	}
 }

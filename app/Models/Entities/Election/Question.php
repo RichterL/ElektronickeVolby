@@ -21,7 +21,7 @@ class Question extends Entity implements IdentifiedById
 	protected string $name;
 	protected string $question;
 	protected Election $election;
-	protected array $answers;
+	protected ?array $answers = null;
 	protected bool $required;
 	protected bool $multiple;
 
@@ -58,7 +58,7 @@ class Question extends Entity implements IdentifiedById
 	}
 
 	/** @return Answer[] */
-	public function getAnswers(): array
+	public function getAnswers(): ?array
 	{
 		return $this->answers;
 	}
@@ -72,5 +72,15 @@ class Question extends Entity implements IdentifiedById
 		}
 		$this->answers = $answers;
 		return $this;
+	}
+
+	public function toArray(): array
+	{
+		return [
+			'id' => $this->getId(),
+			'name' => $this->name,
+			'question' => $this->question,
+			'requried' => $this->required,
+		];
 	}
 }

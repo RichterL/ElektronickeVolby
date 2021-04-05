@@ -15,30 +15,43 @@ abstract class BaseForm extends Nette\Application\UI\Control
 
 	/** @var BootstrapForm */
 	private $form = null;
+
+	public $onSuccess = null;
+	public $onAdd = null;
+	public $onEdit = null;
+	public $onRefresh = null;
+	public $onCancel = null;
+
 	public $onBeforeSave = null;
 	public $onSave = null;
 	public $onAfterSave = null;
 	// private $onSubmit;
-	// private $onError;
+	public $onError = null;
 
-	private function initForm()
-	{
-		$form = $this->formFactory->getForm();
-		$form->onSuccess['beforeSave'] = $this->onBeforeSave ?? function () {};
-		$form->onSuccess['save'] = $this->onSave ?? function () {};
-		$form->onSuccess['afterSave'] = $this->onAfterSave ?? [$this, 'onAfterSave'];
-		$form->onError[] = function () {
-			$this->getPresenter()->flashMessage('some error', 'error');
-		};
-		$this->form = $form;
-	}
-
-	public function getForm()
+	protected function initForm()
 	{
 		if (empty($this->form)) {
-			$this->initForm();
+			$form = $this->formFactory->getForm();
+			$form->onSuccess['beforeSave'] = $this->onBeforeSave ?? function () {};
+			$form->onSuccess['save'] = $this->onSave ?? function () {};
+			$form->onSuccess['afterSave'] = function (Nette\Forms\Form $form, array $values) {
+				$callback = (empty($values['id']) ? $this->onAdd : $this->onEdit);
+				if (is_callable($this->onSuccess)) {
+					call_user_func_array($this->onSuccess, [$form, $values]);
+				}
+				if (is_callable($callback)) {
+					call_user_func($callback);
+				}
+			};
+			$form->onError[] = $this->onError ?? function () {};
+			$this->form = $form;
 		}
 		return $this->form;
+	}
+
+	public function getForm(): BootstrapForm
+	{
+		return $this->getComponent('form');
 	}
 
 	public function setFormFactory(FormFactory $formFactory)
@@ -89,5 +102,25 @@ abstract class BaseForm extends Nette\Application\UI\Control
 		$classes[] = $class;
 		$control->class(implode($classes));
 		return $control;
+	}
+
+	public function setValues(array $values): self
+	{
+		$this->getForm()->setValues($values);
+		return $this;
+	}
+
+	protected function dispatchOnRefresh()
+	{
+		if (is_callable($this->onRefresh)) {
+			call_user_func($this->onRefresh);
+		}
+	}
+
+	protected function dispatchOnCancel()
+	{
+		if (is_callable($this->onCancel)) {
+			call_user_func($this->onCancel);
+		}
 	}
 }

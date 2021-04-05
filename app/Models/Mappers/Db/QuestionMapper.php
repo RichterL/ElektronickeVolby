@@ -36,7 +36,7 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 		$this->answerMapper = $answerMapper;
 	}
 
-	public function create(array $data = []): Question
+	public function create(array $data = [], $includeAnswers = true): Question
 	{
 		$question = new Question();
 		if (!empty($data)) {
@@ -46,6 +46,9 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 				->setRequired($data['required'])
 				->setMultiple($data['multiple'])
 				->setElection($this->electionMapper->findOne(['id' => $data['election_id']]));
+		}
+		if ($includeAnswers) {
+			$question->setAnswers($this->answerMapper->findRelated($question));
 		}
 		return $question;
 	}

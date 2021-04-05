@@ -1,5 +1,5 @@
 {block content}
-{block title}<h1>Election - {$election->title}</h1>{/block}
+	{block title}<h1>Election - {$election->title}</h1>{/block}
 	<a n:href="Elections:">Go back</a>
 	{snippet cardSnippet}
 		{embed electionCard.latte, selectedTab: $selectedTab}
@@ -10,7 +10,7 @@
 					{case questions}
 						{control questionsGrid}
 					{case answers}
-						{control questionForm}
+						{control answersGrid}
 					{case voterList}
 						{control voterListGrid}
 					{case voterFiles}
@@ -18,6 +18,14 @@
 				{/switch}
 			{/block}
 		{/embed}
+	{/snippet}
+
+	{snippet formSnippet}
+		{if !empty($showQuestionForm)}
+			{embed ../defines/formCard.latte, formName: questionForm}
+				{block header}{if empty($questionEdit)}Add new{else}Edit{/if} question{/block}
+			{/embed}
+		{/if}
 	{/snippet}
 {/block}
 

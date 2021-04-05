@@ -62,7 +62,7 @@ class DataGrid
 		return $this;
 	}
 
-	public function addConfirmAction(string $type, IConfirmation $confirm, ?string $destination = null, ?array $params = null)
+	public function addConfirmAction(string $type, IConfirmation $confirm, ?string $destination = null, ?array $params = null): self
 	{
 		$this->addAction($type, $destination, $params);
 		$this->grid->getAction($type)->setConfirmation($confirm);
@@ -112,7 +112,7 @@ class DataGrid
 		return $this->grid;
 	}
 
-	public function addToolbarButton(string $type, string $title = '', string $destination = '')
+	public function addToolbarButton(string $type, string $title = '', string $destination = ''): self
 	{
 		switch ($type) {
 			case ToolbarButton::ADD:
@@ -125,5 +125,6 @@ class DataGrid
 			default:
 				throw new InvalidArgumentException('Toolbar button ' . $type . ' is not defined');
 		}
+		return $this;
 	}
 }

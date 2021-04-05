@@ -2,6 +2,7 @@
 
 namespace App\Forms\Election;
 
+use App\Utils\Form\HasMultiplier;
 use App\Utils\Form\TextInput;
 use Contributte\FormMultiplier\Buttons\CreateButton;
 use Contributte\FormMultiplier\Buttons\RemoveButton;
@@ -13,6 +14,8 @@ use Repositories\QuestionRepository;
 
 class QuestionForm extends \App\Forms\BaseForm
 {
+	use HasMultiplier;
+
 	private $questionRepository;
 	private $electionRepository;
 
@@ -24,8 +27,9 @@ class QuestionForm extends \App\Forms\BaseForm
 
 	public function createComponentForm()
 	{
-		$form = $this->getForm();
+		$form = $this->initForm();
 		$form->getElementPrototype()->class[] = 'form-custom';
+		$form->addHidden('id');
 		$form->addText('name', 'Name')
 			->setRequired()
 			->setPlaceholder('Enter reference name');
@@ -43,15 +47,12 @@ class QuestionForm extends \App\Forms\BaseForm
 		$form->addCheckbox('required', 'Is answer required?')
 			->setDefaultValue(true);
 
-		$copies = 1;
-		$maxCopies = 5;
-
 		$multiplier = $form->addMultiplier('multiplier', function (Nette\Forms\Container $container, Nette\Forms\Form $form) {
 			$text = new TextInput('Answer');
 			$text->setRequired()->setPlaceholder('Text of the answer');
-			$container->addText('test', 'test');
 			$container->addComponent($text, 'answer');
-		}, $copies, $maxCopies);
+			$this->dispatchOnRefresh();
+		}, $this->copies, $this->maxCopies);
 
 		/** @var CreateButton */
 		$createButton = $multiplier->addCreateButton('+')
@@ -67,30 +68,31 @@ class QuestionForm extends \App\Forms\BaseForm
 		return $form;
 	}
 
-	public function processForm(Nette\Forms\Form $form, $values)
+	public function processForm(Nette\Forms\Form $form, array $values)
 	{
 		if ($form->isSubmitted()->getValue() == 'Cancel') {
-			$this->getPresenter()->flashMessage('form canceled');
-			$this->getPresenter()->redirect(':questions');
+			$this->dispatchOnCancel();
+			return false;
 		}
 
 		$election = $this->electionRepository->findById((int) $this->getPresenter()->getParameter('id'));
 
-		$question = new Question();
+		$questionId = (int) $values['id'];
+		unset($values['id']);
+		$question = ($questionId) ? $this->questionRepository->findById($questionId) : new Question();
 		$answers = [];
 		foreach ($values['multiplier'] as $value) {
 			$tmp = new Answer();
-			$tmp->setValue($value->answer);
+			$tmp->setValue($value['answer']);
 			$answers[] = $tmp;
 		}
+		$question->setValues($values);
+		$question->setElection($election);
 		$question->setAnswers($answers);
-		$question->setRequired((bool) $values['required'])
-			// ->setMultiple((bool) $values['multiple'])
-			->setName($values['name'])
-			->setQuestion($values['question'])
-			->setElection($election);
 		if (!$this->questionRepository->save($question)) {
 			$form->addError('Saving failed');
+			return false;
 		}
+		return true;
 	}
 }
