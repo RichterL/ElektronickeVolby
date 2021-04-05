@@ -28,10 +28,12 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 	protected $table = Tables::QUESTION;
 
 	private ElectionMapper $electionMapper;
+	private AnswerMapper $answerMapper;
 
-	public function __construct(ElectionMapper $electionMapper)
+	public function __construct(ElectionMapper $electionMapper, AnswerMapper $answerMapper)
 	{
 		$this->electionMapper = $electionMapper;
+		$this->answerMapper = $answerMapper;
 	}
 
 	public function create(array $data = []): Question
@@ -49,6 +51,23 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 	}
 
 	public function save(Question $question): bool
+	{
+		try {
+			$this->dibi->begin();
+			$this->saveData($question);
+			$this->answerMapper->deleteRelated($question);
+			foreach ($question->getAnswers() as $answer) {
+				$this->answerMapper->save($answer);
+			}
+			$this->dibi->commit();
+		} catch (\Throwable $th) {
+			$this->dibi->rollback();
+			return false;
+		}
+		return true;
+	}
+
+	public function saveData(Question $question): bool
 	{
 		$data = [];
 		foreach (self::MAP as $property => $key) {

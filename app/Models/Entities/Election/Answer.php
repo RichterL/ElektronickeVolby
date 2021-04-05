@@ -15,7 +15,7 @@ use Models\Traits\Entity\HasId;
 class Answer extends Entity implements IdentifiedById
 {
 	protected string $value;
-	protected Question $question;
+	protected ?Question $question = null;
 
 	use HasId;
 
@@ -29,5 +29,10 @@ class Answer extends Entity implements IdentifiedById
 	{
 		$this->value = $value;
 		return $this;
+	}
+
+	public function getQuestion(): ?Question
+	{
+		return $this->question;
 	}
 }

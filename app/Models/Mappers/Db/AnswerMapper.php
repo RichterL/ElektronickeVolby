@@ -9,12 +9,12 @@ use Models\Entities\Election\Answer;
 use Models\Entities\Election\Question;
 use Models\Mappers\IAnswerMapper;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
-use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class AnswerMapper extends BaseMapper implements IAnswerMapper
 {
 	protected const MAP = [
 		'id' => 'id',
+		'question' => 'question_id',
 		'value' => 'value',
 	];
 
@@ -36,6 +36,9 @@ class AnswerMapper extends BaseMapper implements IAnswerMapper
 		foreach (self::MAP as $property => $key) {
 			if (isset($answer->$property)) {
 				$propertyValue = $answer->$property;
+				if ($propertyValue instanceof Question) {
+					$propertyValue = $propertyValue->getId();
+				}
 				$data[$key] = $propertyValue;
 			}
 		}
@@ -64,6 +67,11 @@ class AnswerMapper extends BaseMapper implements IAnswerMapper
 			$answers[] = $this->create($row->toArray());
 		}
 		return $answers;
+	}
+
+	public function deleteRelated(Question $question): bool
+	{
+		return (bool) $this->dibi->delete($this->table)->where('question_id = %i', $question->getId())->execute(dibi::AFFECTED_ROWS);
 	}
 
 	public function getDataSource(array $filter = []): DibiFluentDataSource

@@ -12,6 +12,7 @@ use Models\Traits\Entity\HasId;
  * @property string		$name
  * @property string		$question
  * @property Election	$election
+ * @property Answer[]	$answers
  * @property bool		$required
  * @property bool		$multiple
  */
@@ -20,6 +21,7 @@ class Question extends Entity implements IdentifiedById
 	protected string $name;
 	protected string $question;
 	protected Election $election;
+	protected array $answers;
 	protected bool $required;
 	protected bool $multiple;
 
@@ -52,6 +54,23 @@ class Question extends Entity implements IdentifiedById
 	public function setElection(Election $election): self
 	{
 		$this->election = $election;
+		return $this;
+	}
+
+	/** @return Answer[] */
+	public function getAnswers(): array
+	{
+		return $this->answers;
+	}
+
+	/** @param Answer[] */
+	public function setAnswers(array $answers): self
+	{
+		/** @var Answer */
+		foreach ($answers as $answer) {
+			$answer->setQuestion($this);
+		}
+		$this->answers = $answers;
 		return $this;
 	}
 }

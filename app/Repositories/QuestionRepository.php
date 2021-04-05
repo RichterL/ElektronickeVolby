@@ -35,17 +35,22 @@ class QuestionRepository
 		return $this->questionMapper->findRelated($election);
 	}
 
-	public function getDataSource(): IDataSource
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->questionMapper->getDataSource();
+		return $this->questionMapper->getDataSource($filter);
 	}
 
-	public function save(Question $election)
+	public function save(Question $election): bool
 	{
 		return $this->questionMapper->save($election);
 	}
 
-	public function delete(Question $election)
+	public function saveData(Question $election): bool
+	{
+		return $this->questionMapper->saveData($election);
+	}
+
+	public function delete(Question $election): bool
 	{
 		return $this->questionMapper->delete($election);
 	}

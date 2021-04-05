@@ -161,6 +161,18 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->flashMessage('Voter file applied!', 'success');
 	}
 
+	public function handleDeleteQuestion(int $questionId)
+	{
+		$question = $this->questionRepository->findById($questionId);
+		if (!$question) {
+			$this->error('Question not found!');
+		}
+
+		if ($this->questionRepository->delete($question)) {
+			$this->flashMessage('Question deleted!', 'success');
+		}
+	}
+
 	public function createComponentVoterFilesGrid()
 	{
 		$this->addGrid('voterFilesGrid', $this->voterFileRepository->getDataSource(['election_id' => $this->getParameter('id')]))
@@ -214,6 +226,7 @@ final class ElectionPresenter extends DefaultPresenter
 			->addColumn(Column::FILTERTEXT, 'question', 'Question')
 			->addColumn(Column::BOOL, 'required', 'Required')
 			->addColumn(Column::BOOL, 'multiple', 'Multiple')
+			->addAction(Action::DELETE, 'deleteQuestion!', ['questionId' => 'id'])
 			->getOriginal();
 		$grid->addInlineAdd()
 			->onControlAdd[] = function (\Nette\Forms\Container $container) {
@@ -282,5 +295,24 @@ final class ElectionPresenter extends DefaultPresenter
 		// 	$lines[] = $line;
 		// }
 		// $this->template->lines = $lines;
+	}
+
+	/** @var \App\Forms\Election\QuestionFormFactory @inject */
+	public $questionFormFactory;
+
+	public function createComponentQuestionForm()
+	{
+		$form = $this->questionFormFactory->create();
+		$form->onBeforeSave = function (\Nette\Forms\Form $form, array $values) {
+			// check any conditions before saving the form
+			// stop saving process by $form->addError()
+		};
+		// $form->onSave = [$this, 'formSuccess']; // this is not necessary probably
+		$form->onAfterSave = function (\Nette\Forms\Form $form, array $values) {
+			$this->flashMessage('saved');
+			$this->redirect(':overview');
+		};
+
+		return $form;
 	}
 }

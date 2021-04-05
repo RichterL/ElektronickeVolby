@@ -1,0 +1,55 @@
+{form form}
+	{foreach $form->getOwnErrors() as $error}
+		<div class="alert alert-danger">{$error}</div>
+	{/foreach}
+
+	{$form['name']|formPair|noescape}
+
+
+	<div class="form-row">
+		<div class="col-6">
+			{$form['min']|formPair|noescape}
+		</div>
+		<div class="col-6">
+			{$form['max']|formPair|noescape}
+		</div>
+	</div>
+
+	{$form['question']|formPair|noescape}
+	{input required}
+	<fieldset class="border p-3 mb-3">
+		<legend class="w-auto">Answers</legend>
+		{foreach $form['multiplier']->getContainers() as $multiplier}
+			<div class="form-group">
+				<div class="input-group has-validation">
+					{$multiplier['answer']|inputGroup|noescape}
+					{* {input $multiplier['answer']}
+					{label $multiplier['answer']} *}
+					{* <input n:name="$multiplier['answer']" class="form-control" placeholder="{$multiplier['answer']->caption}">
+					{$multiplier['answer']->label} *}
+
+					{if (!empty($multiplier['multiplier_remover'])) || (!empty($form['multiplier']['multiplier_creator']))}
+						<div class="input-group-append">
+							{if (!empty($multiplier['multiplier_remover']))}
+								{$multiplier['multiplier_remover']->control}
+							{/if}
+							{if $iterator->last && (!empty($form['multiplier']['multiplier_creator']))}
+								{$form['multiplier']['multiplier_creator']->control}
+							{/if}
+						</div>
+					{/if}
+					{$multiplier['answer']|formFeedback}
+				</div>
+			</div>
+		{/foreach}
+	</fieldset>
+
+
+
+	<div class="form-row justify-content-end">
+		<div class="col-auto">
+			{input cancel}
+			{input submit}
+		</div>
+	</div>
+{/form}

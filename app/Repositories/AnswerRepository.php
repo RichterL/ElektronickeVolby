@@ -40,13 +40,18 @@ class AnswerRepository
 		return $this->answerMapper->getDataSource();
 	}
 
-	public function save(Answer $election)
+	public function save(Answer $election): bool
 	{
 		return $this->answerMapper->save($election);
 	}
 
-	public function delete(Answer $election)
+	public function delete(Answer $election): bool
 	{
 		return $this->answerMapper->delete($election);
+	}
+
+	public function deleteRelated(Question $question): bool
+	{
+		return $this->answerMapper->deleteRelated($question);
 	}
 }

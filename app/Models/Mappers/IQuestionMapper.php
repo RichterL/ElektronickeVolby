@@ -21,6 +21,8 @@ interface IQuestionMapper
 
 	public function getDataSource(): IDataSource;
 
+	public function saveData(Question $election): bool;
+
 	public function save(Question $election): bool;
 
 	public function delete(Question $election): bool;

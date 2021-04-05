@@ -18,6 +18,7 @@ di:
 
 extensions:
 	dibi: Dibi\Bridges\Nette\DibiExtension22
+	- Contributte\FormMultiplier\DI\MultiplierExtension
 
 decorator:
 		Repositories\BaseRepository:
@@ -28,6 +29,9 @@ decorator:
 				- setDibi()
 				- setCache(@mapperCache)
 				- init()
+		App\Forms\BaseForm:
+			setup:
+				- setFormFactory()
 
 services:
 	router: App\Router\RouterFactory::createRouter
@@ -53,6 +57,10 @@ services:
 
 	# factories
 	- Models\Entities\Rule\RuleFactory
+
+	# formFactory
+	- App\Forms\FormFactory
+	- App\Forms\Election\QuestionFormFactory
 
 	# data mappers
 	iprivilegeMapper: Models\Mappers\Db\PrivilegeMapper

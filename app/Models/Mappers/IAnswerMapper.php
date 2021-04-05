@@ -19,6 +19,8 @@ interface IAnswerMapper
 	/** @return Answer[] */
 	public function findRelated(Question $question): array;
 
+	public function deleteRelated(Question $question): bool;
+
 	public function getDataSource(): IDataSource;
 
 	public function save(Answer $election): bool;
