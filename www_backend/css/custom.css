@@ -13,6 +13,7 @@
 	position: fixed;
 	top: 0;
 	background-color: var(--body-foreground);
+	z-index: 2;
 }
 
 .sidebar .sidebar-heading {
@@ -73,6 +74,9 @@ body > .navbar {
 	top: 0;
 	width: 100vw;
 	margin-left: 0;
+	box-shadow: 0 0 0.5rem 0 rgba(0, 0, 0, 0.2);
+	background-color:  var(--body-foreground);
+	z-index: 1;
 }
 
 main {
