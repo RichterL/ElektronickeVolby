@@ -48,7 +48,7 @@ abstract class BaseForm extends Nette\Application\UI\Control
 
 	public function render()
 	{
-		if (!$this->template instanceof BootstrapRenderer) {
+		if (!$this->template instanceof Nette\Bridges\ApplicationLatte\Template) {
 			throw new Nette\NotSupportedException('Only Latte templates are supported by this form');
 		}
 		/** @var Nette\Bridges\ApplicationLatte\Template */
