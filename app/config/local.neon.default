@@ -1,0 +1,10 @@
+parameters:
+	ldap:
+		server: 'ldap://10.96.2.201:389'
+		baseDn: 'OU=uzivatele,OU=ucty,OU=UTB,DC=ad,DC=utb,DC=cz'
+dibi:
+	host: localhost
+	username:
+	password:
+	database:
+	lazy: true
