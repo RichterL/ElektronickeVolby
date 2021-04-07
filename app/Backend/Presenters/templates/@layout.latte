@@ -90,6 +90,7 @@
 		</script>
 
 	<script type="module">
+		naja.registerExtension(new ForceRedirectExtension());
 		naja.registerExtension(new LoadingIndicatorExtension());
 		naja.registerExtension(new ModalExtension());
 		document.addEventListener('DOMContentLoaded', () => naja.initialize());

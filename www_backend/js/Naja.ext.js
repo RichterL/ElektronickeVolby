@@ -10,16 +10,16 @@ class LoadingIndicatorExtension {
 		naja.addEventListener('start', this.showLoader.bind(this));
 		naja.addEventListener('complete', this.hideLoader.bind(this));
 	  }
-	locateLoadingIndicator({ detail }) {
+	locateLoadingIndicator({detail}) {
 		const loadingIndicator = detail.element.closest('.ajax-spinner');
 		detail.options.loadingIndicator = loadingIndicator || this.defaultLoadingIndicator;
 		detail.options.loadingIndicatorBackdrop = this.defaultLoadingIndicatorBackdrop;
 	}
-	showLoader({ detail }) {
+	showLoader({detail}) {
 		$(detail.options.loadingIndicator).fadeIn();
 		$(detail.options.loadingIndicatorBackdrop).fadeIn();
 	}
-	hideLoader({ detail }) {
+	hideLoader({detail}) {
 		$(detail.options.loadingIndicator).fadeOut(this.speed);
 		$(detail.options.loadingIndicatorBackdrop).fadeOut(this.speed);
 	}
@@ -27,7 +27,7 @@ class LoadingIndicatorExtension {
 
 class ModalExtension {
 	initialize(naja) {
-		naja.addEventListener('complete', this.openModal.bind(this));
+		naja.addEventListener('success', this.openModal.bind(this));
 	}
 	openModal(event) {
 		let payload = event.detail.payload;
@@ -41,5 +41,16 @@ class ModalExtension {
 			return;
 		}
 		$("#" + modalId).modal('show');
+	}
+}
+
+class ForceRedirectExtension {
+	initialize(naja) {
+		naja.addEventListener('complete', this.detectForceRedirect.bind(this));
+	}
+	detectForceRedirect({detail}) {
+		if (detail.payload.forceRedirect) {
+			naja.redirectHandler.makeRedirect(detail.url, true, detail.options)
+		}
 	}
 }

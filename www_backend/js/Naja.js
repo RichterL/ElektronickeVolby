@@ -1983,7 +1983,7 @@
 	    constructor(naja) {
 	        this.naja = naja;
 	        naja.addEventListener('init', this.initialize.bind(this));
-	        naja.uiHandler.addEventListener('interaction', this.processForm.bind(this));
+	        // naja.uiHandler.addEventListener('interaction', this.processForm.bind(this));
 	    }
 	    initialize() {
 	        this.initForms(window.document.body);
