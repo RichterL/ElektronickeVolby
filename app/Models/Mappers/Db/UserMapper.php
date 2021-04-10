@@ -70,7 +70,7 @@ class UserMapper extends BaseMapper implements IUserMapper
 		try {
 			$this->dibi->begin();
 			$this->saveData($user);
-			foreach ($user->getRoles() as $role) {
+			foreach ($user->getRoles(true) as $role) {
 				$data[] = [
 					'user_id' => $user->getId(),
 					'role_id' => $role->getId(),

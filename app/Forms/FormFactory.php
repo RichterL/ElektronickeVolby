@@ -1,14 +1,18 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Forms;
 
+use App\Utils\Form\BootstrapForm;
+use App\Utils\Form\BootstrapRenderer;
+
 final class FormFactory
 {
-	public function getForm(bool $ajax = true)
+	public function getForm(bool $ajax = true): BootstrapForm
 	{
-		$form = new \App\Utils\Form\BootstrapForm();
+		$form = new BootstrapForm();
 		$form->setAjax($ajax);
-		$form->setRenderer(new \App\Utils\Form\BootstrapRenderer());
+		$form->setRenderer(new BootstrapRenderer());
 		return $form;
 	}
 }

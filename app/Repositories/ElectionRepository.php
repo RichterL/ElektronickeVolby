@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Repositories;
 
 use Models\Entities\Election\Election;
+use Models\Entities\User;
 use Models\Mappers\IElectionMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
@@ -20,6 +21,17 @@ class ElectionRepository
 	public function findById(int $id): ?Election
 	{
 		return $this->electionMapper->findOne(['id' => $id]);
+	}
+
+	/** @return Election[] */
+	public function findActive(): array
+	{
+		return $this->electionMapper->find(['active' => true]);
+	}
+
+	public function findRelated(User $user): array
+	{
+		return $this->electionMapper->findRelated($user);
 	}
 
 	/** @return Election[] */

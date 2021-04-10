@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Models\Traits\Entity;
 
+/** @property int|null $id */
 trait HasId
 {
 	protected ?int $id = null;

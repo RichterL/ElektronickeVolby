@@ -25,10 +25,6 @@ class PasswordAuthenticator implements Nette\Security\Authenticator
 		if (!$this->passwords->verify($password, $user->getPassword())) {
 			throw new Nette\Security\AuthenticationException('Invalid password.');
 		}
-		return new SimpleIdentity(
-			$user->getId(),
-			$user->getRolesNames(),
-			['username' => $user->getUsername()]
-		);
+		return $user;
 	}
 }

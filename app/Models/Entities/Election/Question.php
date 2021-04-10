@@ -14,7 +14,8 @@ use Models\Traits\Entity\HasId;
  * @property Election	$election
  * @property Answer[]	$answers
  * @property bool		$required
- * @property bool		$multiple
+ * @property int		$min
+ * @property int		$max
  */
 class Question extends Entity implements IdentifiedById
 {
@@ -24,18 +25,14 @@ class Question extends Entity implements IdentifiedById
 	protected ?array $answers = null;
 	protected bool $required;
 	protected bool $multiple;
+	protected int $min;
+	protected int $max;
 
 	use HasId;
 
 	public function setRequired(bool $required = true): self
 	{
 		$this->required = $required;
-		return $this;
-	}
-
-	public function setMultiple(bool $multiple = true): self
-	{
-		$this->multiple = $multiple;
 		return $this;
 	}
 
@@ -74,13 +71,37 @@ class Question extends Entity implements IdentifiedById
 		return $this;
 	}
 
+	public function getMin(): int
+	{
+		return $this->min;
+	}
+
+	public function setMin(int $min): Question
+	{
+		$this->min = $min;
+		return $this;
+	}
+
+	public function getMax(): int
+	{
+		return $this->max;
+	}
+
+	public function setMax(int $max): Question
+	{
+		$this->max = $max;
+		return $this;
+	}
+
 	public function toArray(): array
 	{
 		return [
 			'id' => $this->getId(),
 			'name' => $this->name,
 			'question' => $this->question,
-			'requried' => $this->required,
+			'required' => $this->required,
+			'min' => $this->min,
+			'max' => $this->max,
 		];
 	}
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Models\Mappers\Db;
 
 use dibi;
+use Dibi\Row;
 use Exception;
 use Models\Entities\Election\Election;
 use Models\Entities\Election\Question;
@@ -17,7 +18,8 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 		'question' => 'question',
 		'election' => 'election_id',
 		'required' => 'required',
-		'multiple' => 'multiple',
+		'min' => 'min',
+		'max' => 'max',
 	];
 
 	protected const DATA_TYPES = [
@@ -27,12 +29,10 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 
 	protected $table = Tables::QUESTION;
 
-	private ElectionMapper $electionMapper;
 	private AnswerMapper $answerMapper;
 
-	public function __construct(ElectionMapper $electionMapper, AnswerMapper $answerMapper)
+	public function __construct(AnswerMapper $answerMapper)
 	{
-		$this->electionMapper = $electionMapper;
 		$this->answerMapper = $answerMapper;
 	}
 
@@ -44,10 +44,8 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 			$question->setName($data['name'])
 				->setQuestion($data['question'])
 				->setRequired($data['required'])
-				->setMultiple($data['multiple'])
-				->setElection($this->electionMapper->findOne(['id' => $data['election_id']]));
-		}
-		if ($includeAnswers) {
+				->setMin($data['min'])
+				->setMax($data['max']);
 			$question->setAnswers($this->answerMapper->findRelated($question));
 		}
 		return $question;
@@ -100,10 +98,10 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 	public function findRelated(Election $election): array
 	{
 		$result = $this->dibi->select('*')->from($this->table)->where('election_id = %i', $election->getId())->execute();
-		$this->applyDataTypes($result);
+		self::applyDataTypes($result);
 		$result->fetchAll();
 		$questions = [];
-		/** @var Row */
+		/** @var Row $row */
 		foreach ($result as $row) {
 			$questions[] = $this->create($row->toArray());
 		}

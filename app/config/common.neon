@@ -61,6 +61,10 @@ services:
 	# formFactory
 	- App\Forms\FormFactory
 	- App\Forms\Election\QuestionFormFactory
+	- App\Forms\Voting\VotingFormFactory
+
+	#facades
+	- App\Frontend\Classes\ElectionsFacade
 
 	# data mappers
 	iprivilegeMapper: Models\Mappers\Db\PrivilegeMapper
