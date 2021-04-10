@@ -45,6 +45,7 @@ final class ElectionPresenter extends DefaultPresenter
 		QuestionRepository $questionRepository,
 		AnswerRepository $answerRepository
 	) {
+		parent::__construct();
 		$this->electionRepository = $electionRepository;
 		$this->userRepository = $userRepository;
 		$this->voterFileRepository = $voterFileRepository;
@@ -283,7 +284,8 @@ final class ElectionPresenter extends DefaultPresenter
 			->addColumn(Column::FILTERTEXT, 'name', 'Name')
 			->addColumn(Column::FILTERTEXT, 'question', 'Question')
 			->addColumn(Column::BOOL, 'required', 'Required')
-			->addColumn(Column::BOOL, 'multiple', 'Multiple')
+			->addColumn(Column::NUMBER, 'min', 'min')
+			->addColumn(Column::NUMBER, 'max', 'max')
 			->addAction(Action::EDIT, 'editQuestion!', ['questionId' => 'id'])
 			->addAction(Action::DELETE, 'deleteQuestion!', ['questionId' => 'id'])
 			->addToolbarButton(ToolbarButton::ADD, 'Add new question', 'showQuestionForm!')

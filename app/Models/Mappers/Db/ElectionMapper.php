@@ -30,11 +30,15 @@ class ElectionMapper extends BaseMapper implements IElectionMapper
 	];
 
 	protected $table = Tables::ELECTION;
-	private UserMapper $userMapper;
+	protected $voterTable = Tables::VOTER;
 
-	public function __construct(UserMapper $userMapper)
+	private UserMapper $userMapper;
+	private QuestionMapper $questionMapper;
+
+	public function __construct(UserMapper $userMapper, QuestionMapper $questionMapper)
 	{
 		$this->userMapper = $userMapper;
+		$this->questionMapper = $questionMapper;
 	}
 
 	public function create(array $data = []): Election
@@ -50,6 +54,7 @@ class ElectionMapper extends BaseMapper implements IElectionMapper
 			}
 			$election->$property = $data[$key];
 		}
+		$election->setQuestions($this->questionMapper->findRelated($election));
 
 		return $election;
 	}
@@ -79,6 +84,22 @@ class ElectionMapper extends BaseMapper implements IElectionMapper
 
 		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
 		return true;
+	}
+
+	public function findRelated(User $user): iterable
+	{
+		$result = $this->dibi->select('*')
+			->from('%n e', $this->table)
+			->leftJoin('%n v', $this->voterTable)->on('v.election_id = e.id')
+			->where('v.email = %s', $user->getEmail())
+			->execute();
+		self::applyDataTypes($result);
+
+		$collection = self::createCollection();
+		foreach ($result->fetchAll() as $row) {
+			$collection[] = $this->create((array) $row);
+		}
+		return $collection;
 	}
 
 	/** parent concrete implementetions */
