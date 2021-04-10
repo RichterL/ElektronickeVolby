@@ -1,7 +1,33 @@
 {block content}
-<h1>Hello World!</h1>
-<a n:href="Sign:out" n:if="$user->isLoggedIn()">Odhlasit</a><br>
-Excepteur labore minim est et culpa mollit consectetur consectetur. Dolor adipisicing in consequat enim proident nulla exercitation do deserunt. Incididunt aliqua laborum nulla ea culpa officia. Reprehenderit labore pariatur officia deserunt ea ipsum excepteur cillum non et deserunt sunt est aliqua. Lorem enim pariatur reprehenderit officia anim officia dolor.
+<h1>UTB voting system</h1>
+{dump}
+<style>
+.card:not(.disabled):hover {
+    box-shadow: 0 0 1rem 0 #007bff5c;
+}
+.card .btn {
+	font-size: 80%;
+    letter-spacing: .1rem;
+    font-weight: bold;
+    padding: 1rem;
+    transition: all 0.2s;
+}
+</style>
 
-Minim deserunt reprehenderit dolor eu eiusmod eu deserunt ea do esse. Quis mollit velit pariatur qui aute aliqua qui labore incididunt officia. Excepteur occaecat ipsum esse velit culpa quis aute qui reprehenderit incididunt. Dolore amet nulla magna eu eu culpa sint aliqua irure laboris.
+<div class="row">
+	<div n:foreach="$allElections as $election" class="col-md-6 col-lg-4 col-xl-3 my-3">
+		<div  n:class="!$election->active ? 'disabled border-secondary bg-light' : 'border-primary', 'card'">
+			<div class="card-header">{$election->title}</div>
+			<div n:class="!$election->active ? 'text-secondary', 'card-body'">
+				Je aktivni : {$election->active ? "ano" : "ne"}<br>
+				Zacatek : {$election->start}<br>
+				Konec : {$election->start}<br>
+			</div>
+			<div class="card-fotter bg-primary">
+				<a n:href="Voting: $election->id" n:class="!$election->active ? 'btn-secondary disabled' : 'btn-primary stretched-link', 'btn btn-block text-uppercase'" role="button">Chci volit!</a>
+			</div>
+		</div>
+	</div>
+</div>
+
 {/block}

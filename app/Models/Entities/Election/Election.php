@@ -19,6 +19,7 @@ use Models\Entities\User;
  * @property \DateTimeInterface $end
  * @property \DateTimeInterface $createdAt
  * @property User $createdBy
+ * @property Question[] $questions
  */
 class Election extends Entity implements IdentifiedById
 {
@@ -30,6 +31,7 @@ class Election extends Entity implements IdentifiedById
 	protected \DateTimeInterface $end;
 	protected \DateTimeInterface $createdAt;
 	protected User $createdBy;
+	protected iterable $questions = [];
 
 	use \Models\Traits\Entity\HasId;
 
@@ -48,6 +50,21 @@ class Election extends Entity implements IdentifiedById
 	public function setCreatedAt($datetime): self
 	{
 		$this->createdAt = $this->getDateTime($datetime);
+		return $this;
+	}
+
+	public function getQuestions(): iterable
+	{
+		return $this->questions;
+	}
+
+	public function setQuestions(iterable $questions): self
+	{
+		/** @var Question */
+		foreach ($questions as $question) {
+			$question->setElection($this);
+		}
+		$this->questions = $questions;
 		return $this;
 	}
 

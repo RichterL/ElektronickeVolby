@@ -1,0 +1,39 @@
+{varType Models\Entities\Election\Election $election}
+{varType bool $showModal}
+{block content}
+	<h1 n:block="title">{$election->title}</h1>
+	<div>
+		{$election->description}
+	</div>
+
+	<div class="container-fluid mb-5">
+		{control votingForm}
+	</div>
+
+	<div class="container-fluid">
+		<label for="encrypted">Your encrypted vote:</label>
+		<textarea class="form-control" id="encrypted"></textarea>
+	</div>
+
+
+
+
+{/block}
+
+{block modal}
+	{if !empty($showModal)}
+		{embed ../defines/modal.latte, classes: "modal-lg modal-dialog-centered"}
+			{block title}Modal{/block}
+			{block body}
+				modal body
+			{/block}
+			{block footer}{/block}
+		{/embed}
+	{/if}
+{/block}
+
+{block scripts}
+	<script type="module">
+		naja.registerExtension(new ValidateVotingForm());
+	</script>
+{/block}

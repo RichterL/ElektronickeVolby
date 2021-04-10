@@ -1,0 +1,15 @@
+{varType \App\Utils\Form\BootstrapForm $form}
+{form form}
+    <div class="card-columns mb-3">
+        {foreach $form['questions']->getControls() as $formControl}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{label $formControl}</h5>
+                        {input $formControl}
+                        <div class="invalid-feedback"></div>
+                    </div>
+                </div>
+        {/foreach}
+    </div>
+    {input submit}
+{/form}
