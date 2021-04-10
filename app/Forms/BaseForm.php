@@ -2,48 +2,47 @@
 
 namespace App\Forms;
 
+use Closure;
 use Contributte\FormsBootstrap\BootstrapUtils;
 use Nette;
 use Nette\Utils\Html;
 use ReflectionClass;
 use App\Utils\Form\BootstrapRenderer;
-use Contributte\FormsBootstrap\BootstrapForm;
+use App\Utils\Form\BootstrapForm;
 
 abstract class BaseForm extends Nette\Application\UI\Control
 {
 	private FormFactory $formFactory;
+	private BootstrapForm $form;
 
-	/** @var BootstrapForm */
-	private $form = null;
+	public ?Closure $onSuccess = null;
+	public ?Closure $onAdd = null;
+	public ?Closure $onEdit = null;
+	public ?Closure $onRefresh = null;
+	public ?Closure $onCancel = null;
+	public ?Closure $onSubmit = null;
 
-	public $onSuccess = null;
-	public $onAdd = null;
-	public $onEdit = null;
-	public $onRefresh = null;
-	public $onCancel = null;
+	public ?Closure $onBeforeSave = null;
+	public ?Closure $onSave = null;
+	public ?Closure $onError = null;
 
-	public $onBeforeSave = null;
-	public $onSave = null;
-	public $onAfterSave = null;
-	// private $onSubmit;
-	public $onError = null;
-
-	protected function initForm()
+	protected function initForm(): BootstrapForm
 	{
 		if (empty($this->form)) {
 			$form = $this->formFactory->getForm();
-			$form->onSuccess['beforeSave'] = $this->onBeforeSave ?? function () {};
-			$form->onSuccess['save'] = $this->onSave ?? function () {};
+			$form->onError[] = $this->onError ?? static function () {};
+			$form->onSubmit[] = $this->onSubmit ?? static function () {};
+			$form->onSuccess['beforeSave'] = $this->onBeforeSave ?? static function () {};
+			$form->onSuccess['save'] = $this->onSave ?? static function () {};
 			$form->onSuccess['afterSave'] = function (Nette\Forms\Form $form, array $values) {
 				$callback = (empty($values['id']) ? $this->onAdd : $this->onEdit);
-				if (is_callable($this->onSuccess)) {
-					call_user_func_array($this->onSuccess, [$form, $values]);
+				if ($callback !== null) {
+					$callback();
 				}
-				if (is_callable($callback)) {
-					call_user_func($callback);
+				if ($this->onSuccess !== null) {
+					call_user_func($this->onSuccess, $form, $values);
 				}
 			};
-			$form->onError[] = $this->onError ?? function () {};
 			$this->form = $form;
 		}
 		return $this->form;
@@ -106,20 +105,20 @@ abstract class BaseForm extends Nette\Application\UI\Control
 
 	public function setValues(array $values): self
 	{
-		$this->getForm()->setValues($values);
+		$this->getForm()->setDefaults($values);
 		return $this;
 	}
 
 	protected function dispatchOnRefresh()
 	{
-		if (is_callable($this->onRefresh)) {
+		if ($this->onRefresh !== null) {
 			call_user_func($this->onRefresh);
 		}
 	}
 
 	protected function dispatchOnCancel()
 	{
-		if (is_callable($this->onCancel)) {
+		if ($this->onCancel !== null) {
 			call_user_func($this->onCancel);
 		}
 	}
