@@ -1,3 +1,5 @@
+.idea/
 app/config/local.neon
 .vscode/
 vendor/
+.php_cs.cache
