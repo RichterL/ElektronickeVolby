@@ -112,7 +112,7 @@ final class UsersPresenter extends DefaultPresenter
 			$roles[] = $this->roleRepository->findById($roleId);
 		}
 		unset($values['roles']);
-		$user->setRoles($roles);
+		$user->setRoles(...$roles);
 		$user->setValues($values);
 
 		if ($this->userRepository->save($user)) {

@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace Models\Entities;
 
 use Models\Entities\Role\Role;
+use Nette\Security\IIdentity;
 
-class User extends Entity implements IdentifiedById
+class User extends Entity implements IdentifiedById, IIdentity
 {
 	protected ?string $username = null;
 	protected ?string $password = null;
@@ -81,12 +82,12 @@ class User extends Entity implements IdentifiedById
 	}
 
 	/** @return Role[] */
-	public function getRoles(): array
+	public function getRoles(bool $asEntity = false): array
 	{
-		return $this->roles;
+		return $asEntity ? $this->roles : $this->getRolesNames();
 	}
 
-	public function setRoles(array $roles): self
+	public function setRoles(Role ...$roles): self
 	{
 		$this->roles = $roles;
 		return $this;
@@ -95,7 +96,7 @@ class User extends Entity implements IdentifiedById
 	public function getRolesNames(): array
 	{
 		$tmp = [];
-		foreach ($this->getRoles() as $role) {
+		foreach ($this->getRoles(true) as $role) {
 			$tmp[] = $role->key;
 		}
 		return $tmp;
@@ -105,10 +106,15 @@ class User extends Entity implements IdentifiedById
 	{
 		$tmp = [];
 		/** @var Role */
-		foreach ($this->getRoles() as $role) {
+		foreach ($this->getRoles(true) as $role) {
 			$tmp[] = $role->id;
 		}
 		return $tmp;
+	}
+
+	public function getData(): array
+	{
+		return $this->toArray();
 	}
 
 	public function toArray(): array

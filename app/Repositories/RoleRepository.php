@@ -30,6 +30,12 @@ class RoleRepository extends BaseRepository
 		return $role;
 	}
 
+	/** @return Role[] */
+	public function findByKey(string $key): array
+	{
+		return $this->roleMapper->find(['key' => $key]);
+	}
+
 	public function findAll(bool $includeRules = false)
 	{
 		return $this->cache->load('role.findAll', function () use ($includeRules) {

@@ -50,27 +50,35 @@ abstract class BaseMapper
 
 	public function findOne(array $filter = []): ?Entity
 	{
-		static::applyMapToFilter($filter);
-		$result = $this->dibi->select('*')->from($this->table)->where($filter)->execute();
-		static::applyDataTypes($result);
-		$data = $result->fetch();
+		$data = $this->getResult($filter)->fetch();
 		if (empty($data)) {
 			return null;
 		}
 		return $this->create($data->toArray());
 	}
 
+	public function find(array $filter = []): iterable
+	{
+		$collection = static::createCollection();
+		$rows = $this->getResult($filter)->fetchAll();
+		foreach ($rows as $row) {
+			$collection[] = $this->create($row->toArray());
+		}
+		return $collection;
+	}
+
+	public function getResult(array $filter = []): Dibi\Result
+	{
+		static::applyMapToFilter($filter);
+		$result = $this->dibi->select('*')->from($this->table)->where($filter)->execute();
+		static::applyDataTypes($result);
+		return $result;
+	}
+
+	/** @deprecated use find() */
 	public function findAll(): iterable
 	{
-		$all = [];
-		$result = $this->dibi->select('*')->from($this->table)->execute();
-		static::applyDataTypes($result);
-		$rows = $result->fetchAll();
-		/** @var Row */
-		foreach ($rows as $row) {
-			$all[] = $this->create($row->toArray());
-		}
-		return $all;
+		return $this->find();
 	}
 
 	public static function applyMapToFilter(?array &$filter = []): void
@@ -93,6 +101,11 @@ abstract class BaseMapper
 		foreach (static::DATA_TYPES as $key => $type) {
 			$result->setType($key, $type);
 		}
+	}
+
+	public static function createCollection(): iterable
+	{
+		return [];
 	}
 
 	public function delete(IdentifiedById $entity): bool

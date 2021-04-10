@@ -2,24 +2,25 @@
 
 use LDAP\LdapException;
 use LDAP\Service;
-use Nette\Security\Passwords;
-use Nette\Security\SimpleIdentity;
+use Models\Entities\User;
+use Nette\Security\IIdentity;
+use Repositories\RoleRepository;
 use Repositories\UserRepository;
 
 class LdapAuthenticator implements Nette\Security\Authenticator
 {
-	private $passwords;
 	private $userRepository;
+	private $roleRepository;
 	private $ldapService;
 
-	public function __construct(Passwords $passwords, UserRepository $userRepository, Service $service)
+	public function __construct(UserRepository $userRepository, RoleRepository $roleRepository, Service $service)
 	{
-		$this->passwords = $passwords;
 		$this->userRepository = $userRepository;
+		$this->roleRepository = $roleRepository;
 		$this->ldapService = $service;
 	}
 
-	public function authenticate(string $username, string $password): SimpleIdentity
+	public function authenticate(string $username, string $password): IIdentity
 	{
 		try {
 			$remoteUser = $this->ldapService->getRemoteUser($username, $password);
@@ -29,20 +30,12 @@ class LdapAuthenticator implements Nette\Security\Authenticator
 
 		$user = $this->userRepository->findByUsername($remoteUser['email']);
 		if ($user) {
-			return new SimpleIdentity(
-				$user->getId(),
-				$user->getRolesNames(),
-				['name' => $user->getUsername()]
-			);
+			return $user;
 		}
+		$user = new User();
 
-		return new SimpleIdentity(
-			$remoteUser['id'],
-			$remoteUser['roles'],
-			[
-				'name' => $remoteUser['fullname'],
-				'email' => $remoteUser['email'],
-			]
-		);
+		$roles = $this->roleRepository->findByKey(reset($remoteUser['roles']));
+		$user->setEmail($remoteUser['email'])->setName($remoteUser['fullname'])->setUsername($remoteUser['email'])->setRoles(...$roles);
+		return $user;
 	}
 }

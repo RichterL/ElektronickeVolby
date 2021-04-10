@@ -23,5 +23,8 @@ interface IRoleMapper
 	public function findOne(array $filter = []): ?Role;
 
 	/** @return Role[] */
+	public function find(array $filter = []): iterable;
+
+	/** @return Role[] */
 	public function findAll(): array;
 }

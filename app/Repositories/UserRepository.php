@@ -23,7 +23,7 @@ class UserRepository
 	{
 		$user = $this->userMapper->findOne(['id' => $id]);
 		if ($includeRoles) {
-			$user->setRoles($this->roleMapper->findRelated($user));
+			$user->setRoles(...$this->roleMapper->findRelated($user));
 		}
 		return $user;
 	}
