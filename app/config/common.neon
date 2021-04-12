@@ -57,6 +57,7 @@ services:
 
 	# factories
 	- Models\Entities\Rule\RuleFactory
+	- App\Models\Factories\BallotFactory
 
 	# formFactory
 	- App\Forms\FormFactory
@@ -77,6 +78,7 @@ services:
 	iVoterMapper: Models\Mappers\Db\VoterMapper
 	iQuestionMapper: Models\Mappers\Db\QuestionMapper
 	iAnswerMapper: Models\Mappers\Db\AnswerMapper
+	iBallotMapper: App\Models\Mappers\Db\BallotMapper
 
 	# repositories
 	privilegeRepository: Repositories\PrivilegeRepository
@@ -89,3 +91,4 @@ services:
 	voterRepository: Repositories\VoterRepository
 	questionRepository: Repositories\QuestionRepository
 	answerRepository: Repositories\AnswerRepository
+	- App\Repositories\BallotRepository

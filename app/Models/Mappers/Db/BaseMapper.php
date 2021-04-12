@@ -6,6 +6,7 @@ namespace Models\Mappers\Db;
 use dibi;
 use Dibi\Connection;
 use Dibi\Row;
+use Exception;
 use Models\Entities\Entity;
 use Models\Entities\IdentifiedById;
 use Nette\InvalidStateException;
@@ -37,16 +38,35 @@ abstract class BaseMapper
 		}
 	}
 
-	//abstract public function create(array $data = []): DbEntity;
+	/**
+	 * @throws Exception
+	 */
+	protected function saveWithId(IdentifiedById $entity): bool
+	{
+		$data = [];
+		foreach (static::MAP as $property => $key) {
+			if (isset($entity->$property)) {
+				$propertyValue = $entity->$property;
+				if ($propertyValue instanceof IdentifiedById) {
+					$propertyValue = $propertyValue->getId();
+				}
+				$data[$key] = $propertyValue;
+			}
+		}
+		unset($data['id']);
+		$id = $entity->getId();
+		if ($id === null) {
+			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
+			if (!$id) {
+				throw new Exception('insert failed');
+			}
+			$entity->setId($id);
+			return true;
+		}
 
-	// public function loadFromState(DbEntity $obj, array $data): DbEntity
-	// {
-	//     $rc = new ReflectionClass($obj);
-	//     foreach ($rc->getProperties(ReflectionProperty::IS_PRIVATE) as $property) {
-	//         $obj->{$property->getName()} = $data[StringHelper::camelToUnderscore($property->getName())];
-	//     }
-	//     return $obj;
-	// }
+		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
+		return true;
+	}
 
 	public function findOne(array $filter = []): ?Entity
 	{

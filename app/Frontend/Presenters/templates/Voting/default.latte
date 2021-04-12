@@ -9,31 +9,78 @@
 	<div class="container-fluid mb-5">
 		{control votingForm}
 	</div>
+	<style>
+		#console-wrapper textarea {
+			background: white;
+			border-bottom: 0;
+			border-radius: 0.25rem 0.25rem 0 0 ;
+			resize: none;
+			min-height: 300px;
+		}
+		#encrypted-wrapper textarea {
+			background: white;
+			resize: none;
+			min-height: 300px;
+		}
+		#myModal label {
+			position: relative;
+			top: 0.7rem;
+			left: 0.5rem;
+			padding: 0 0.25rem;
+			margin: 0;
+			background: white;
+			line-height: 1;
 
-	<div class="container-fluid">
-		<label for="encrypted">Your encrypted vote:</label>
-		<textarea class="form-control" id="encrypted"></textarea>
-	</div>
-
-
-
-
+		}
+		#console-wrapper .progress {
+			border-radius: 0 0 0.25rem 0.25rem;
+			border: 1px solid #ced4da;
+			border-top: 0;
+			background: #f1f1f1;
+		}
+	</style>
 {/block}
 
 {block modal}
-	{if !empty($showModal)}
-		{embed ../defines/modal.latte, classes: "modal-lg modal-dialog-centered"}
-			{block title}Modal{/block}
-			{block body}
-				modal body
-			{/block}
-			{block footer}{/block}
-		{/embed}
-	{/if}
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Vote encryption in progress</h5>
+				</div>
+				<div class="modal-body">
+					<div id="console-wrapper">
+						<label for="console">Status</label>
+						<textarea readonly class="form-control" id="console"></textarea>
+						<div class="progress">
+							<div id="progressbar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
+						</div>
+					</div>
+					<div id="encrypted-wrapper">
+						<label for="encrypted">Your encrypted vote</label>
+						<textarea readonly class="form-control" id="encrypted"></textarea>
+					</div>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" disabled="disabled" class="btn btn-success" data-dismiss="modal" id="closeButton">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 {/block}
 
 {block scripts}
+	<script src="/js/crypto/jsbn@latest.js"></script>
+	<script src="/js/crypto/js-sha256@latest.js"></script>
 	<script type="module">
 		naja.registerExtension(new ValidateVotingForm());
+		import Crypto from '/js/crypto.js'
+		window.crypt = new Crypto({
+			publicEncryptionKeyLink: {link getPublicEncryptionKey!},
+			publicSigningKeyLink: {link getPublicSigningKey!},
+			signingLink: {link blindSign!},
+			savingLink: {link save!}
+		});
 	</script>
 {/block}

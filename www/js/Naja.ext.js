@@ -122,7 +122,16 @@ class ValidateVotingForm {
 		res.electionId = $form.find('input[name=electionId]').val()
 		res.timestamp = new Date().getTime()
 		console.log(res)
-		console.log(JSON.stringify(res))
 
+
+		if (typeof window.crypt === "undefined") {
+			throw new Error('Encryption script is not loaded')
+		}
+
+		window.crypt.processVote(res).catch((error) => {
+			throw new Error('encryption processing error: '+ error)
+		}).then((result) => {
+			$('#myModal #closeButton').attr('disabled', false)
+		})
 	}
 }

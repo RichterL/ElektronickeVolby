@@ -23,8 +23,9 @@
 		"contributte/forms-bootstrap": "^0.4",
 		"ublaboo/datagrid": "^6.7",
 		"dibi/dibi": "^4.2",
-		"contributte/forms-multiplier": "^3.2"
-	},
+		"contributte/forms-multiplier": "^3.2",
+		"phpseclib/phpseclib": "^3.0"
+    },
 	"require-dev": {
 		"nette/tester": "^2.3",
 		"symfony/thanks": "^1"
