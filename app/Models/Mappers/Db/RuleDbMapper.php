@@ -11,7 +11,7 @@ use App\Models\Entities\Rule\Rule;
 use App\Models\Entities\Rule\RuleCollection;
 use App\Models\Entities\Rule\Type;
 use App\Models\Mappers\RuleMapper;
-use Utils\ValueObject\ValueObject;
+use App\Core\Utils\ValueObject\ValueObject;
 
 class RuleDbMapper extends BaseDbMapper implements RuleMapper
 {

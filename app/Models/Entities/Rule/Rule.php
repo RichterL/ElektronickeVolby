@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models\Entities\Rule;
 
@@ -26,16 +27,6 @@ class Rule extends Entity implements IdentifiedById
 
 	use HasId;
 
-	public function __construct(string $name = null, string $key = null)
-	{
-		if ($name) {
-			$this->name = $name;
-		}
-		if ($key) {
-			$this->key = $key;
-		}
-	}
-
 	public function getRoleId(): ?int
 	{
 		return $this->role->getId();
@@ -57,7 +48,7 @@ class Rule extends Entity implements IdentifiedById
 		return $this;
 	}
 
-	public function setType(Type $type)
+	public function setType(Type $type): void
 	{
 		$this->type = $type;
 	}
@@ -74,6 +65,9 @@ class Rule extends Entity implements IdentifiedById
 		return $this;
 	}
 
+	/**
+	 * @return array<string, int>
+	 */
 	public function toArray(): array
 	{
 		return [

@@ -1,15 +1,18 @@
 <?php
+declare(strict_types=1);
 
-namespace App\Utils\Form;
+namespace App\Forms;
+
+use Contributte\FormMultiplier\Multiplier;
 
 trait HasMultiplier
 {
 	private int $copies = 1;
 	private int $maxCopies = 5;
 
-	public function setMultiplierValues(array $multiplierValues)
+	public function setMultiplierValues(array $multiplierValues): void
 	{
-		/** @var \Contributte\FormMultiplier\Multiplier */
+		/** @var Multiplier */
 		$multiplier = $this->getForm()->getComponent('multiplier');
 		$multiplier->setValues($multiplierValues);
 	}

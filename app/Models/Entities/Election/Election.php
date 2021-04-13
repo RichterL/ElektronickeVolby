@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace App\Models\Entities\Election;
 
 use App\Models\Traits\Entity\HasId;
-use Constants;
+use App\Core\Utils\Constants;
 use InvalidArgumentException;
 use App\Models\Entities\Entity;
 use App\Models\Entities\IdentifiedById;

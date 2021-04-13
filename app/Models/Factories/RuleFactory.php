@@ -1,7 +1,9 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models\Factories;
 
+use App\Models\Entities\Rule\Rule;
 use App\Repositories\PrivilegeRepository;
 use App\Repositories\ResourceRepository;
 use App\Repositories\RoleRepository;

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Backend\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
-use LdapAuthenticator;
+use App\Core\Classes\LdapAuthenticator;
 use Nette;
 use Nette\Application\UI\Form;
 use Nette\Security\AuthenticationException;
-use Nette\Security\Passwords;
-use PasswordAuthenticator;
+use App\Core\Classes\PasswordAuthenticator;
 
 final class SignPresenter extends Nette\Application\UI\Presenter
 {
@@ -48,8 +47,8 @@ final class SignPresenter extends Nette\Application\UI\Presenter
 
 	public function signInFormSuccess(Form $form, \stdClass $values): void
 	{
+		$user = $this->getUser();
 		try {
-			$user = $this->getUser();
 			$user->setAuthenticator($this->passwordAuthenticator);
 			$user->login($values->username, $values->password);
 			$this->redirect('Homepage:');

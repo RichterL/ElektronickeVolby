@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Forms;
 
@@ -7,8 +8,8 @@ use Contributte\FormsBootstrap\BootstrapUtils;
 use Nette;
 use Nette\Utils\Html;
 use ReflectionClass;
-use App\Utils\Form\BootstrapRenderer;
-use App\Utils\Form\BootstrapForm;
+use App\Core\Utils\Form\BootstrapRenderer;
+use App\Core\Utils\Form\BootstrapForm;
 
 abstract class BaseForm extends Nette\Application\UI\Control
 {

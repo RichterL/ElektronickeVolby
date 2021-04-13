@@ -40,17 +40,17 @@ services:
 	mapperCache: Nette\Caching\Cache(namespace: 'mapperCache')
 
 	# ldap settings from parameters: of local.neon
-	ldap: LDAP\Service(%ldap.server%, %ldap.baseDn%)
+	ldap: App\Core\Classes\LDAP\Service(%ldap.server%, %ldap.baseDn%)
 
 	# set available authenticators
 	-
-		factory: LdapAuthenticator
+		factory: App\Core\Classes\LdapAuthenticator
 		autowired: self
 	-
-		factory: PasswordAuthenticator
+		factory: App\Core\Classes\PasswordAuthenticator
 		autowired: self
 
-	authorizatorFactory : AuthorizatorFactory
+	authorizatorFactory : App\Core\Classes\AuthorizatorFactory
 	authorizator:
 		class: Nette\Security\Permission
 		factory: @authorizatorFactory::create()

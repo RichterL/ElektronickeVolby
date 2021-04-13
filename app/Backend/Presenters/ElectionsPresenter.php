@@ -11,9 +11,9 @@ use Nette\Application\UI\Form;
 use App\Repositories\ElectionRepository;
 use App\Repositories\UserRepository;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
-use Utils\DataGrid\Action;
-use Utils\DataGrid\Column;
-use Utils\DataGrid\ToolbarButton;
+use App\Backend\Utils\DataGrid\Action;
+use App\Backend\Utils\DataGrid\Column;
+use App\Backend\Utils\DataGrid\ToolbarButton;
 
 final class ElectionsPresenter extends DefaultPresenter
 {

@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Forms;
 
-use App\Utils\Form\BootstrapForm;
-use App\Utils\Form\BootstrapRenderer;
+use App\Core\Utils\Form\BootstrapForm;
+use App\Core\Utils\Form\BootstrapRenderer;
 
 final class FormFactory
 {

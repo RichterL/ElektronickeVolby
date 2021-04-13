@@ -26,7 +26,7 @@ class ResourceDbMapper extends BaseDbMapper implements ResourceMapper
 		$this->privilegeMapper = $privilegeMapper;
 	}
 
-	public function create(array $data = []): Resource
+	public function create(array $data = []): \App\Models\Entities\Resource\Resource
 	{
 		$resource = new Resource();
 		if (!empty($data)) {
@@ -80,7 +80,7 @@ class ResourceDbMapper extends BaseDbMapper implements ResourceMapper
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): Resource
+	public function findOne(array $filter = []): \App\Models\Entities\Resource\Resource
 	{
 		return parent::findOne($filter);
 	}

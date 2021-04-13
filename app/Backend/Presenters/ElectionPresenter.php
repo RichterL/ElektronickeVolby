@@ -6,11 +6,10 @@ namespace App\Backend\Presenters;
 use App\Forms\Election\QuestionForm;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
-use App\Models\Entities\Election\Answer;
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\Question;
 use App\Models\Entities\Election\VoterFile;
-use Nette\Application\Responses\CsvResponse;
+use App\Core\Classes\CsvResponse;
 use Nette\Application\UI\Form;
 use App\Repositories\AnswerRepository;
 use App\Repositories\ElectionRepository;
@@ -20,9 +19,9 @@ use App\Repositories\VoterFileRepository;
 use App\Repositories\VoterRepository;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Ublaboo\DataGrid\DataSource\ArrayDataSource;
-use Utils\DataGrid\Action;
-use Utils\DataGrid\Column;
-use Utils\DataGrid\ToolbarButton;
+use App\Backend\Utils\DataGrid\Action;
+use App\Backend\Utils\DataGrid\Column;
+use App\Backend\Utils\DataGrid\ToolbarButton;
 
 final class ElectionPresenter extends DefaultPresenter
 {

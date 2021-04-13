@@ -10,12 +10,12 @@ use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface ResourceMapper
 {
-	public function create(array $data = []): Resource;
+	public function create(array $data = []): \App\Models\Entities\Resource\Resource;
 
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): Resource;
+	public function findOne(array $filter = []): \App\Models\Entities\Resource\Resource;
 
 	/** @return Resource[] */
 	public function findAll(): array;
