@@ -42,7 +42,7 @@ class PrivilegeRepository
 	/**
 	 * @throws SavingErrorException
 	 */
-	public function save(Resource $resource, Privilege $privilege)
+	public function save(Resource $resource, Privilege $privilege): bool
 	{
 		return $this->privilegeMapper->save($resource, $privilege);
 	}

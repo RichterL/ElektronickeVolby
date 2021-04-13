@@ -27,7 +27,7 @@ abstract class BaseDbMapper
 		$this->dibi = $dibi;
 	}
 
-	public function setCache(\Nette\Caching\Cache $cache): void
+	public function setCache(Cache $cache): void
 	{
 		$this->cache = $cache;
 	}
@@ -35,7 +35,7 @@ abstract class BaseDbMapper
 	public function init(): void
 	{
 		if (empty($this->table)) {
-			throw new InvalidStateException('No database table defined for ' . get_called_class() . '!');
+			throw new InvalidStateException('No database table defined for ' . static::class . '!');
 		}
 	}
 
@@ -99,7 +99,7 @@ abstract class BaseDbMapper
 		return $collection;
 	}
 
-	public function getResult(array $filter = []): Dibi\Result
+	public function getResult(array $filter = []): dibi\Result
 	{
 		static::applyMapToFilter($filter);
 		$result = $this->dibi->select('*')->from($this->table)->where($filter)->execute();
@@ -120,7 +120,7 @@ abstract class BaseDbMapper
 		}
 
 		foreach ($filter as $property => $value) {
-			if (static::MAP[$property] == $property) {
+			if (static::MAP[$property] === $property) {
 				continue;
 			}
 			$filter[static::MAP[$property]] = $value;

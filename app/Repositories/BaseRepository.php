@@ -8,7 +8,7 @@ class BaseRepository
 {
 	protected Cache $cache;
 
-	public function setCache(\Nette\Caching\Cache $cache): void
+	public function setCache(Cache $cache): void
 	{
 		$this->cache = $cache;
 	}

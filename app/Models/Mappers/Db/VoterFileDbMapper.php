@@ -71,7 +71,7 @@ class VoterFileDbMapper extends BaseDbMapper implements VoterFileMapper
 	{
 		$voterFiles = [];
 		$result = $this->dibi->select('id, election_id, filename, created_at, created_by')->from($this->table)->where('election_id = %i', $election->getId())->fetchAll();
-		/** @var Row */
+		/** @var Row $row */
 		foreach ($result as $row) {
 			$voterFiles[] = $this->create($row->toArray());
 		}

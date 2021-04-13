@@ -41,7 +41,7 @@ class UserRepository
 		return $this->userMapper->findOne(['username' => $username]);
 	}
 
-	public function findAll()
+	public function findAll(): array
 	{
 		return $this->userMapper->findAll();
 	}

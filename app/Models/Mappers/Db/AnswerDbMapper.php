@@ -6,7 +6,7 @@ namespace App\Models\Mappers\Db;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
-use Exception;
+use Dibi\Row;
 use App\Models\Entities\Election\Answer;
 use App\Models\Entities\Election\Question;
 use App\Models\Mappers\AnswerMapper;
@@ -45,7 +45,7 @@ class AnswerDbMapper extends BaseDbMapper implements AnswerMapper
 	{
 		$result = $this->dibi->select('*')->from($this->table)->where('question_id = %i', $question->getId())->fetchAll();
 		$answers = [];
-		/** @var Row */
+		/** @var Row $row */
 		foreach ($result as $row) {
 			$answers[] = $this->create($row->toArray());
 		}
@@ -67,7 +67,6 @@ class AnswerDbMapper extends BaseDbMapper implements AnswerMapper
 		}
 		return new DibiFluentDataSource($fluent, 'id');
 	}
-
 
 	/**
 	 * @throws EntityNotFoundException

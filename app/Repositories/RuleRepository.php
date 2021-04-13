@@ -29,7 +29,7 @@ class RuleRepository
 		return $this->ruleMapper->findOne(['id' => $id]);
 	}
 
-	public function findAll()
+	public function findAll(): array
 	{
 		return $this->ruleMapper->findAll();
 	}

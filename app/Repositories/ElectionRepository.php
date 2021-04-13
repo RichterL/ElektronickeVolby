@@ -58,7 +58,7 @@ class ElectionRepository
 		return $this->electionMapper->save($election);
 	}
 
-	public function delete(Election $election)
+	public function delete(Election $election): bool
 	{
 		return $this->electionMapper->delete($election);
 	}

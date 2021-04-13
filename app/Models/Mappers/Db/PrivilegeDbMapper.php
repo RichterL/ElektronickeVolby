@@ -11,7 +11,7 @@ use App\Models\Mappers\PrivilegeMapper;
 
 class PrivilegeDbMapper extends BaseDbMapper implements PrivilegeMapper
 {
-	const MAP = [
+	protected const MAP = [
 		'id' => 'id',
 		'name' => 'name',
 		'key' => 'key',

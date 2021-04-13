@@ -53,11 +53,6 @@ class QuestionRepository
 		return $this->questionMapper->save($election);
 	}
 
-	public function saveData(Question $election): bool
-	{
-		return $this->questionMapper->saveData($election);
-	}
-
 	public function delete(Question $election): bool
 	{
 		return $this->questionMapper->delete($election);

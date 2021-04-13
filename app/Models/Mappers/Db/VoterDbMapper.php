@@ -48,12 +48,15 @@ class VoterDbMapper extends BaseDbMapper implements VoterMapper
 		return null;
 	}
 
-	private function prepareFile(Election $election, VoterFile $voterFile)
+	private function prepareFile(Election $election, VoterFile $voterFile): string
 	{
 		$content = $voterFile->getContent();
 		$now = new \DateTime();
-		if (!is_dir(TEMP_DIR . '/voterFiles/' . $election->getId())) {
-			mkdir(TEMP_DIR . '/voterFiles/' . $election->getId(), 0777, true);
+		if (!is_dir(TEMP_DIR . '/voterFiles/' . $election->getId())
+			&& !mkdir($concurrentDirectory = TEMP_DIR . '/voterFiles/' . $election->getId(), 0777, true)
+			&& !is_dir($concurrentDirectory) // race-condition fix
+		) {
+			throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
 		}
 		$filename = TEMP_DIR . '/voterFiles/' . $election->getId() . '/' . $now->format('dmy_Hi') . '_' . $voterFile->filename;
 		if (!file_put_contents($filename, $content)) {

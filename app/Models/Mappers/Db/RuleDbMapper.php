@@ -15,7 +15,7 @@ use Utils\ValueObject\ValueObject;
 
 class RuleDbMapper extends BaseDbMapper implements RuleMapper
 {
-	const MAP = [
+	protected const MAP = [
 		'id' => 'id',
 		'roleId' => 'role_id',
 		'resourceId' => 'resource_id',
@@ -66,7 +66,7 @@ class RuleDbMapper extends BaseDbMapper implements RuleMapper
 
 		unset($data['id']);
 		$id = $rule->getId();
-		if (empty($id)) {
+		if ($id === null) {
 			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
 			if (!$id) {
 				throw new Exception('insert failed');

@@ -11,7 +11,7 @@ use App\Models\Mappers\ResourceMapper;
 
 class ResourceDbMapper extends BaseDbMapper implements ResourceMapper
 {
-	const MAP = [
+	protected const MAP = [
 		'id' => 'id',
 		'name' => 'name',
 		'key' => 'key',
@@ -26,7 +26,7 @@ class ResourceDbMapper extends BaseDbMapper implements ResourceMapper
 		$this->privilegeMapper = $privilegeMapper;
 	}
 
-	public function create(array $data = []): \App\Models\Entities\Resource\Resource
+	public function create(array $data = []): Resource
 	{
 		$resource = new Resource();
 		if (!empty($data)) {
@@ -55,7 +55,7 @@ class ResourceDbMapper extends BaseDbMapper implements ResourceMapper
 		}
 		unset($data['id']);
 		$id = $resource->getId();
-		if (empty($id)) {
+		if ($id === null) {
 			$id = $this->dibi->insert($this->table, $resource->toArray())->execute(dibi::IDENTIFIER);
 			if (!$id) {
 				throw new Exception('insert failed');
@@ -80,7 +80,7 @@ class ResourceDbMapper extends BaseDbMapper implements ResourceMapper
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): \App\Models\Entities\Resource\Resource
+	public function findOne(array $filter = []): Resource
 	{
 		return parent::findOne($filter);
 	}

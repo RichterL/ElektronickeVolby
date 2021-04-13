@@ -55,7 +55,7 @@ class RoleRepository extends BaseRepository
 		});
 	}
 
-	public function getIdNamePairs()
+	public function getIdNamePairs(): array
 	{
 		$roles = $this->roleMapper->findAll();
 		$pairs = [];

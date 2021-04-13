@@ -27,12 +27,17 @@ class ResourceRepository extends BaseRepository
 		return $this->resourceMapper->findOne(['id' => $id]);
 	}
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findByUsername(string $username): Resource
 	{
 		return $this->resourceMapper->findOne(['username' => $username]);
 	}
 
-	/** @return Resource[] */
+	/**
+	 * @return Resource[]
+	 */
 	public function findAll(): array
 	{
 		return $this->cache->load('resource.findAll', function () {
@@ -40,7 +45,7 @@ class ResourceRepository extends BaseRepository
 		});
 	}
 
-	public function getIdNamePairs()
+	public function getIdNamePairs(): array
 	{
 		$resources = $this->resourceMapper->findAll();
 		$pairs = [];

@@ -13,7 +13,7 @@ use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 class UserDbMapper extends BaseDbMapper implements UserMapper
 {
-	const MAP = [
+	protected const MAP = [
 		'id' => 'id',
 		'username' => 'username',
 		'password' => 'password',

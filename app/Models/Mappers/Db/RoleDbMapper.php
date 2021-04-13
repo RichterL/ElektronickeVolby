@@ -13,7 +13,7 @@ use App\Models\Mappers\RoleMapper;
 
 class RoleDbMapper extends BaseDbMapper implements RoleMapper
 {
-	const MAP = [
+	protected const MAP = [
 		'id' => 'id',
 		'name' => 'name',
 		'key' => 'key',
@@ -21,7 +21,7 @@ class RoleDbMapper extends BaseDbMapper implements RoleMapper
 	];
 
 	protected string $table = Tables::ACL_ROLES;
-	private $usersRolesTable = Tables::USERS_ROLES;
+	private string $usersRolesTable = Tables::USERS_ROLES;
 
 	public function create(array $data = []): Role
 	{
@@ -43,7 +43,7 @@ class RoleDbMapper extends BaseDbMapper implements RoleMapper
 			->leftJoin('%n ur', $this->usersRolesTable)->on('r.id = ur.role_id')
 			->where('ur.user_id = %i', $user->getId())
 			->fetchAll();
-		/** @var Row */
+		/** @var Row $row */
 		foreach ($result as $role) {
 			$roles[] = $this->create($role->toArray());
 		}
@@ -60,7 +60,7 @@ class RoleDbMapper extends BaseDbMapper implements RoleMapper
 		}
 		unset($data['id']);
 		$id = $role->getId();
-		if (empty($id)) {
+		if ($id === null) {
 			$id = $this->dibi->insert($this->table, $role->toArray())->execute(dibi::IDENTIFIER);
 			if (!$id) {
 				throw new Exception('insert failed');
