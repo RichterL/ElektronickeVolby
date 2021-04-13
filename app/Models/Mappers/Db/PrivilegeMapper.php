@@ -3,12 +3,16 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
 use Exception;
-use Models\Entities\Resource\Privilege;
-use Models\Entities\Resource\PrivilegeCollection;
-use Models\Entities\Resource\Resource;
-use Models\Mappers\IPrivilegeMapper;
+use App\Models\Entities\Entity;
+use App\Models\Entities\IdentifiedById;
+use App\Models\Entities\Resource\Privilege;
+use App\Models\Entities\Resource\PrivilegeCollection;
+use App\Models\Entities\Resource\Resource;
+use App\Models\Mappers\IPrivilegeMapper;
 
 class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 {
@@ -19,7 +23,7 @@ class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 		'resource' => 'resource_id',
 	];
 
-	protected $table = Tables::ACL_RESOURCE_PRIVILEGE;
+	protected string $table = Tables::ACL_RESOURCE_PRIVILEGE;
 
 	public function create(array $data = []): Privilege
 	{
@@ -41,19 +45,7 @@ class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 			}
 		}
 		$data['resource_id'] = $resource->getId();
-		unset($data['id']);
-		$id = $privilege->getId();
-		if (empty($id)) {
-			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
-			if (!$id) {
-				throw new Exception('insert failed');
-			}
-			$privilege->setId($id);
-			return true;
-		}
-
-		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
-		return true;
+		return $this->saveData($data);
 	}
 
 	/** @var Privilege[] */
@@ -70,8 +62,10 @@ class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 		return $privileges;
 	}
 
-	/** parent concrete implementetions */
-	public function findOne(array $filter = []): ?Privilege
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): Privilege
 	{
 		return parent::findOne($filter);
 	}
@@ -80,7 +74,7 @@ class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 	{
 		return $this->cache->load('privilege.findAll', function () {
 			$privileges = new PrivilegeCollection();
-			$result = $this->dibi->select(array_keys(self::MAP))
+			$result = $this->dibi->select(array_values(self::MAP))
 				->from($this->table)
 				->fetchAssoc('id,=');
 			foreach ($result as $id => $values) {

@@ -18,7 +18,10 @@ class ElectionRepository
 		$this->electionMapper = $electionMapper;
 	}
 
-	public function findById(int $id): ?Election
+	/**
+	 * @throws \App\Models\Mappers\Exception\EntityNotFoundException
+	 */
+	public function findById(int $id): Election
 	{
 		return $this->electionMapper->findOne(['id' => $id]);
 	}
@@ -45,7 +48,10 @@ class ElectionRepository
 		return $this->electionMapper->getDataSource();
 	}
 
-	public function save(Election $election)
+	/**
+	 * @throws SavingErrorException
+	 */
+	public function save(Election $election): bool
 	{
 		return $this->electionMapper->save($election);
 	}

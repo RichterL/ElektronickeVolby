@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
 use Dibi\Connection;
 use Dibi\Row;
@@ -14,24 +16,24 @@ use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 abstract class BaseMapper
 {
-	protected $dibi;
-	protected $cache;
-	protected $table;
+	protected Connection $dibi;
+	protected Cache $cache;
+	protected string $table;
 
 	protected const MAP = [];
 	protected const DATA_TYPES = [];
 
-	public function setDibi(Connection $dibi)
+	public function setDibi(Connection $dibi): void
 	{
 		$this->dibi = $dibi;
 	}
 
-	public function setCache(\Nette\Caching\Cache $cache)
+	public function setCache(\Nette\Caching\Cache $cache): void
 	{
 		$this->cache = $cache;
 	}
 
-	public function init()
+	public function init(): void
 	{
 		if (empty($this->table)) {
 			throw new InvalidStateException('No database table defined for ' . get_called_class() . '!');
@@ -39,7 +41,7 @@ abstract class BaseMapper
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws SavingErrorException
 	 */
 	protected function saveWithId(IdentifiedById $entity): bool
 	{
@@ -53,26 +55,37 @@ abstract class BaseMapper
 				$data[$key] = $propertyValue;
 			}
 		}
-		unset($data['id']);
-		$id = $entity->getId();
-		if ($id === null) {
-			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
-			if (!$id) {
-				throw new Exception('insert failed');
-			}
-			$entity->setId($id);
-			return true;
-		}
-
-		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
-		return true;
+		return $this->saveData($data, $entity);
 	}
 
-	public function findOne(array $filter = []): ?Entity
+	/**
+	 * @throws SavingErrorException
+	 */
+	protected function saveData(array $data, IdentifiedById $entity): bool
+	{
+		try {
+			unset($data['id']);
+			$id = $entity->getId();
+			if ($id === null) {
+				$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
+				$entity->setId($id);
+				return true;
+			}
+			$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
+			return true;
+		} catch (\Dibi\Exception $e) {
+			throw new SavingErrorException('Saving failed!');
+		}
+	}
+
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): Entity
 	{
 		$data = $this->getResult($filter)->fetch();
 		if (empty($data)) {
-			return null;
+			throw new EntityNotFoundException('Requested entity was not found!');
 		}
 		return $this->create($data->toArray());
 	}

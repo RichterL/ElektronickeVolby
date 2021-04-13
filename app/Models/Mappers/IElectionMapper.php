@@ -11,7 +11,10 @@ interface IElectionMapper
 {
 	public function create(array $data = []): Election;
 
-	public function findOne(array $filter = []): ?Election;
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): Election;
 
 	/** @return Election[] */
 	public function find(array $filter = []): iterable;
@@ -23,6 +26,9 @@ interface IElectionMapper
 
 	public function getDataSource(): IDataSource;
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Election $election): bool;
 
 	public function delete(Election $election): bool;

@@ -8,6 +8,9 @@ use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 interface IBallotMapper
 {
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findOne(array $filter = []): Ballot;
 
 	/**
@@ -15,7 +18,12 @@ interface IBallotMapper
 	 */
 	public function find(array $filter = []): iterable;
 
-	public function delete(IdentifiedById $entity): bool;
+	/**
+	 * @throws SavingErrorException
+	 */
+	public function save(Ballot $ballot): bool;
+
+	public function delete(Ballot $ballot): bool;
 
 	public function getDataSource(array $filter = []): DibiFluentDataSource;
 }

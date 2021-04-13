@@ -4,6 +4,8 @@ namespace App\Models\Mappers\Db;
 
 use App\Models\Entities\Election\Ballot;
 use App\Models\Factories\BallotFactory;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\IBallotMapper;
 use dibi;
 use Exception;
@@ -23,7 +25,7 @@ class BallotMapper extends \Models\Mappers\Db\BaseMapper implements IBallotMappe
 		'signature' => 'signature',
 	];
 
-	protected $table = Tables::BALLOT;
+	protected string $table = Tables::BALLOT;
 	private BallotFactory $ballotFactory;
 
 	public function __construct(BallotFactory $ballotFactory)
@@ -40,13 +42,16 @@ class BallotMapper extends \Models\Mappers\Db\BaseMapper implements IBallotMappe
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws SavingErrorException
 	 */
 	public function save(Ballot $ballot): bool
 	{
 		return $this->saveWithId($ballot);
 	}
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findOne(array $filter = []): Ballot
 	{
 		return parent::findOne($filter);

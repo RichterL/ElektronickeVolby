@@ -9,6 +9,9 @@ use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IVoterFileMapper
 {
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(VoterFile $voterFile): bool;
 
 	public function delete(VoterFile $voterFile): bool;
@@ -18,6 +21,9 @@ interface IVoterFileMapper
 
 	public function getDataSource(array $filter = []): IDataSource;
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findOne(array $filter = []): ?VoterFile;
 
 	/** @return VoterFile[] */

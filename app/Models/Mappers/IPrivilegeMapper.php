@@ -12,10 +12,16 @@ interface IPrivilegeMapper
 {
 	public function create(array $data = []): Privilege;
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Resource $resource, Privilege $privilege): bool;
 
 	public function findRelated(Resource $resource): PrivilegeCollection;
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findOne(array $filter = []): ?Privilege;
 
 	public function findAll(): PrivilegeCollection;

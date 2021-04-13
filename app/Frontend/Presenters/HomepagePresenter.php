@@ -17,11 +17,15 @@ final class HomepagePresenter extends BasePresenter
 		$this->electionsFacade = $electionsFacade;
 	}
 
-	public function renderDefault(): void
+	public function actionDefault(): void
 	{
 		if (!$this->getUser()->isLoggedIn()) {
 			$this->redirect('Sign:in');
 		}
+	}
+
+	public function renderDefault(): void
+	{
 		$this->template->allElections = $this->electionsFacade->getAllElections();
 		$this->template->activeElections = $this->electionsFacade->getAllActiveElections();
 		$this->template->availableElections = $this->electionsFacade->findVoterInVoterLists($this->getUserEntity());

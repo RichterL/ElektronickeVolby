@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
 use Exception;
 use Models\Entities\Election\Answer;
@@ -18,7 +20,7 @@ class AnswerMapper extends BaseMapper implements IAnswerMapper
 		'value' => 'value',
 	];
 
-	protected $table = Tables::ANSWER;
+	protected string $table = Tables::ANSWER;
 
 	public function create(array $data = []): Answer
 	{
@@ -30,31 +32,12 @@ class AnswerMapper extends BaseMapper implements IAnswerMapper
 		return $answer;
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Answer $answer): bool
 	{
-		$data = [];
-		foreach (self::MAP as $property => $key) {
-			if (isset($answer->$property)) {
-				$propertyValue = $answer->$property;
-				if ($propertyValue instanceof Question) {
-					$propertyValue = $propertyValue->getId();
-				}
-				$data[$key] = $propertyValue;
-			}
-		}
-		unset($data['id']);
-		$id = $answer->getId();
-		if (empty($id)) {
-			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
-			if (!$id) {
-				throw new Exception('insert failed');
-			}
-			$answer->setId($id);
-			return true;
-		}
-
-		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
-		return true;
+		return $this->saveWithId($answer);
 	}
 
 	/** @return Answer[] */
@@ -85,8 +68,11 @@ class AnswerMapper extends BaseMapper implements IAnswerMapper
 		return new DibiFluentDataSource($fluent, 'id');
 	}
 
-	/** parent concrete implementetions */
-	public function findOne(array $filter = []): ?Answer
+
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): Answer
 	{
 		return parent::findOne($filter);
 	}

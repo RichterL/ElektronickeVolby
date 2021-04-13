@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
+use Dibi\DriverException;
 use Exception;
 use Models\Entities\User;
 use Models\Mappers\Db\Tables;
@@ -21,9 +24,9 @@ class UserMapper extends BaseMapper implements IUserMapper
 		'email' => 'email',
 	];
 
-	protected $table = Tables::USERS;
-	protected $userRolesTable = Tables::USERS_ROLES;
-	private $roleMapper;
+	protected string $table = Tables::USERS;
+	protected string $userRolesTable = Tables::USERS_ROLES;
+	private RoleMapper $roleMapper;
 
 	public function __construct(RoleMapper $roleMapper)
 	{
@@ -43,33 +46,15 @@ class UserMapper extends BaseMapper implements IUserMapper
 		return $user;
 	}
 
-	public function saveData(User $user): bool
-	{
-		$data = [];
-		foreach (self::MAP as $property => $key) {
-			$data[$key] = $user->$property;
-		}
-		$data = array_filter($data);
-		unset($data['id']); // necessary?
-		$id = $user->getId();
-		if (empty($id)) {
-			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
-			if (!$id) {
-				throw new Exception('insert failed');
-			}
-			$user->setId($id);
-			return true;
-		}
-
-		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
-		return true;
-	}
-
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(User $user): bool
 	{
 		try {
 			$this->dibi->begin();
-			$this->saveData($user);
+			$this->saveWithId($user);
+			$data = [];
 			foreach ($user->getRoles(true) as $role) {
 				$data[] = [
 					'user_id' => $user->getId(),
@@ -81,11 +66,10 @@ class UserMapper extends BaseMapper implements IUserMapper
 				$this->dibi->insert($this->userRolesTable, $item)->execute();
 			}
 			$this->dibi->commit();
-		} catch (\Throwable $th) {
-			throw $th;
-			return false;
+			return true;
+		} catch (DriverException $e) {
+			throw new SavingErrorException('Saving failed!');
 		}
-		return true;
 	}
 
 	public function getDataSource(array $filter = []): DibiFluentDataSource
@@ -98,8 +82,10 @@ class UserMapper extends BaseMapper implements IUserMapper
 		return new DibiFluentDataSource($fluent, 'id');
 	}
 
-	/** parent concrete implementetions */
-	public function findOne(array $filter = []): ?User
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): User
 	{
 		return parent::findOne($filter);
 	}
@@ -107,8 +93,13 @@ class UserMapper extends BaseMapper implements IUserMapper
 	/** @return User[] */
 	public function findAll(): array
 	{
-		return $this->cache->load('user.findAll', function () {
+		try {
+			return $this->cache->load('user.findAll', function () {
+				throw new Exception('error');
+				return parent::findAll();
+			});
+		} catch (\Throwable $e) {
 			return parent::findAll();
-		});
+		}
 	}
 }

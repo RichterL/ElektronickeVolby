@@ -14,12 +14,18 @@ interface IRoleMapper
 	/** @return Role[] */
 	public function findRelated(User $user): array;
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Role $role): bool;
 
 	public function delete(Role $role): bool;
 
 	public function getDataSource(): IDataSource;
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findOne(array $filter = []): ?Role;
 
 	/** @return Role[] */

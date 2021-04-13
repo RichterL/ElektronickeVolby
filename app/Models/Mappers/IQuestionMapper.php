@@ -11,6 +11,9 @@ interface IQuestionMapper
 {
 	public function create(array $data = []): Question;
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findOne(array $filter = []): ?Question;
 
 	/** @return Question[] */
@@ -21,8 +24,9 @@ interface IQuestionMapper
 
 	public function getDataSource(): IDataSource;
 
-	public function saveData(Question $question): bool;
-
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Question $question): bool;
 
 	public function delete(Question $question): bool;

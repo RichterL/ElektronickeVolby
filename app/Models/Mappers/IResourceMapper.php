@@ -3,18 +3,26 @@ declare(strict_types=1);
 
 namespace Models\Mappers;
 
-use Models\Entities\Resource\Resource;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\Resource\Resource;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IResourceMapper
 {
-	public function create(array $data = []): Resource;
+	public function create(array $data = []): \App\Models\Entities\Resource\Resource;
 
-	public function findOne(array $filter = []): ?Resource;
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): \App\Models\Entities\Resource\Resource;
 
 	/** @return Resource[] */
 	public function findAll(): array;
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Resource $resource): bool;
 
 	public function getDataSource(array $filter = []): IDataSource;

@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
+use Dibi\DriverException;
 use Dibi\Row;
 use Exception;
 use Models\Entities\Election\Election;
@@ -27,7 +30,7 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 		'multiple' => \Dibi\Type::BOOL,
 	];
 
-	protected $table = Tables::QUESTION;
+	protected string $table = Tables::QUESTION;
 
 	private AnswerMapper $answerMapper;
 
@@ -55,45 +58,45 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 	{
 		try {
 			$this->dibi->begin();
-			$this->saveData($question);
+			$this->saveWithId($question);
 			$this->answerMapper->deleteRelated($question);
 			foreach ($question->getAnswers() as $answer) {
 				$this->answerMapper->save($answer);
 			}
 			$this->dibi->commit();
-		} catch (\Throwable $th) {
-			$this->dibi->rollback();
-			return false;
-		}
-		return true;
-	}
-
-	public function saveData(Question $question): bool
-	{
-		$data = [];
-		foreach (self::MAP as $property => $key) {
-			if (isset($question->$property)) {
-				$propertyValue = $question->$property;
-				if ($propertyValue instanceof Election) {
-					$propertyValue = $propertyValue->getId();
-				}
-				$data[$key] = $propertyValue;
-			}
-		}
-		unset($data['id']);
-		$id = $question->getId();
-		if (empty($id)) {
-			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
-			if (!$id) {
-				throw new Exception('insert failed');
-			}
-			$question->setId($id);
 			return true;
+		} catch (DriverException $e) {
+			$this->dibi->rollback();
+			throw new SavingErrorException('Saving failed!');
 		}
-
-		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
-		return true;
 	}
+
+//	public function saveData(Question $question): bool
+//	{
+//		$data = [];
+//		foreach (self::MAP as $property => $key) {
+//			if (isset($question->$property)) {
+//				$propertyValue = $question->$property;
+//				if ($propertyValue instanceof Election) {
+//					$propertyValue = $propertyValue->getId();
+//				}
+//				$data[$key] = $propertyValue;
+//			}
+//		}
+//		unset($data['id']);
+//		$id = $question->getId();
+//		if (empty($id)) {
+//			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
+//			if (!$id) {
+//				throw new Exception('insert failed');
+//			}
+//			$question->setId($id);
+//			return true;
+//		}
+//
+//		$this->dibi->update($this->table, $data)->where('id = %i', $id)->execute();
+//		return true;
+//	}
 
 	public function findRelated(Election $election): array
 	{
@@ -108,8 +111,10 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 		return $questions;
 	}
 
-	/** parent concrete implementetions */
-	public function findOne(array $filter = []): ?Question
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): Question
 	{
 		return parent::findOne($filter);
 	}

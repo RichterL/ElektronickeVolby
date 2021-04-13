@@ -9,14 +9,18 @@ interface IUserMapper
 {
 	public function create(array $data = []): User;
 
-	public function saveData(User $user): bool;
-
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(User $user): bool;
 
 	public function getDataSource();
 
 	public function delete(User $user): bool;
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findOne(array $filter = []): ?User;
 
 	/** @return User[] */

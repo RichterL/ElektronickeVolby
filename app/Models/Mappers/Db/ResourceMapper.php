@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Exception;
 use Models\Entities\Resource\Resource;
@@ -17,7 +18,7 @@ class ResourceMapper extends BaseMapper implements IResourceMapper
 		'parent' => 'parent',
 	];
 
-	protected $table = Tables::ACL_RESOURCES;
+	protected string $table = Tables::ACL_RESOURCES;
 	private PrivilegeMapper $privilegeMapper;
 
 	public function __construct(PrivilegeMapper $privilegeMapper)
@@ -25,7 +26,7 @@ class ResourceMapper extends BaseMapper implements IResourceMapper
 		$this->privilegeMapper = $privilegeMapper;
 	}
 
-	public function create(array $data = []): Resource
+	public function create(array $data = []): \App\Models\Entities\Resource\Resource
 	{
 		$resource = new Resource();
 		if (!empty($data)) {
@@ -76,8 +77,10 @@ class ResourceMapper extends BaseMapper implements IResourceMapper
 		return $ret;
 	}
 
-	/** parent concrete implementetions */
-	public function findOne(array $filter = []): ?Resource
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): \App\Models\Entities\Resource\Resource
 	{
 		return parent::findOne($filter);
 	}

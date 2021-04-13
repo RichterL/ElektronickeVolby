@@ -35,6 +35,17 @@ class Election extends Entity implements IdentifiedById
 
 	use \Models\Traits\Entity\HasId;
 
+	public function isRunning(): bool
+	{
+		$now = new \DateTime();
+		return $now >= $this->start && $now < $this->end && $this->active;
+	}
+
+	public function isActive(): bool
+	{
+		return $this->active;
+	}
+
 	public function setStart($from): self
 	{
 		$this->start = $this->getDateTime($from);

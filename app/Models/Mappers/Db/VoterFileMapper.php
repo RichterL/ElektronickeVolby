@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Dibi\Row;
 use ErrorException;
@@ -27,7 +28,7 @@ class VoterFileMapper extends BaseMapper implements IVoterFileMapper
 		'content' => \Dibi\Type::BINARY,
 	];
 
-	protected $table = Tables::VOTER_FILE;
+	protected string $table = Tables::VOTER_FILE;
 	private ElectionMapper $electionMapper;
 	private UserMapper $userMapper;
 
@@ -46,7 +47,7 @@ class VoterFileMapper extends BaseMapper implements IVoterFileMapper
 					$data[$key] = $voterFile->$property->getId();
 					continue;
 				}
-				if ($property == 'content') {
+				if ($property === 'content') {
 					$data[$key] = $voterFile->getContent(true);
 					continue;
 				}
@@ -55,7 +56,7 @@ class VoterFileMapper extends BaseMapper implements IVoterFileMapper
 		}
 		unset($data['id']);
 		$id = $voterFile->getId();
-		if (empty($id)) {
+		if ($id === null) {
 			$id = $this->dibi->insert($this->table, $data)->execute(dibi::IDENTIFIER);
 			if (!$id) {
 				throw new ErrorException('insert failed');
@@ -102,7 +103,10 @@ class VoterFileMapper extends BaseMapper implements IVoterFileMapper
 		return new DibiFluentDataSource($fluent, 'id');
 	}
 
-	public function findOne(array $filter = []): ?VoterFile
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): VoterFile
 	{
 		return parent::findOne($filter);
 	}

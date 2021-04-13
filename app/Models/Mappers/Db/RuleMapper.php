@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Exception;
 use Models\Entities\Role\Role;
@@ -22,7 +23,7 @@ class RuleMapper extends BaseMapper implements IRuleMapper
 		'type' => 'type',
 	];
 
-	protected $table = Tables::ACL_RULES;
+	protected string $table = Tables::ACL_RULES;
 	private RoleMapper $roleMapper;
 	private ResourceMapper $resourceMapper;
 	private PrivilegeMapper $privilegeMapper;
@@ -78,7 +79,6 @@ class RuleMapper extends BaseMapper implements IRuleMapper
 		return true;
 	}
 
-	/** @var Rule[] */
 	public function findRelated(Role $role): RuleCollection
 	{
 		$rules = new RuleCollection();
@@ -92,13 +92,17 @@ class RuleMapper extends BaseMapper implements IRuleMapper
 		return $rules;
 	}
 
-	/** parent concrete implementetions */
-	public function findOne(array $filter = []): ?Rule
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): Rule
 	{
 		return parent::findOne($filter);
 	}
 
-	/** @return Rule[] */
+	/**
+	 * @return Rule[]
+	 */
 	public function findAll(): array
 	{
 		return $this->cache->load('rule.findAll', function () {

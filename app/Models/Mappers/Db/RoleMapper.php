@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Dibi\Row;
 use Exception;
@@ -20,7 +21,7 @@ class RoleMapper extends BaseMapper implements IRoleMapper
 		'parent' => 'parent',
 	];
 
-	protected $table = Tables::ACL_ROLES;
+	protected string $table = Tables::ACL_ROLES;
 	private $usersRolesTable = Tables::USERS_ROLES;
 
 	public function create(array $data = []): Role
@@ -73,13 +74,17 @@ class RoleMapper extends BaseMapper implements IRoleMapper
 		return true;
 	}
 
-	/** parent concrete implementetions */
-	public function findOne(array $filter = []): ?Role
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findOne(array $filter = []): Role
 	{
 		return parent::findOne($filter);
 	}
 
-	/** @return Role[] */
+	/**
+	 * @return Role[]
+	 */
 	public function findAll(): array
 	{
 		return $this->cache->load('role.findAll', function () {

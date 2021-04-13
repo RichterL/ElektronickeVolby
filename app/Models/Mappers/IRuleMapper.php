@@ -12,6 +12,9 @@ interface IRuleMapper
 {
 	public function create(array $data = []): Rule;
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findOne(array $filter = []): ?Rule;
 
 	/** @return Rule[] */
@@ -19,6 +22,9 @@ interface IRuleMapper
 
 	public function findRelated(Role $role): RuleCollection;
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Rule $rule): bool;
 
 	public function delete(Rule $rule): bool;

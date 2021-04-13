@@ -9,21 +9,24 @@ use Repositories\BaseRepository;
 
 class BallotRepository extends BaseRepository
 {
-	private BallotMapper $ballotMapper;
+	private IBallotMapper $ballotMapper;
 
-	public function __construct(BallotMapper $ballotMapper)
+	public function __construct(IBallotMapper $ballotMapper)
 	{
 		$this->ballotMapper = $ballotMapper;
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws SavingErrorException
 	 */
 	public function save(Ballot $ballot): bool
 	{
 		return $this->ballotMapper->save($ballot);
 	}
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findById(int $id): Ballot
 	{
 		return $this->ballotMapper->findOne(['id' => $id]);

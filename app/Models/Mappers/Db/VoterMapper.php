@@ -11,7 +11,7 @@ use Models\Mappers\IVoterMapper;
 
 class VoterMapper extends BaseMapper implements IVoterMapper
 {
-	protected $table = Tables::VOTER;
+	protected string $table = Tables::VOTER;
 
 	/**
 	 * requires mysql to run with --secure-file-priv="" or secure-file-priv="" in config
@@ -45,7 +45,7 @@ class VoterMapper extends BaseMapper implements IVoterMapper
 
 	public function create(array $data = []): Entity
 	{
-		return new Entity();
+		return null;
 	}
 
 	private function prepareFile(Election $election, VoterFile $voterFile)

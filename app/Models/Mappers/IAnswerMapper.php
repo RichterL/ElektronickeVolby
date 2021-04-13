@@ -11,6 +11,9 @@ interface IAnswerMapper
 {
 	public function create(array $data = []): Answer;
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findOne(array $filter = []): ?Answer;
 
 	/** @return Answer[] */
@@ -23,7 +26,10 @@ interface IAnswerMapper
 
 	public function getDataSource(): IDataSource;
 
-	public function save(Answer $election): bool;
+	/**
+	 * @throws SavingErrorException
+	 */
+	public function save(Answer $answer): bool;
 
-	public function delete(Answer $election): bool;
+	public function delete(Answer $answer): bool;
 }
