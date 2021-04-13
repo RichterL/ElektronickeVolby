@@ -9,10 +9,10 @@ use dibi;
 use Exception;
 use App\Models\Entities\Election\Answer;
 use App\Models\Entities\Election\Question;
-use App\Models\Mappers\IAnswerMapper;
+use App\Models\Mappers\AnswerMapper;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
-class AnswerMapper extends BaseMapper implements IAnswerMapper
+class AnswerDbMapper extends BaseDbMapper implements AnswerMapper
 {
 	protected const MAP = [
 		'id' => 'id',

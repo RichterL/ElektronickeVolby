@@ -5,13 +5,13 @@ namespace App\Models\Factories;
 use App\Models\Entities\Election\Ballot;
 use App\Models\Entities\Election\DecryptedBallot;
 use App\Models\Entities\Election\EncryptedBallot;
-use App\Models\Mappers\IElectionMapper;
+use App\Models\Mappers\ElectionMapper;
 
 class BallotFactory
 {
-	private IElectionMapper $electionMapper;
+	private ElectionMapper $electionMapper;
 
-	public function __construct(IElectionMapper $electionMapper)
+	public function __construct(ElectionMapper $electionMapper)
 	{
 		$this->electionMapper = $electionMapper;
 	}

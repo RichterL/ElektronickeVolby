@@ -5,33 +5,31 @@ namespace App\Models\Mappers;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use App\Models\Entities\Election\Answer;
+use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\Question;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
-interface IAnswerMapper
+interface QuestionMapper
 {
-	public function create(array $data = []): Answer;
+	public function create(array $data = []): Question;
 
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): Answer;
+	public function findOne(array $filter = []): Question;
 
-	/** @return Answer[] */
+	/** @return Question[] */
 	public function findAll(): array;
 
-	/** @return Answer[] */
-	public function findRelated(Question $question): array;
-
-	public function deleteRelated(Question $question): bool;
+	/** @return Question[] */
+	public function findRelated(Election $election): array;
 
 	public function getDataSource(array $filter = []): IDataSource;
 
 	/**
 	 * @throws SavingErrorException
 	 */
-	public function save(Answer $answer): bool;
+	public function save(Question $question): bool;
 
-	public function delete(Answer $answer): bool;
+	public function delete(Question $question): bool;
 }

@@ -7,15 +7,15 @@ namespace App\Repositories;
 use App\Models\Entities\User;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use App\Models\Mappers\IRoleMapper;
-use App\Models\Mappers\IUserMapper;
+use App\Models\Mappers\RoleMapper;
+use App\Models\Mappers\UserMapper;
 
 class UserRepository
 {
-	private IUserMapper $userMapper;
-	private IRoleMapper $roleMapper;
+	private UserMapper $userMapper;
+	private RoleMapper $roleMapper;
 
-	public function __construct(IUserMapper $userMapper, IRoleMapper $roleMapper)
+	public function __construct(UserMapper $userMapper, RoleMapper $roleMapper)
 	{
 		$this->userMapper = $userMapper;
 		$this->roleMapper = $roleMapper;

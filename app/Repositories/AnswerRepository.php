@@ -8,14 +8,14 @@ use App\Models\Entities\Election\Answer;
 use App\Models\Entities\Election\Question;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use App\Models\Mappers\IAnswerMapper;
+use App\Models\Mappers\AnswerMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class AnswerRepository
 {
-	private IAnswerMapper $answerMapper;
+	private AnswerMapper $answerMapper;
 
-	public function __construct(IAnswerMapper $answerMapper)
+	public function __construct(AnswerMapper $answerMapper)
 	{
 		$this->answerMapper = $answerMapper;
 	}

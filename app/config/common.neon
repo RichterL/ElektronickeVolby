@@ -24,7 +24,7 @@ decorator:
 		App\Repositories\BaseRepository:
 			setup:
 				- setCache(@repositoryCache)
-		App\Models\Mappers\Db\BaseMapper:
+		App\Models\Mappers\Db\BaseDbMapper:
 			setup:
 				- setDibi()
 				- setCache(@mapperCache)
@@ -68,17 +68,17 @@ services:
 	- App\Frontend\Classes\ElectionsFacade
 
 	# data mappers
-	iprivilegeMapper: App\Models\Mappers\Db\PrivilegeMapper
-	iResourceMapper: App\Models\Mappers\Db\ResourceMapper
-	iroleMapper : App\Models\Mappers\Db\RoleMapper
-	iuserMapper : App\Models\Mappers\Db\UserMapper
-	iRuleMapper: App\Models\Mappers\Db\RuleMapper
-	iElectionMapper: App\Models\Mappers\Db\ElectionMapper
-	iVoterFileMapper: App\Models\Mappers\Db\VoterFileMapper
-	iVoterMapper: App\Models\Mappers\Db\VoterMapper
-	iQuestionMapper: App\Models\Mappers\Db\QuestionMapper
-	iAnswerMapper: App\Models\Mappers\Db\AnswerMapper
-	iBallotMapper: App\Models\Mappers\Db\BallotMapper
+	PrivilegeMapper: App\Models\Mappers\Db\PrivilegeDbMapper
+	ResourceMapper: App\Models\Mappers\Db\ResourceDbMapper
+	RoleMapper : App\Models\Mappers\Db\RoleDbMapper
+	UserMapper : App\Models\Mappers\Db\UserDbMapper
+	RuleMapper: App\Models\Mappers\Db\RuleDbMapper
+	ElectionMapper: App\Models\Mappers\Db\ElectionDbMapper
+	VoterFileMapper: App\Models\Mappers\Db\VoterFileDbMapper
+	VoterMapper: App\Models\Mappers\Db\VoterDbMapper
+	QuestionMapper: App\Models\Mappers\Db\QuestionDbMapper
+	AnswerMapper: App\Models\Mappers\Db\AnswerDbMapper
+	BallotMapper: App\Models\Mappers\Db\BallotDbMapper
 
 	# repositories
 	privilegeRepository: App\Repositories\PrivilegeRepository

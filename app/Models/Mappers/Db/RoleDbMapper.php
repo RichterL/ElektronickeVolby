@@ -9,9 +9,9 @@ use Dibi\Row;
 use Exception;
 use App\Models\Entities\Role\Role;
 use App\Models\Entities\User;
-use App\Models\Mappers\IRoleMapper;
+use App\Models\Mappers\RoleMapper;
 
-class RoleMapper extends BaseMapper implements IRoleMapper
+class RoleDbMapper extends BaseDbMapper implements RoleMapper
 {
 	const MAP = [
 		'id' => 'id',

@@ -8,7 +8,7 @@ use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Entities\IdentifiedById;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
-interface IBallotMapper
+interface BallotMapper
 {
 	/**
 	 * @throws EntityNotFoundException

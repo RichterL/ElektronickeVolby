@@ -5,14 +5,14 @@ namespace App\Repositories;
 
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\VoterFile;
-use App\Models\Mappers\IVoterMapper;
+use App\Models\Mappers\VoterMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class VoterRepository
 {
-	private IVoterMapper $voterMapper;
+	private VoterMapper $voterMapper;
 
-	public function __construct(IVoterMapper $voterMapper)
+	public function __construct(VoterMapper $voterMapper)
 	{
 		$this->voterMapper = $voterMapper;
 	}

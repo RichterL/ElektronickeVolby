@@ -7,9 +7,9 @@ use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Exception;
 use App\Models\Entities\Resource\Resource;
-use App\Models\Mappers\IResourceMapper;
+use App\Models\Mappers\ResourceMapper;
 
-class ResourceMapper extends BaseMapper implements IResourceMapper
+class ResourceDbMapper extends BaseDbMapper implements ResourceMapper
 {
 	const MAP = [
 		'id' => 'id',
@@ -19,9 +19,9 @@ class ResourceMapper extends BaseMapper implements IResourceMapper
 	];
 
 	protected string $table = Tables::ACL_RESOURCES;
-	private PrivilegeMapper $privilegeMapper;
+	private PrivilegeDbMapper $privilegeMapper;
 
-	public function __construct(PrivilegeMapper $privilegeMapper)
+	public function __construct(PrivilegeDbMapper $privilegeMapper)
 	{
 		$this->privilegeMapper = $privilegeMapper;
 	}

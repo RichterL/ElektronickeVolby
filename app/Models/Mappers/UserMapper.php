@@ -7,7 +7,7 @@ use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Entities\User;
 
-interface IUserMapper
+interface UserMapper
 {
 	public function create(array $data = []): User;
 

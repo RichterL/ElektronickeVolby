@@ -9,7 +9,7 @@ use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\VoterFile;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
-interface IVoterFileMapper
+interface VoterFileMapper
 {
 	/**
 	 * @throws SavingErrorException

@@ -7,9 +7,9 @@ use Exception;
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\VoterFile;
 use App\Models\Entities\Entity;
-use App\Models\Mappers\IVoterMapper;
+use App\Models\Mappers\VoterMapper;
 
-class VoterMapper extends BaseMapper implements IVoterMapper
+class VoterDbMapper extends BaseDbMapper implements VoterMapper
 {
 	protected string $table = Tables::VOTER;
 

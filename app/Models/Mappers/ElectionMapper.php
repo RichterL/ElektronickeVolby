@@ -9,7 +9,7 @@ use App\Models\Entities\Election\Election;
 use App\Models\Entities\User;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
-interface IElectionMapper
+interface ElectionMapper
 {
 	public function create(array $data = []): Election;
 

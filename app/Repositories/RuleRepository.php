@@ -9,14 +9,14 @@ use App\Models\Entities\Rule\Rule;
 use App\Models\Entities\Rule\RuleCollection;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use App\Models\Mappers\IRuleMapper;
+use App\Models\Mappers\RuleMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class RuleRepository
 {
-	private IRuleMapper $ruleMapper;
+	private RuleMapper $ruleMapper;
 
-	public function __construct(IRuleMapper $ruleMapper)
+	public function __construct(RuleMapper $ruleMapper)
 	{
 		$this->ruleMapper = $ruleMapper;
 	}

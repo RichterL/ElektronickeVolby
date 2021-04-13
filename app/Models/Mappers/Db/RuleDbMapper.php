@@ -10,10 +10,10 @@ use App\Models\Entities\Role\Role;
 use App\Models\Entities\Rule\Rule;
 use App\Models\Entities\Rule\RuleCollection;
 use App\Models\Entities\Rule\Type;
-use App\Models\Mappers\IRuleMapper;
+use App\Models\Mappers\RuleMapper;
 use Utils\ValueObject\ValueObject;
 
-class RuleMapper extends BaseMapper implements IRuleMapper
+class RuleDbMapper extends BaseDbMapper implements RuleMapper
 {
 	const MAP = [
 		'id' => 'id',
@@ -24,14 +24,14 @@ class RuleMapper extends BaseMapper implements IRuleMapper
 	];
 
 	protected string $table = Tables::ACL_RULES;
-	private RoleMapper $roleMapper;
-	private ResourceMapper $resourceMapper;
-	private PrivilegeMapper $privilegeMapper;
+	private RoleDbMapper $roleMapper;
+	private ResourceDbMapper $resourceMapper;
+	private PrivilegeDbMapper $privilegeMapper;
 
 	public function __construct(
-		RoleMapper $roleMapper,
-		ResourceMapper $resourceMapper,
-		PrivilegeMapper $privilegeMapper
+		RoleDbMapper $roleMapper,
+		ResourceDbMapper $resourceMapper,
+		PrivilegeDbMapper $privilegeMapper
 	) {
 		$this->roleMapper = $roleMapper;
 		$this->resourceMapper = $resourceMapper;

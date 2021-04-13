@@ -8,14 +8,14 @@ use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\User;
-use App\Models\Mappers\IElectionMapper;
+use App\Models\Mappers\ElectionMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ElectionRepository
 {
-	private IElectionMapper $electionMapper;
+	private ElectionMapper $electionMapper;
 
-	public function __construct(IElectionMapper $electionMapper)
+	public function __construct(ElectionMapper $electionMapper)
 	{
 		$this->electionMapper = $electionMapper;
 	}

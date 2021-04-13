@@ -6,9 +6,9 @@ use App\Models\Entities\Election\Ballot;
 use App\Models\Factories\BallotFactory;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use App\Models\Mappers\IBallotMapper;
+use App\Models\Mappers\BallotMapper;
 
-class BallotMapper extends BaseMapper implements IBallotMapper
+class BallotDbMapper extends BaseDbMapper implements BallotMapper
 {
 	protected const MAP = [
 		'id' => 'id',

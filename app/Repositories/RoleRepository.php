@@ -7,16 +7,16 @@ namespace App\Repositories;
 use App\Models\Entities\Role\Role;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use App\Models\Mappers\IRoleMapper;
-use App\Models\Mappers\IRuleMapper;
+use App\Models\Mappers\RoleMapper;
+use App\Models\Mappers\RuleMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class RoleRepository extends BaseRepository
 {
-	private IRoleMapper $roleMapper;
-	private IRuleMapper $ruleMapper;
+	private RoleMapper $roleMapper;
+	private RuleMapper $ruleMapper;
 
-	public function __construct(IRoleMapper $roleMapper, IRuleMapper $ruleMapper)
+	public function __construct(RoleMapper $roleMapper, RuleMapper $ruleMapper)
 	{
 		$this->roleMapper = $roleMapper;
 		$this->ruleMapper = $ruleMapper;

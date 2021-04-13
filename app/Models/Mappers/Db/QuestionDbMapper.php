@@ -9,9 +9,9 @@ use Dibi\DriverException;
 use Dibi\Row;
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\Question;
-use App\Models\Mappers\IQuestionMapper;
+use App\Models\Mappers\QuestionMapper;
 
-class QuestionMapper extends BaseMapper implements IQuestionMapper
+class QuestionDbMapper extends BaseDbMapper implements QuestionMapper
 {
 	protected const MAP = [
 		'id' => 'id',
@@ -30,9 +30,9 @@ class QuestionMapper extends BaseMapper implements IQuestionMapper
 
 	protected string $table = Tables::QUESTION;
 
-	private AnswerMapper $answerMapper;
+	private AnswerDbMapper $answerMapper;
 
-	public function __construct(AnswerMapper $answerMapper)
+	public function __construct(AnswerDbMapper $answerMapper)
 	{
 		$this->answerMapper = $answerMapper;
 	}

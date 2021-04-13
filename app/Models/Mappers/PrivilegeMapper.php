@@ -10,7 +10,7 @@ use App\Models\Entities\Resource\PrivilegeCollection;
 use App\Models\Entities\Resource\Resource;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
-interface IPrivilegeMapper
+interface PrivilegeMapper
 {
 	public function create(array $data = []): Privilege;
 

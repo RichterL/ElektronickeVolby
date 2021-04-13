@@ -7,14 +7,14 @@ namespace App\Repositories;
 use App\Models\Entities\Resource\Resource;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use App\Models\Mappers\IResourceMapper;
+use App\Models\Mappers\ResourceMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ResourceRepository extends BaseRepository
 {
-	private IResourceMapper $resourceMapper;
+	private ResourceMapper $resourceMapper;
 
-	public function __construct(IResourceMapper $resourceMapper)
+	public function __construct(ResourceMapper $resourceMapper)
 	{
 		$this->resourceMapper = $resourceMapper;
 	}

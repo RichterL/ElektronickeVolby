@@ -8,10 +8,10 @@ use App\Models\Mappers\Exception\SavingErrorException;
 use Dibi\DriverException;
 use Exception;
 use App\Models\Entities\User;
-use App\Models\Mappers\IUserMapper;
+use App\Models\Mappers\UserMapper;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
-class UserMapper extends BaseMapper implements IUserMapper
+class UserDbMapper extends BaseDbMapper implements UserMapper
 {
 	const MAP = [
 		'id' => 'id',
@@ -24,9 +24,9 @@ class UserMapper extends BaseMapper implements IUserMapper
 
 	protected string $table = Tables::USERS;
 	protected string $userRolesTable = Tables::USERS_ROLES;
-	private RoleMapper $roleMapper;
+	private RoleDbMapper $roleMapper;
 
-	public function __construct(RoleMapper $roleMapper)
+	public function __construct(RoleDbMapper $roleMapper)
 	{
 		$this->roleMapper = $roleMapper;
 	}

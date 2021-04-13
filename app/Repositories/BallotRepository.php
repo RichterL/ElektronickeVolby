@@ -5,15 +5,15 @@ namespace App\Repositories;
 use App\Models\Entities\Election\Ballot;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use App\Models\Mappers\IBallotMapper;
+use App\Models\Mappers\BallotMapper;
 use Exception;
 use App\Repositories\BaseRepository;
 
 class BallotRepository extends BaseRepository
 {
-	private IBallotMapper $ballotMapper;
+	private BallotMapper $ballotMapper;
 
-	public function __construct(IBallotMapper $ballotMapper)
+	public function __construct(BallotMapper $ballotMapper)
 	{
 		$this->ballotMapper = $ballotMapper;
 	}

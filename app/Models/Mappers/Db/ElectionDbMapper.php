@@ -7,9 +7,9 @@ use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\User;
-use App\Models\Mappers\IElectionMapper;
+use App\Models\Mappers\ElectionMapper;
 
-class ElectionMapper extends BaseMapper implements IElectionMapper
+class ElectionDbMapper extends BaseDbMapper implements ElectionMapper
 {
 	protected const MAP = [
 		'id' => 'id',
@@ -31,10 +31,10 @@ class ElectionMapper extends BaseMapper implements IElectionMapper
 	protected string $table = Tables::ELECTION;
 	protected string $voterTable = Tables::VOTER;
 
-	private UserMapper $userMapper;
-	private QuestionMapper $questionMapper;
+	private UserDbMapper $userMapper;
+	private QuestionDbMapper $questionMapper;
 
-	public function __construct(UserMapper $userMapper, QuestionMapper $questionMapper)
+	public function __construct(UserDbMapper $userMapper, QuestionDbMapper $questionMapper)
 	{
 		$this->userMapper = $userMapper;
 		$this->questionMapper = $questionMapper;

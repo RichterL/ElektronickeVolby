@@ -13,7 +13,7 @@ use Nette\Caching\Cache;
 use Nette\InvalidStateException;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
-abstract class BaseMapper
+abstract class BaseDbMapper
 {
 	protected Connection $dibi;
 	protected Cache $cache;

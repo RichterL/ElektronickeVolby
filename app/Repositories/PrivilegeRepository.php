@@ -9,14 +9,14 @@ use App\Models\Entities\Resource\PrivilegeCollection;
 use App\Models\Entities\Resource\Resource;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use App\Models\Mappers\IPrivilegeMapper;
+use App\Models\Mappers\PrivilegeMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class PrivilegeRepository
 {
-	private IPrivilegeMapper $privilegeMapper;
+	private PrivilegeMapper $privilegeMapper;
 
-	public function __construct(IPrivilegeMapper $privilegeMapper)
+	public function __construct(PrivilegeMapper $privilegeMapper)
 	{
 		$this->privilegeMapper = $privilegeMapper;
 	}

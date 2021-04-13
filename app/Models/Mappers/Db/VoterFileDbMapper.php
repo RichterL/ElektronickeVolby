@@ -10,10 +10,10 @@ use ErrorException;
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\VoterFile;
 use App\Models\Entities\IdentifiedById;
-use App\Models\Mappers\IVoterFileMapper;
+use App\Models\Mappers\VoterFileMapper;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
-class VoterFileMapper extends BaseMapper implements IVoterFileMapper
+class VoterFileDbMapper extends BaseDbMapper implements VoterFileMapper
 {
 	protected const MAP = [
 		'id' => 'id',
@@ -29,10 +29,10 @@ class VoterFileMapper extends BaseMapper implements IVoterFileMapper
 	];
 
 	protected string $table = Tables::VOTER_FILE;
-	private ElectionMapper $electionMapper;
-	private UserMapper $userMapper;
+	private ElectionDbMapper $electionMapper;
+	private UserDbMapper $userMapper;
 
-	public function __construct(ElectionMapper $electionMapper, UserMapper $userMapper)
+	public function __construct(ElectionDbMapper $electionMapper, UserDbMapper $userMapper)
 	{
 		$this->userMapper = $userMapper;
 		$this->electionMapper = $electionMapper;

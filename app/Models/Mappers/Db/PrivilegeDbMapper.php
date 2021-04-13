@@ -7,9 +7,9 @@ use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Entities\Resource\Privilege;
 use App\Models\Entities\Resource\PrivilegeCollection;
 use App\Models\Entities\Resource\Resource;
-use App\Models\Mappers\IPrivilegeMapper;
+use App\Models\Mappers\PrivilegeMapper;
 
-class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
+class PrivilegeDbMapper extends BaseDbMapper implements PrivilegeMapper
 {
 	const MAP = [
 		'id' => 'id',

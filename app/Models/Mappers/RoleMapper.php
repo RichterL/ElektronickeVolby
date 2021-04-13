@@ -9,7 +9,7 @@ use App\Models\Entities\Role\Role;
 use App\Models\Entities\User;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
-interface IRoleMapper
+interface RoleMapper
 {
 	public function create(array $data = []): Role;
 
