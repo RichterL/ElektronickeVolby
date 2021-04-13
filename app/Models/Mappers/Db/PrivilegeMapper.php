@@ -1,14 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
-use App\Models\Mappers\Exception\SavingErrorException;
-use dibi;
-use Exception;
-use App\Models\Entities\Entity;
-use App\Models\Entities\IdentifiedById;
 use App\Models\Entities\Resource\Privilege;
 use App\Models\Entities\Resource\PrivilegeCollection;
 use App\Models\Entities\Resource\Resource;
@@ -45,7 +40,7 @@ class PrivilegeMapper extends BaseMapper implements IPrivilegeMapper
 			}
 		}
 		$data['resource_id'] = $resource->getId();
-		return $this->saveData($data);
+		return $this->saveData($data, $privilege);
 	}
 
 	/** @var Privilege[] */

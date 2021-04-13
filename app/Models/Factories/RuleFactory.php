@@ -1,11 +1,11 @@
 <?php
 
-namespace Models\Entities\Rule;
+namespace App\Models\Factories;
 
-use Repositories\PrivilegeRepository;
-use Repositories\ResourceRepository;
-use Repositories\RoleRepository;
-use Repositories\RuleRepository;
+use App\Repositories\PrivilegeRepository;
+use App\Repositories\ResourceRepository;
+use App\Repositories\RoleRepository;
+use App\Repositories\RuleRepository;
 
 class RuleFactory
 {

@@ -1,17 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use dibi;
 use Dibi\DriverException;
 use Dibi\Row;
-use Exception;
-use Models\Entities\Election\Election;
-use Models\Entities\Election\Question;
-use Models\Mappers\IQuestionMapper;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\Question;
+use App\Models\Mappers\IQuestionMapper;
 
 class QuestionMapper extends BaseMapper implements IQuestionMapper
 {

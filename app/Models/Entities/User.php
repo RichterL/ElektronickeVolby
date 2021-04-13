@@ -1,9 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Entities;
+namespace App\Models\Entities;
 
-use Models\Entities\Role\Role;
+use App\Models\Entities\Role\Role;
+use App\Models\Traits\Entity\HasId;
 use Nette\Security\IIdentity;
 
 class User extends Entity implements IdentifiedById, IIdentity
@@ -16,7 +17,7 @@ class User extends Entity implements IdentifiedById, IIdentity
 	/** @var Role[] */
 	protected array $roles = [];
 
-	use \Models\Traits\Entity\HasId;
+	use HasId;
 
 	public function __construct()
 	{

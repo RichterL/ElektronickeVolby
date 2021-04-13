@@ -1,16 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
 use Dibi\Connection;
-use Dibi\Row;
-use Exception;
-use Models\Entities\Entity;
-use Models\Entities\IdentifiedById;
+use App\Models\Entities\Entity;
+use App\Models\Entities\IdentifiedById;
+use Nette\Caching\Cache;
 use Nette\InvalidStateException;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 

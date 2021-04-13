@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Dibi\Row;
 use ErrorException;
-use Models\Entities\Election\Election;
-use Models\Entities\Election\VoterFile;
-use Models\Entities\IdentifiedById;
-use Models\Mappers\IVoterFileMapper;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\VoterFile;
+use App\Models\Entities\IdentifiedById;
+use App\Models\Mappers\IVoterFileMapper;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 class VoterFileMapper extends BaseMapper implements IVoterFileMapper

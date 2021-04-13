@@ -1,10 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace App\Models\Mappers;
 
-use Models\Entities\Election\Election;
-use Models\Entities\User;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\User;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IElectionMapper
@@ -24,7 +26,7 @@ interface IElectionMapper
 	/** @return Election[] */
 	public function findRelated(User $user): iterable;
 
-	public function getDataSource(): IDataSource;
+	public function getDataSource(array $filter = []): IDataSource;
 
 	/**
 	 * @throws SavingErrorException

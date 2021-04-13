@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Exception;
-use Models\Entities\Resource\Resource;
-use Models\Mappers\IResourceMapper;
+use App\Models\Entities\Resource\Resource;
+use App\Models\Mappers\IResourceMapper;
 
 class ResourceMapper extends BaseMapper implements IResourceMapper
 {

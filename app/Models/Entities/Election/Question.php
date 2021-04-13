@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Entities\Election;
+namespace App\Models\Entities\Election;
 
-use Models\Entities\Entity;
-use Models\Entities\IdentifiedById;
-use Models\Traits\Entity\HasId;
+use App\Models\Entities\Entity;
+use App\Models\Entities\IdentifiedById;
+use App\Models\Traits\Entity\HasId;
 
 /**
  * @property int|null	$id

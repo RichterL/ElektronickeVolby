@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Election\Answer;
-use Models\Entities\Election\Question;
-use Models\Mappers\IAnswerMapper;
+use App\Models\Entities\Election\Answer;
+use App\Models\Entities\Election\Question;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\IAnswerMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class AnswerRepository
@@ -18,7 +20,10 @@ class AnswerRepository
 		$this->answerMapper = $answerMapper;
 	}
 
-	public function findById(int $id): ?Answer
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $id): Answer
 	{
 		return $this->answerMapper->findOne(['id' => $id]);
 	}
@@ -40,6 +45,9 @@ class AnswerRepository
 		return $this->answerMapper->getDataSource();
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Answer $answer): bool
 	{
 		return $this->answerMapper->save($answer);

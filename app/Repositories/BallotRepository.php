@@ -3,9 +3,11 @@
 namespace App\Repositories;
 
 use App\Models\Entities\Election\Ballot;
-use App\Models\Mappers\Db\BallotMapper;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\IBallotMapper;
 use Exception;
-use Repositories\BaseRepository;
+use App\Repositories\BaseRepository;
 
 class BallotRepository extends BaseRepository
 {

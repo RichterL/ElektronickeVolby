@@ -1,10 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace App\Models\Mappers;
 
-use Models\Entities\Election\Answer;
-use Models\Entities\Election\Question;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\Election\Answer;
+use App\Models\Entities\Election\Question;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IAnswerMapper
@@ -14,7 +16,7 @@ interface IAnswerMapper
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): ?Answer;
+	public function findOne(array $filter = []): Answer;
 
 	/** @return Answer[] */
 	public function findAll(): array;
@@ -24,7 +26,7 @@ interface IAnswerMapper
 
 	public function deleteRelated(Question $question): bool;
 
-	public function getDataSource(): IDataSource;
+	public function getDataSource(array $filter = []): IDataSource;
 
 	/**
 	 * @throws SavingErrorException

@@ -1,10 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace App\Models\Mappers;
 
-use Models\Entities\Election\Election;
-use Models\Entities\Election\VoterFile;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\VoterFile;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IVoterFileMapper
@@ -24,7 +26,7 @@ interface IVoterFileMapper
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): ?VoterFile;
+	public function findOne(array $filter = []): VoterFile;
 
 	/** @return VoterFile[] */
 	public function findAll(): array;

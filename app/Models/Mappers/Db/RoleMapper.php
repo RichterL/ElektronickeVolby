@@ -1,16 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Dibi\Row;
 use Exception;
-use Models\Entities\Role\Role;
-use Models\Entities\User;
-use Models\Mappers\IRoleMapper;
-use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
+use App\Models\Entities\Role\Role;
+use App\Models\Entities\User;
+use App\Models\Mappers\IRoleMapper;
 
 class RoleMapper extends BaseMapper implements IRoleMapper
 {

@@ -1,16 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use dibi;
-use Exception;
-use Models\Entities\Election\Election;
-use Models\Entities\User;
-use Models\Mappers\IElectionMapper;
-use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\User;
+use App\Models\Mappers\IElectionMapper;
 
 class ElectionMapper extends BaseMapper implements IElectionMapper
 {

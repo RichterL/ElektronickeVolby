@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Backend\Presenters;
 
+use App\Models\Factories\RuleFactory;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
 use Contributte\FormsBootstrap\Inputs\SelectInput;
-use Models\Entities\Role\Role;
-use Models\Entities\Rule;
-use Models\Entities\Rule\RuleFactory;
-use Models\Entities\Rule\Type;
+use App\Models\Entities\Role\Role;
+use App\Models\Entities\Rule;
+use App\Models\Entities\Rule\Type;
 use Nette\Application\UI\Form;
 use Nette\Utils\Html;
-use Repositories\PrivilegeRepository;
-use Repositories\ResourceRepository;
-use Repositories\RoleRepository;
-use Repositories\RuleRepository;
+use App\Repositories\PrivilegeRepository;
+use App\Repositories\ResourceRepository;
+use App\Repositories\RoleRepository;
+use App\Repositories\RuleRepository;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Utils\DataGrid\Action;
 use Utils\DataGrid\Column;

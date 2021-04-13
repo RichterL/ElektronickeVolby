@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Traits\Entity;
+namespace App\Models\Traits\Entity;
 
 /** @property int|null $id */
 trait HasId

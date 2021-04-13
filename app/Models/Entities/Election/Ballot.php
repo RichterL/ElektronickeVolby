@@ -2,14 +2,14 @@
 
 namespace App\Models\Entities\Election;
 
-use Models\Entities\Election\Election;
-use Models\Entities\IdentifiedById;
-use Models\Traits\Entity\HasId;
+use App\Models\Entities\Entity;
+use App\Models\Entities\IdentifiedById;
+use App\Models\Traits\Entity\HasId;
 
 /**
  * @property Election $election
  */
-abstract class Ballot extends \Models\Entities\Entity implements IdentifiedById
+abstract class Ballot extends Entity implements IdentifiedById
 {
 	use HasId;
 

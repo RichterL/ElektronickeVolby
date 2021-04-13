@@ -1,16 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use dibi;
 use Dibi\DriverException;
 use Exception;
-use Models\Entities\User;
-use Models\Mappers\Db\Tables;
-use Models\Mappers\IUserMapper;
+use App\Models\Entities\User;
+use App\Models\Mappers\IUserMapper;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 class UserMapper extends BaseMapper implements IUserMapper

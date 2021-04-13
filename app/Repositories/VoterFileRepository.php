@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Election\Election;
-use Models\Entities\Election\VoterFile;
-use Models\Mappers\IVoterFileMapper;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\VoterFile;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\IVoterFileMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class VoterFileRepository
@@ -17,7 +19,10 @@ class VoterFileRepository
 		$this->voterFileMapper = $voterFileMapper;
 	}
 
-	public function findById(int $id): ?VoterFile
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $id): VoterFile
 	{
 		return $this->voterFileMapper->findOne(['id' => $id]);
 	}
@@ -38,6 +43,9 @@ class VoterFileRepository
 		return $this->voterFileMapper->getDataSource($filter);
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(VoterFile $voterFile): bool
 	{
 		return $this->voterFileMapper->save($voterFile);

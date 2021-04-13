@@ -1,6 +1,6 @@
 <?php
 
-namespace Models\Entities\Resource;
+namespace App\Models\Entities\Resource;
 
 class PrivilegeCollection implements \IteratorAggregate, \ArrayAccess
 {

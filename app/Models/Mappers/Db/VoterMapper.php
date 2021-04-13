@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use Exception;
-use Models\Entities\Election\Election;
-use Models\Entities\Election\VoterFile;
-use Models\Entities\Entity;
-use Models\Mappers\IVoterMapper;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\VoterFile;
+use App\Models\Entities\Entity;
+use App\Models\Mappers\IVoterMapper;
 
 class VoterMapper extends BaseMapper implements IVoterMapper
 {

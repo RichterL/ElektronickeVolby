@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace App\Models\Mappers;
 
-use Models\Entities\Election\Election;
-use Models\Entities\Election\VoterFile;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\VoterFile;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IVoterMapper

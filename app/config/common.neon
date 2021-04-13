@@ -21,10 +21,10 @@ extensions:
 	- Contributte\FormMultiplier\DI\MultiplierExtension
 
 decorator:
-		Repositories\BaseRepository:
+		App\Repositories\BaseRepository:
 			setup:
 				- setCache(@repositoryCache)
-		Models\Mappers\Db\BaseMapper:
+		App\Models\Mappers\Db\BaseMapper:
 			setup:
 				- setDibi()
 				- setCache(@mapperCache)
@@ -56,7 +56,7 @@ services:
 		factory: @authorizatorFactory::create()
 
 	# factories
-	- Models\Entities\Rule\RuleFactory
+	- App\Models\Factories\RuleFactory
 	- App\Models\Factories\BallotFactory
 
 	# formFactory
@@ -68,27 +68,27 @@ services:
 	- App\Frontend\Classes\ElectionsFacade
 
 	# data mappers
-	iprivilegeMapper: Models\Mappers\Db\PrivilegeMapper
-	iResourceMapper: Models\Mappers\Db\ResourceMapper
-	iroleMapper : Models\Mappers\Db\RoleMapper
-	iuserMapper : Models\Mappers\Db\UserMapper
-	iRuleMapper: Models\Mappers\Db\RuleMapper
-	iElectionMapper: Models\Mappers\Db\ElectionMapper
-	iVoterFileMapper: Models\Mappers\Db\VoterFileMapper
-	iVoterMapper: Models\Mappers\Db\VoterMapper
-	iQuestionMapper: Models\Mappers\Db\QuestionMapper
-	iAnswerMapper: Models\Mappers\Db\AnswerMapper
+	iprivilegeMapper: App\Models\Mappers\Db\PrivilegeMapper
+	iResourceMapper: App\Models\Mappers\Db\ResourceMapper
+	iroleMapper : App\Models\Mappers\Db\RoleMapper
+	iuserMapper : App\Models\Mappers\Db\UserMapper
+	iRuleMapper: App\Models\Mappers\Db\RuleMapper
+	iElectionMapper: App\Models\Mappers\Db\ElectionMapper
+	iVoterFileMapper: App\Models\Mappers\Db\VoterFileMapper
+	iVoterMapper: App\Models\Mappers\Db\VoterMapper
+	iQuestionMapper: App\Models\Mappers\Db\QuestionMapper
+	iAnswerMapper: App\Models\Mappers\Db\AnswerMapper
 	iBallotMapper: App\Models\Mappers\Db\BallotMapper
 
 	# repositories
-	privilegeRepository: Repositories\PrivilegeRepository
-	resourceRepository: Repositories\ResourceRepository
-	roleRepository: Repositories\RoleRepository
-	userRepository : Repositories\UserRepository
-	ruleRepository: Repositories\RuleRepository
-	electionRepository: Repositories\ElectionRepository
-	voterFileRepository: Repositories\VoterFileRepository
-	voterRepository: Repositories\VoterRepository
-	questionRepository: Repositories\QuestionRepository
-	answerRepository: Repositories\AnswerRepository
+	privilegeRepository: App\Repositories\PrivilegeRepository
+	resourceRepository: App\Repositories\ResourceRepository
+	roleRepository: App\Repositories\RoleRepository
+	userRepository : App\Repositories\UserRepository
+	ruleRepository: App\Repositories\RuleRepository
+	electionRepository: App\Repositories\ElectionRepository
+	voterFileRepository: App\Repositories\VoterFileRepository
+	voterRepository: App\Repositories\VoterRepository
+	questionRepository: App\Repositories\QuestionRepository
+	answerRepository: App\Repositories\AnswerRepository
 	- App\Repositories\BallotRepository

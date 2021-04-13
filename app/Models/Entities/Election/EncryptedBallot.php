@@ -2,8 +2,8 @@
 
 namespace App\Models\Entities\Election;
 
-use Models\Entities\Election\Election;
-use Models\Traits\Entity\HasId;
+use App\Models\Entities\Election\Election;
+use App\Models\Traits\Entity\HasId;
 
 /**
  * @property string $encryptedData

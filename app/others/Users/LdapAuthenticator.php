@@ -2,10 +2,10 @@
 
 use LDAP\LdapException;
 use LDAP\Service;
-use Models\Entities\User;
+use App\Models\Entities\User;
 use Nette\Security\IIdentity;
-use Repositories\RoleRepository;
-use Repositories\UserRepository;
+use App\Repositories\RoleRepository;
+use App\Repositories\UserRepository;
 
 class LdapAuthenticator implements Nette\Security\Authenticator
 {

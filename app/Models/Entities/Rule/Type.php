@@ -1,6 +1,6 @@
 <?php
 
-namespace Models\Entities\Rule;
+namespace App\Models\Entities\Rule;
 
 use Utils\ValueObject\EnumTrait;
 use Utils\ValueObject\ValueObject;

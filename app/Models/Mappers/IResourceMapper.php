@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace App\Models\Mappers;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
@@ -10,12 +10,12 @@ use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IResourceMapper
 {
-	public function create(array $data = []): \App\Models\Entities\Resource\Resource;
+	public function create(array $data = []): Resource;
 
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): \App\Models\Entities\Resource\Resource;
+	public function findOne(array $filter = []): Resource;
 
 	/** @return Resource[] */
 	public function findAll(): array;

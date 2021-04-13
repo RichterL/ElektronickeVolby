@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace App\Models\Mappers;
 
-use Models\Entities\Role\Role;
-use Models\Entities\Rule\Rule;
-use Models\Entities\Rule\RuleCollection;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\Role\Role;
+use App\Models\Entities\Rule\Rule;
+use App\Models\Entities\Rule\RuleCollection;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IRuleMapper
@@ -15,7 +17,7 @@ interface IRuleMapper
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): ?Rule;
+	public function findOne(array $filter = []): Rule;
 
 	/** @return Rule[] */
 	public function findAll(): array;
@@ -29,5 +31,5 @@ interface IRuleMapper
 
 	public function delete(Rule $rule): bool;
 
-	public function getDataSource(): IDataSource;
+	public function getDataSource(array $filter = []): IDataSource;
 }

@@ -1,11 +1,13 @@
 <?php
 
-namespace Models\Entities\Rule;
+namespace App\Models\Entities\Rule;
 
-use Models\Entities\Entity;
-use Models\Entities\Resource\Privilege;
-use Models\Entities\Resource\Resource;
-use Models\Entities\Role\Role;
+use App\Models\Entities\Entity;
+use App\Models\Entities\IdentifiedById;
+use App\Models\Entities\Resource\Privilege;
+use App\Models\Entities\Resource\Resource;
+use App\Models\Entities\Role\Role;
+use App\Models\Traits\Entity\HasId;
 
 /**
  * @property int $id
@@ -15,14 +17,14 @@ use Models\Entities\Role\Role;
  * @property Type $type
  */
 
-class Rule extends Entity implements \Models\Entities\IdentifiedById
+class Rule extends Entity implements IdentifiedById
 {
 	protected Role $role;
 	protected Resource $resource;
 	protected Privilege $privilege;
 	protected Type $type;
 
-	use \Models\Traits\Entity\HasId;
+	use HasId;
 
 	public function __construct(string $name = null, string $key = null)
 	{

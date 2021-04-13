@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\User;
-use Models\Mappers\IRoleMapper;
-use Models\Mappers\IUserMapper;
+use App\Models\Entities\User;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\IRoleMapper;
+use App\Models\Mappers\IUserMapper;
 
 class UserRepository
 {
@@ -19,6 +21,9 @@ class UserRepository
 		$this->roleMapper = $roleMapper;
 	}
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findById(int $id, bool $includeRoles = true): User
 	{
 		$user = $this->userMapper->findOne(['id' => $id]);
@@ -28,7 +33,10 @@ class UserRepository
 		return $user;
 	}
 
-	public function findByUsername(string $username): ?User
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findByUsername(string $username): User
 	{
 		return $this->userMapper->findOne(['username' => $username]);
 	}
@@ -38,14 +46,12 @@ class UserRepository
 		return $this->userMapper->findAll();
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(User $user): bool
 	{
 		return $this->userMapper->save($user);
-	}
-
-	public function saveData(User $user): bool
-	{
-		return $this->userMapper->saveData($user);
 	}
 
 	public function getDataSource()

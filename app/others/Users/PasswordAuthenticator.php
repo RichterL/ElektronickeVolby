@@ -3,7 +3,7 @@
 use Nette\Security\IIdentity;
 use Nette\Security\Passwords;
 use Nette\Security\SimpleIdentity;
-use Repositories\UserRepository;
+use App\Repositories\UserRepository;
 
 class PasswordAuthenticator implements Nette\Security\Authenticator
 {

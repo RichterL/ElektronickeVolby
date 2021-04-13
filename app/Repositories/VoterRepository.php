@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Election\Election;
-use Models\Entities\Election\VoterFile;
-use Models\Mappers\IVoterMapper;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\VoterFile;
+use App\Models\Mappers\IVoterMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class VoterRepository

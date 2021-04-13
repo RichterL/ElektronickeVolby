@@ -1,6 +1,6 @@
 <?php
 
-namespace Repositories;
+namespace App\Repositories;
 
 use Nette\Caching\Cache;
 

@@ -2,8 +2,8 @@
 
 use Nette\Security\Authorizator;
 use Nette\Security\Permission;
-use Repositories\ResourceRepository;
-use Repositories\RoleRepository;
+use App\Repositories\ResourceRepository;
+use App\Repositories\RoleRepository;
 
 class AuthorizatorFactory
 {

@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace App\Models\Mappers;
 
-use Models\Entities\User;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\User;
 
 interface IUserMapper
 {
@@ -14,14 +16,14 @@ interface IUserMapper
 	 */
 	public function save(User $user): bool;
 
-	public function getDataSource();
+	public function getDataSource(array $filter = []);
 
 	public function delete(User $user): bool;
 
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): ?User;
+	public function findOne(array $filter = []): User;
 
 	/** @return User[] */
 	public function findAll(): array;

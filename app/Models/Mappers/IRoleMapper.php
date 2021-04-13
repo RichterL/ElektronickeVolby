@@ -1,10 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace App\Models\Mappers;
 
-use Models\Entities\Role\Role;
-use Models\Entities\User;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\Role\Role;
+use App\Models\Entities\User;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IRoleMapper
@@ -21,12 +23,12 @@ interface IRoleMapper
 
 	public function delete(Role $role): bool;
 
-	public function getDataSource(): IDataSource;
+	public function getDataSource(array $filter = []): IDataSource;
 
 	/**
 	 * @throws EntityNotFoundException
 	 */
-	public function findOne(array $filter = []): ?Role;
+	public function findOne(array $filter = []): Role;
 
 	/** @return Role[] */
 	public function find(array $filter = []): iterable;

@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
 use Exception;
-use Models\Entities\Election\Answer;
-use Models\Entities\Election\Question;
-use Models\Mappers\IAnswerMapper;
+use App\Models\Entities\Election\Answer;
+use App\Models\Entities\Election\Question;
+use App\Models\Mappers\IAnswerMapper;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 class AnswerMapper extends BaseMapper implements IAnswerMapper

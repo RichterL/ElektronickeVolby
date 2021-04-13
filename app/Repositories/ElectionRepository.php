@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Election\Election;
-use Models\Entities\User;
-use Models\Mappers\IElectionMapper;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\User;
+use App\Models\Mappers\IElectionMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ElectionRepository
@@ -19,7 +21,7 @@ class ElectionRepository
 	}
 
 	/**
-	 * @throws \App\Models\Mappers\Exception\EntityNotFoundException
+	 * @throws EntityNotFoundException
 	 */
 	public function findById(int $id): Election
 	{

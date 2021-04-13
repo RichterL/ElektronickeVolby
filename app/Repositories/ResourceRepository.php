@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Resource\Resource;
-use Models\Mappers\IResourceMapper;
+use App\Models\Entities\Resource\Resource;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\IResourceMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ResourceRepository extends BaseRepository
@@ -17,12 +19,15 @@ class ResourceRepository extends BaseRepository
 		$this->resourceMapper = $resourceMapper;
 	}
 
-	public function findById(int $id): ?Resource
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $id): Resource
 	{
 		return $this->resourceMapper->findOne(['id' => $id]);
 	}
 
-	public function findByUsername(string $username): ?Resource
+	public function findByUsername(string $username): Resource
 	{
 		return $this->resourceMapper->findOne(['username' => $username]);
 	}
@@ -45,6 +50,9 @@ class ResourceRepository extends BaseRepository
 		return $pairs;
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Resource $resource): bool
 	{
 		return $this->resourceMapper->save($resource);

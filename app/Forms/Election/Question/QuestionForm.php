@@ -6,11 +6,11 @@ use App\Utils\Form\HasMultiplier;
 use App\Utils\Form\TextInput;
 use Contributte\FormMultiplier\Buttons\CreateButton;
 use Contributte\FormMultiplier\Buttons\RemoveButton;
-use Models\Entities\Election\Answer;
-use Models\Entities\Election\Question;
+use App\Models\Entities\Election\Answer;
+use App\Models\Entities\Election\Question;
 use Nette;
-use Repositories\ElectionRepository;
-use Repositories\QuestionRepository;
+use App\Repositories\ElectionRepository;
+use App\Repositories\QuestionRepository;
 
 class QuestionForm extends \App\Forms\BaseForm
 {

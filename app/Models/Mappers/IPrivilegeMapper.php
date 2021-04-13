@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers;
+namespace App\Models\Mappers;
 
-use Models\Entities\Resource\Privilege;
-use Models\Entities\Resource\PrivilegeCollection;
-use Models\Entities\Resource\Resource;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\Resource\Privilege;
+use App\Models\Entities\Resource\PrivilegeCollection;
+use App\Models\Entities\Resource\Resource;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface IPrivilegeMapper
@@ -26,7 +28,7 @@ interface IPrivilegeMapper
 
 	public function findAll(): PrivilegeCollection;
 
-	public function getDataSource(): IDataSource;
+	public function getDataSource(array $filter = []): IDataSource;
 
 	public function delete(Privilege $privilege): bool;
 }

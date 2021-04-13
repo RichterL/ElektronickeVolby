@@ -7,12 +7,8 @@ use App\Models\Factories\BallotFactory;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\IBallotMapper;
-use dibi;
-use Exception;
-use Models\Entities\IdentifiedById;
-use Models\Mappers\Db\Tables;
 
-class BallotMapper extends \Models\Mappers\Db\BaseMapper implements IBallotMapper
+class BallotMapper extends BaseMapper implements IBallotMapper
 {
 	protected const MAP = [
 		'id' => 'id',

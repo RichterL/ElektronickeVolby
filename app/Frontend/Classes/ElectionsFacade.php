@@ -5,9 +5,9 @@ namespace App\Frontend\Classes;
 use App\Models\Entities\Election\Ballot;
 use App\Repositories\BallotRepository;
 use Exception;
-use Models\Entities\Election\Election;
-use Models\Entities\User;
-use Repositories\ElectionRepository;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\User;
+use App\Repositories\ElectionRepository;
 
 class ElectionsFacade
 {

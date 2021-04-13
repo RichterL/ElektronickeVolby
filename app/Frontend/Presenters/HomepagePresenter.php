@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace App\Frontend\Presenters;
 
 use App\Frontend\Classes\ElectionsFacade;
-use Nette;
-use Repositories\ElectionRepository;
 
 final class HomepagePresenter extends BasePresenter
 {

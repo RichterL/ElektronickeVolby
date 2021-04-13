@@ -6,10 +6,10 @@ namespace App\Backend\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
-use Models\Entities\User;
+use App\Models\Entities\User;
 use Nette\Application\UI\Form;
-use Repositories\RoleRepository;
-use Repositories\UserRepository;
+use App\Repositories\RoleRepository;
+use App\Repositories\UserRepository;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Utils\DataGrid\Action;
 use Utils\DataGrid\Column;

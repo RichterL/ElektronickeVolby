@@ -5,7 +5,7 @@ namespace App\Models\Factories;
 use App\Models\Entities\Election\Ballot;
 use App\Models\Entities\Election\DecryptedBallot;
 use App\Models\Entities\Election\EncryptedBallot;
-use Models\Mappers\IElectionMapper;
+use App\Models\Mappers\IElectionMapper;
 
 class BallotFactory
 {

@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Mappers\Db;
+namespace App\Models\Mappers\Db;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Exception;
-use Models\Entities\Role\Role;
-use Models\Entities\Rule\Rule;
-use Models\Entities\Rule\RuleCollection;
-use Models\Entities\Rule\Type;
-use Models\Mappers\IRuleMapper;
+use App\Models\Entities\Role\Role;
+use App\Models\Entities\Rule\Rule;
+use App\Models\Entities\Rule\RuleCollection;
+use App\Models\Entities\Rule\Type;
+use App\Models\Mappers\IRuleMapper;
 use Utils\ValueObject\ValueObject;
 
 class RuleMapper extends BaseMapper implements IRuleMapper

@@ -7,7 +7,7 @@ use App\Forms\Voting\VotingForm;
 use App\Forms\Voting\VotingFormFactory;
 use App\Frontend\Classes\ElectionsFacade;
 use App\Models\Entities\Election\EncryptedBallot;
-use Models\Entities\Election\Election;
+use App\Models\Entities\Election\Election;
 use Nette\Forms\Form;
 use phpseclib3\Crypt\AES;
 use phpseclib3\Crypt\Hash;
