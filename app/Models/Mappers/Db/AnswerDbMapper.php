@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
-use Dibi\Row;
 use App\Models\Entities\Election\Answer;
 use App\Models\Entities\Election\Question;
 use App\Models\Mappers\AnswerMapper;
@@ -45,16 +45,23 @@ class AnswerDbMapper extends BaseDbMapper implements AnswerMapper
 	{
 		$result = $this->dibi->select('*')->from($this->table)->where('question_id = %i', $question->getId())->fetchAll();
 		$answers = [];
-		/** @var Row $row */
+		/** @var \Dibi\Row $row */
 		foreach ($result as $row) {
 			$answers[] = $this->create($row->toArray());
 		}
 		return $answers;
 	}
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function deleteRelated(Question $question): bool
 	{
-		return (bool) $this->dibi->delete($this->table)->where('question_id = %i', $question->getId())->execute(dibi::AFFECTED_ROWS);
+		try {
+			return (bool)$this->dibi->delete($this->table)->where('question_id = %i', $question->getId())->execute(dibi::AFFECTED_ROWS);
+		} catch (\Dibi\Exception $e) {
+			throw new DeletingErrorException($e->getMessage());
+		}
 	}
 
 	public function getDataSource(array $filter = []): DibiFluentDataSource

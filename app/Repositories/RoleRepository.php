@@ -78,8 +78,8 @@ class RoleRepository extends BaseRepository
 		return $this->roleMapper->delete($role);
 	}
 
-	public function getDataSource(): IDataSource
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->roleMapper->getDataSource();
+		return $this->roleMapper->getDataSource($filter);
 	}
 }

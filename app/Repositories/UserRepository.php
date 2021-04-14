@@ -9,6 +9,7 @@ use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\RoleMapper;
 use App\Models\Mappers\UserMapper;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class UserRepository
 {
@@ -54,9 +55,9 @@ class UserRepository
 		return $this->userMapper->save($user);
 	}
 
-	public function getDataSource()
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->userMapper->getDataSource();
+		return $this->userMapper->getDataSource($filter);
 	}
 
 	public function delete(User $user): bool

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers\Db;
 
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use dibi;
@@ -140,9 +141,16 @@ abstract class BaseDbMapper
 		return [];
 	}
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(IdentifiedById $entity): bool
 	{
-		return (bool) $this->dibi->delete($this->table)->where('id = %i', $entity->getId())->execute(dibi::AFFECTED_ROWS);
+		try {
+			return (bool)$this->dibi->delete($this->table)->where('id = %i', $entity->getId())->execute(dibi::AFFECTED_ROWS);
+		} catch (\Dibi\Exception $e) {
+			throw new DeletingErrorException($e->getMessage());
+		}
 	}
 
 	public function getDataSource(array $filter = []): DibiFluentDataSource

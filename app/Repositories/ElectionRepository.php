@@ -45,9 +45,9 @@ class ElectionRepository
 		return $this->electionMapper->findAll();
 	}
 
-	public function getDataSource(): IDataSource
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->electionMapper->getDataSource();
+		return $this->electionMapper->getDataSource($filter);
 	}
 
 	/**

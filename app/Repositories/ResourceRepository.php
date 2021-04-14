@@ -66,9 +66,9 @@ class ResourceRepository extends BaseRepository
 		return $this->resourceMapper->save($resource);
 	}
 
-	public function getDataSource(): IDataSource
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->resourceMapper->getDataSource();
+		return $this->resourceMapper->getDataSource($filter);
 	}
 
 	public function delete(Resource $resource): bool

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers;
 
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Entities\Election\Answer;
@@ -19,7 +20,7 @@ interface AnswerMapper
 	public function findOne(array $filter = []): Answer;
 
 	/** @return Answer[] */
-	public function findAll(): array;
+	public function findAll(): iterable;
 
 	/** @return Answer[] */
 	public function findRelated(Question $question): array;
@@ -33,5 +34,8 @@ interface AnswerMapper
 	 */
 	public function save(Answer $answer): bool;
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(Answer $answer): bool;
 }
