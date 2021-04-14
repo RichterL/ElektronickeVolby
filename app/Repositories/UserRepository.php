@@ -2,23 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\User;
-use Models\Mappers\IRoleMapper;
-use Models\Mappers\IUserMapper;
+use App\Models\Entities\User;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\RoleMapper;
+use App\Models\Mappers\UserMapper;
+use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class UserRepository
 {
-	private IUserMapper $userMapper;
-	private IRoleMapper $roleMapper;
+	private UserMapper $userMapper;
+	private RoleMapper $roleMapper;
 
-	public function __construct(IUserMapper $userMapper, IRoleMapper $roleMapper)
+	public function __construct(UserMapper $userMapper, RoleMapper $roleMapper)
 	{
 		$this->userMapper = $userMapper;
 		$this->roleMapper = $roleMapper;
 	}
 
+	/**
+	 * @throws EntityNotFoundException
+	 */
 	public function findById(int $id, bool $includeRoles = true): User
 	{
 		$user = $this->userMapper->findOne(['id' => $id]);
@@ -28,29 +34,30 @@ class UserRepository
 		return $user;
 	}
 
-	public function findByUsername(string $username): ?User
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findByUsername(string $username): User
 	{
 		return $this->userMapper->findOne(['username' => $username]);
 	}
 
-	public function findAll()
+	public function findAll(): array
 	{
 		return $this->userMapper->findAll();
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(User $user): bool
 	{
 		return $this->userMapper->save($user);
 	}
 
-	public function saveData(User $user): bool
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->userMapper->saveData($user);
-	}
-
-	public function getDataSource()
-	{
-		return $this->userMapper->getDataSource();
+		return $this->userMapper->getDataSource($filter);
 	}
 
 	public function delete(User $user): bool

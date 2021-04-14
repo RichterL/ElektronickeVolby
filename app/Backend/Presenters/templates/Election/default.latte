@@ -1,3 +1,4 @@
+{varType App\Models\Entities\Election\Election $election}
 {block content}
 	{block title}<h1>Election - {$election->title}</h1>{/block}
 	<a n:href="Elections:">Go back</a>
@@ -6,6 +7,8 @@
 			{block body}
 				{switch $selectedTab}
 					{case overview}
+						<a n:if="!$election->isActive()" n:href="activate!" class="btn btn-primary">Activate this election</a>
+						<a n:if="$election->isActive()" n:href="deactivate!" class="btn btn-warning">Deactivate this election</a>
 						{$election->description}
 					{case questions}
 						{control questionsGrid}

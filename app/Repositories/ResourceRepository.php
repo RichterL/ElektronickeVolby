@@ -2,32 +2,42 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Resource\Resource;
-use Models\Mappers\IResourceMapper;
+use App\Models\Entities\Resource\Resource;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\ResourceMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ResourceRepository extends BaseRepository
 {
-	private IResourceMapper $resourceMapper;
+	private ResourceMapper $resourceMapper;
 
-	public function __construct(IResourceMapper $resourceMapper)
+	public function __construct(ResourceMapper $resourceMapper)
 	{
 		$this->resourceMapper = $resourceMapper;
 	}
 
-	public function findById(int $id): ?Resource
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $id): \App\Models\Entities\Resource\Resource
 	{
 		return $this->resourceMapper->findOne(['id' => $id]);
 	}
 
-	public function findByUsername(string $username): ?Resource
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findByUsername(string $username): \App\Models\Entities\Resource\Resource
 	{
 		return $this->resourceMapper->findOne(['username' => $username]);
 	}
 
-	/** @return Resource[] */
+	/**
+	 * @return Resource[]
+	 */
 	public function findAll(): array
 	{
 		return $this->cache->load('resource.findAll', function () {
@@ -35,7 +45,10 @@ class ResourceRepository extends BaseRepository
 		});
 	}
 
-	public function getIdNamePairs()
+	/**
+	 * @return string[]
+	 */
+	public function getIdNamePairs(): array
 	{
 		$resources = $this->resourceMapper->findAll();
 		$pairs = [];
@@ -45,14 +58,17 @@ class ResourceRepository extends BaseRepository
 		return $pairs;
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Resource $resource): bool
 	{
 		return $this->resourceMapper->save($resource);
 	}
 
-	public function getDataSource(): IDataSource
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->resourceMapper->getDataSource();
+		return $this->resourceMapper->getDataSource($filter);
 	}
 
 	public function delete(Resource $resource): bool

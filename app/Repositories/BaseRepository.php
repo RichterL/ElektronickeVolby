@@ -1,12 +1,15 @@
 <?php
+declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
+
+use Nette\Caching\Cache;
 
 class BaseRepository
 {
-	protected $cache;
+	protected Cache $cache;
 
-	public function setCache(\Nette\Caching\Cache $cache)
+	public function setCache(Cache $cache): void
 	{
 		$this->cache = $cache;
 	}

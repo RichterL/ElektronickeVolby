@@ -2,23 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Election\Election;
-use Models\Entities\Election\Question;
-use Models\Mappers\IQuestionMapper;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\Question;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\QuestionMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class QuestionRepository
 {
-	private IQuestionMapper $questionMapper;
+	private QuestionMapper $questionMapper;
 
-	public function __construct(IQuestionMapper $questionMapper)
+	public function __construct(QuestionMapper $questionMapper)
 	{
 		$this->questionMapper = $questionMapper;
 	}
 
-	public function findById(int $id): ?Question
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $id): Question
 	{
 		return $this->questionMapper->findOne(['id' => $id]);
 	}
@@ -40,14 +45,12 @@ class QuestionRepository
 		return $this->questionMapper->getDataSource($filter);
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Question $election): bool
 	{
 		return $this->questionMapper->save($election);
-	}
-
-	public function saveData(Question $election): bool
-	{
-		return $this->questionMapper->saveData($election);
 	}
 
 	public function delete(Question $election): bool

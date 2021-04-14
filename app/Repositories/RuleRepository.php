@@ -2,29 +2,34 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Role\Role;
-use Models\Entities\Rule\Rule;
-use Models\Entities\Rule\RuleCollection;
-use Models\Mappers\IRuleMapper;
+use App\Models\Entities\Role\Role;
+use App\Models\Entities\Rule\Rule;
+use App\Models\Entities\Rule\RuleCollection;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\RuleMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class RuleRepository
 {
-	private IRuleMapper $ruleMapper;
+	private RuleMapper $ruleMapper;
 
-	public function __construct(IRuleMapper $ruleMapper)
+	public function __construct(RuleMapper $ruleMapper)
 	{
 		$this->ruleMapper = $ruleMapper;
 	}
 
-	public function findById(int $id): ?Rule
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $id): Rule
 	{
 		return $this->ruleMapper->findOne(['id' => $id]);
 	}
 
-	public function findAll()
+	public function findAll(): array
 	{
 		return $this->ruleMapper->findAll();
 	}
@@ -34,6 +39,9 @@ class RuleRepository
 		return $this->ruleMapper->findRelated($role);
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Rule $rule): bool
 	{
 		return $this->ruleMapper->save($rule);

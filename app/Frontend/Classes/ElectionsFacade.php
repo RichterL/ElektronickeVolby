@@ -1,18 +1,26 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Frontend\Classes;
 
-use Models\Entities\Election\Election;
-use Models\Entities\User;
-use Repositories\ElectionRepository;
+use App\Models\Entities\Election\Ballot;
+use App\Repositories\BallotRepository;
+use Exception;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\User;
+use App\Repositories\ElectionRepository;
 
 class ElectionsFacade
 {
 	private ElectionRepository $electionRepository;
+	private BallotRepository $ballotRepository;
 
-	public function __construct(ElectionRepository $electionRepository)
-	{
+	public function __construct(
+		ElectionRepository $electionRepository,
+		BallotRepository $ballotRepository
+	) {
 		$this->electionRepository = $electionRepository;
+		$this->ballotRepository = $ballotRepository;
 	}
 
 	public function getAllElections(): array
@@ -33,5 +41,13 @@ class ElectionsFacade
 	public function getElectionById(int $electionId): ?Election
 	{
 		return $this->electionRepository->findById($electionId);
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function saveBallot(Ballot $ballot): bool
+	{
+		return $this->ballotRepository->save($ballot);
 	}
 }

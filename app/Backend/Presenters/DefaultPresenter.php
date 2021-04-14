@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Backend\Presenters;
 
-use App\Controls\Menu;
+use App\Backend\Classes\Menu\Menu;
 use InvalidArgumentException;
 use Nette;
 use Nette\Application\UI\Form;
@@ -52,7 +52,7 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 
 	public function addGrid(string $name, IDataSource $dataSource, string $primaryKey = 'id')
 	{
-		$grid = new \Utils\DataGrid\DataGrid($dataSource, $primaryKey);
+		$grid = new \App\Backend\Utils\DataGrid\DataGrid($dataSource, $primaryKey);
 		$this->addComponent($grid->getOriginal(), $name);
 		return $grid;
 	}

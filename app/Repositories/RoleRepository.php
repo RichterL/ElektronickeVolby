@@ -2,28 +2,33 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Role\Role;
-use Models\Mappers\IRoleMapper;
-use Models\Mappers\IRuleMapper;
+use App\Models\Entities\Role\Role;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\RoleMapper;
+use App\Models\Mappers\RuleMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class RoleRepository extends BaseRepository
 {
-	private IRoleMapper $roleMapper;
-	private IRuleMapper $ruleMapper;
+	private RoleMapper $roleMapper;
+	private RuleMapper $ruleMapper;
 
-	public function __construct(IRoleMapper $roleMapper, IRuleMapper $ruleMapper)
+	public function __construct(RoleMapper $roleMapper, RuleMapper $ruleMapper)
 	{
 		$this->roleMapper = $roleMapper;
 		$this->ruleMapper = $ruleMapper;
 	}
 
-	public function findById(int $id, bool $includeRules = false): ?Role
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $id, bool $includeRules = false): Role
 	{
 		$role = $this->roleMapper->findOne(['id' => $id]);
-		if ($role && $includeRules) {
+		if ($includeRules) {
 			$rules = $this->ruleMapper->findRelated($role);
 			$role->addRules($rules);
 		}
@@ -50,7 +55,7 @@ class RoleRepository extends BaseRepository
 		});
 	}
 
-	public function getIdNamePairs()
+	public function getIdNamePairs(): array
 	{
 		$roles = $this->roleMapper->findAll();
 		$pairs = [];
@@ -60,6 +65,9 @@ class RoleRepository extends BaseRepository
 		return $pairs;
 	}
 
+	/**
+	 * @throws SavingErrorException
+	 */
 	public function save(Role $role): bool
 	{
 		return $this->roleMapper->save($role);
@@ -70,8 +78,8 @@ class RoleRepository extends BaseRepository
 		return $this->roleMapper->delete($role);
 	}
 
-	public function getDataSource(): IDataSource
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->roleMapper->getDataSource();
+		return $this->roleMapper->getDataSource($filter);
 	}
 }

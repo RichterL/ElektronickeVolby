@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Entities\Election;
+namespace App\Models\Entities\Election;
 
-use Constants;
+use App\Models\Traits\Entity\HasId;
+use App\Core\Utils\Constants;
 use InvalidArgumentException;
-use Models\Entities\Entity;
-use Models\Entities\IdentifiedById;
-use Models\Entities\User;
+use App\Models\Entities\Entity;
+use App\Models\Entities\IdentifiedById;
+use App\Models\Entities\User;
 
 /**
  * @property int|null $id
@@ -33,7 +34,18 @@ class Election extends Entity implements IdentifiedById
 	protected User $createdBy;
 	protected iterable $questions = [];
 
-	use \Models\Traits\Entity\HasId;
+	use HasId;
+
+	public function isRunning(): bool
+	{
+		$now = new \DateTime();
+		return $now >= $this->start && $now < $this->end && $this->active;
+	}
+
+	public function isActive(): bool
+	{
+		return $this->active;
+	}
 
 	public function setStart($from): self
 	{
@@ -65,6 +77,12 @@ class Election extends Entity implements IdentifiedById
 			$question->setElection($this);
 		}
 		$this->questions = $questions;
+		return $this;
+	}
+
+	public function setActive(bool $active = true): Election
+	{
+		$this->active = $active;
 		return $this;
 	}
 

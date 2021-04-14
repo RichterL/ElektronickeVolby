@@ -4,30 +4,33 @@ declare(strict_types=1);
 namespace App\Backend\Presenters;
 
 use App\Forms\Election\QuestionForm;
+use App\Forms\Election\QuestionFormFactory;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
-use Models\Entities\Election\Answer;
-use Models\Entities\Election\Election;
-use Models\Entities\Election\Question;
-use Models\Entities\Election\VoterFile;
-use Nette\Application\Responses\CsvResponse;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\Question;
+use App\Models\Entities\Election\VoterFile;
+use App\Core\Classes\CsvResponse;
 use Nette\Application\UI\Form;
-use Repositories\AnswerRepository;
-use Repositories\ElectionRepository;
-use Repositories\QuestionRepository;
-use Repositories\UserRepository;
-use Repositories\VoterFileRepository;
-use Repositories\VoterRepository;
+use App\Repositories\AnswerRepository;
+use App\Repositories\ElectionRepository;
+use App\Repositories\QuestionRepository;
+use App\Repositories\UserRepository;
+use App\Repositories\VoterFileRepository;
+use App\Repositories\VoterRepository;
+use Nette\Http\FileUpload;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Ublaboo\DataGrid\DataSource\ArrayDataSource;
-use Utils\DataGrid\Action;
-use Utils\DataGrid\Column;
-use Utils\DataGrid\ToolbarButton;
+use App\Backend\Utils\DataGrid\Action;
+use App\Backend\Utils\DataGrid\Column;
+use App\Backend\Utils\DataGrid\ToolbarButton;
 
 final class ElectionPresenter extends DefaultPresenter
 {
 	/** @persistent */
-	public $id;
+	public int $id;
 	private ?Election $election = null;
 
 	private ElectionRepository $electionRepository;
@@ -54,17 +57,18 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->answerRepository = $answerRepository;
 	}
 
-	public function startup()
+	public function startup(): void
 	{
 		parent::startup();
-		$election = $this->electionRepository->findById((int) $this->getParameter('id'));
-		if (!$election) {
+		try {
+			$election = $this->electionRepository->findById((int)$this->getParameter('id'));
+			$this->election = $election;
+		} catch (EntityNotFoundException $e) {
 			$this->error('Election not found!');
 		}
-		$this->election = $election;
 	}
 
-	public function beforeRender()
+	public function beforeRender(): void
 	{
 		parent::beforeRender();
 		$this->template->setFile(__DIR__ . '/templates/Election/default.latte');
@@ -72,7 +76,7 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->redrawControl('formSnippet');
 	}
 
-	public function afterRender()
+	public function afterRender(): void
 	{
 		parent::afterRender();
 		if ($this->isAjax()) {
@@ -80,35 +84,35 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function renderOverview()
+	public function renderOverview(): void
 	{
 		$this->template->selectedTab = 'overview';
 	}
 
-	public function renderQuestions()
+	public function renderQuestions(): void
 	{
 		$this->template->selectedTab = 'questions';
 		$questions = $this->questionRepository->findRelated($this->election);
 		$this->template->questions = $questions;
 	}
 
-	public function renderAnswers()
+	public function renderAnswers(): void
 	{
 		$this->template->selectedTab = 'answers';
 	}
 
-	public function renderVoterFiles()
+	public function renderVoterFiles(): void
 	{
 		$this->template->voterFiles = $this->voterFileRepository->findRelated($this->election);
 		$this->template->selectedTab = 'voterFiles';
 	}
 
-	public function renderVoterList()
+	public function renderVoterList(): void
 	{
 		$this->template->selectedTab = 'voterList';
 	}
 
-	public function handleDeleteVoterFile(int $voterFileId)
+	public function handleDeleteVoterFile(int $voterFileId): void
 	{
 		$voterFile = $this->voterFileRepository->findById($voterFileId);
 		if (!$voterFileId) {
@@ -121,7 +125,7 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function handleShowVoterFileDetail(int $voterFileId)
+	public function handleShowVoterFileDetail(int $voterFileId): void
 	{
 		$this->template->voterFileDetail = $this->voterFileRepository->findById($voterFileId);
 		$this->template->showVoterFileDetail = true;
@@ -134,7 +138,7 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function handleImportVoterList()
+	public function handleImportVoterList(): void
 	{
 		$this->template->showImportVoterListForm = true;
 		$this->template->showModal = true;
@@ -148,7 +152,7 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function handleDownloadVoterFile(int $voterFileId)
+	public function handleDownloadVoterFile(int $voterFileId): void
 	{
 		if ($this->isAjax()) {
 			$this->redirectUrl($this->link('downloadVoterFile!', ['voterFileId' => $voterFileId]), 302);
@@ -158,14 +162,14 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->sendResponse(new CsvResponse($voterFile->filename, $voterFile->content));
 	}
 
-	public function handleApplyVoterFile(int $voterFileId)
+	public function handleApplyVoterFile(int $voterFileId): void
 	{
 		$voterFile = $this->voterFileRepository->findById($voterFileId);
 		$this->voterRepository->importFromFile($this->election, $voterFile);
 		$this->flashMessage('Voter file applied!', 'success');
 	}
 
-	public function handleEditQuestion(int $questionId)
+	public function handleEditQuestion(int $questionId): void
 	{
 		$question = $this->questionRepository->findById($questionId);
 		if (!$question) {
@@ -187,7 +191,7 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function handleShowQuestionForm()
+	public function handleShowQuestionForm(): void
 	{
 		$this->template->showQuestionForm = true;
 		if ($this->isAjax()) {
@@ -195,7 +199,7 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function handleHideQuestionForm()
+	public function handleHideQuestionForm(): void
 	{
 		$this->template->showQuestionForm = false;
 		if ($this->isAjax()) {
@@ -203,7 +207,7 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function handleDeleteQuestion(int $questionId)
+	public function handleDeleteQuestion(int $questionId): void
 	{
 		$question = $this->questionRepository->findById($questionId);
 		if (!$question) {
@@ -215,24 +219,55 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function handleDeleteAnswer(int $answerId)
+	public function handleDeleteAnswer(int $answerId): void
 	{
-		$answer = $this->answerRepository->findById($answerId);
-		if (!$answer) {
+		try {
+			$answer = $this->answerRepository->findById($answerId);
+			if (!$this->answerRepository->delete($answer)) {
+				$this->flashMessage('delete failed', 'error');
+				return;
+			}
+			$this->flashMessage('answer deleted', 'success');
+			if ($this->isAjax()) {
+				$this->getGrid('answersGrid')->reload();
+				$this->redrawControl('cardSnippet');
+			}
+		} catch (EntityNotFoundException $e) {
 			$this->error('Answer not found!');
-		}
-		if (!$this->answerRepository->delete($answer)) {
-			$this->flashMessage('delete failed', 'error');
-			return;
-		}
-		$this->flashMessage('answer deleted', 'success');
-		if ($this->isAjax()) {
-			$this->getGrid('answersGrid')->reload();
-			$this->redrawControl('cardSnippet');
 		}
 	}
 
-	public function createComponentVoterFilesGrid()
+	public function handleActivate(): void
+	{
+		try {
+			if ($this->election->active) {
+				$this->flashMessage('Election is already active', 'info');
+				return;
+			}
+			$this->election->setActive();
+			$this->electionRepository->save($this->election);
+			$this->flashMessage('Election activated!', 'success');
+		} catch (SavingErrorException $e) {
+			$this->flashMessage('Activating failed!', 'error');
+		}
+	}
+
+	public function handleDeactivate(): void
+	{
+		try {
+			if (!$this->election->active) {
+				$this->flashMessage('Election is already inactive', 'info');
+				return;
+			}
+			$this->election->setActive(false);
+			$this->electionRepository->save($this->election);
+			$this->flashMessage('Election deactivated!', 'success');
+		} catch (SavingErrorException $e) {
+			$this->flashMessage('Deactivating failed!', 'error');
+		}
+	}
+
+	public function createComponentVoterFilesGrid(): void
 	{
 		$this->addGrid('voterFilesGrid', $this->voterFileRepository->getDataSource(['election_id' => $this->getParameter('id')]))
 			->addColumn(Column::NUMBER, 'id', 'id')
@@ -245,7 +280,7 @@ final class ElectionPresenter extends DefaultPresenter
 			->addConfirmAction(Action::DELETE, new StringConfirmation('Do you really want to delete voter file %s?', 'filename'), 'deleteVoterFile!', ['voterFileId' => 'id']);
 	}
 
-	public function createComponentVoterFileDetailGrid()
+	public function createComponentVoterFileDetailGrid(): void
 	{
 		$voterFile = $this->voterFileRepository->findById((int) $this->getParameter('voterFileId'));
 		$content = $voterFile->getContent();
@@ -268,7 +303,7 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function createComponentVoterListGrid()
+	public function createComponentVoterListGrid(): void
 	{
 		$this->addGrid('voterListGrid', $this->voterRepository->getDataSource(['election_id' => $this->election->getId()]))
 			->addColumn(Column::NUMBER, 'id', 'id')
@@ -277,7 +312,7 @@ final class ElectionPresenter extends DefaultPresenter
 			->addColumn(Column::DATETIME, 'timestamp', 'timestamp');
 	}
 
-	public function createComponentQuestionsGrid()
+	public function createComponentQuestionsGrid(): void
 	{
 		$grid = $this->addGrid('questionsGrid', $this->questionRepository->getDataSource(['election_id' => $this->election->getId()]))
 			->addColumn(Column::NUMBER, 'id', 'id')
@@ -311,7 +346,7 @@ final class ElectionPresenter extends DefaultPresenter
 		};
 	}
 
-	public function createComponentAnswersGrid()
+	public function createComponentAnswersGrid(): void
 	{
 		$this->addGrid('answersGrid', $this->answerRepository->getDataSource(['election_id' => $this->election->getId()]))
 			->addColumn(Column::TEXT, 'question_id', 'question id')
@@ -320,7 +355,7 @@ final class ElectionPresenter extends DefaultPresenter
 			->addAction(Action::DELETE, 'deleteAnswer!', ['answerId' => 'id']);
 	}
 
-	public function createComponentImportVoterListForm()
+	public function createComponentImportVoterListForm(): BootstrapForm
 	{
 		$form = new BootstrapForm();
 		$form->setRenderMode(RenderMode::SIDE_BY_SIDE_MODE);
@@ -331,42 +366,32 @@ final class ElectionPresenter extends DefaultPresenter
 		return $form;
 	}
 
-	public function importVoterListFormSuccess(Form $form, array $values)
+	public function importVoterListFormSuccess(Form $form, array $values): void
 	{
-		/** @var \Nette\Http\FileUpload */
-		$file = $values['file'];
-		unset($values['file']);
+		try {
+			/** @var FileUpload */
+			$file = $values['file'];
+			unset($values['file']);
 
-		$values['filename'] = $file->getSanitizedName();
-		$values['content'] = $file->getContents();
-		$values['createdAt'] = new \DateTime();
-		$values['createdBy'] = $this->userRepository->findById($this->getLoggedUserId(), false);
-		$voterFile = new VoterFile();
-		$voterFile->setElection($this->electionRepository->findById((int) $this->getParameter('id')));
-		$voterFile->setValues($values);
-		if ($this->voterFileRepository->save($voterFile)) {
+			$values['filename'] = $file->getSanitizedName();
+			$values['content'] = $file->getContents();
+			$values['createdAt'] = new \DateTime();
+			$values['createdBy'] = $this->userRepository->findById($this->getLoggedUserId(), false);
+			$voterFile = new VoterFile();
+			$voterFile->setElection($this->electionRepository->findById((int) $this->getParameter('id')));
+			$voterFile->setValues($values);
+			$this->voterFileRepository->save($voterFile);
 			$this->flashMessage('import success', 'success');
-		// $this->redrawControl('modals');
-		} else {
+			$this->redirect(':voterFiles', ['id' => (int) $this->getParameter('id')]);
+		} catch (SavingErrorException | EntityNotFoundException $e) {
 			$this->flashMessage('import failed', 'error');
 		}
-		$this->redirect(':voterFiles', ['id' => (int) $this->getParameter('id')]);
-
-		// $contents = $file->getContents();
-		// file_put_contents(TEMP_DIR . '/encoded.gz', gzencode($contents, 9));
-
-		// $h = fopen($file->getTemporaryFile(), 'r');
-		// $lines = [];
-		// while ($line = fgetcsv($h)) {
-		// 	$lines[] = $line;
-		// }
-		// $this->template->lines = $lines;
 	}
 
-	/** @var \App\Forms\Election\QuestionFormFactory @inject */
-	public $questionFormFactory;
+	/** @var QuestionFormFactory @inject */
+	public QuestionFormFactory $questionFormFactory;
 
-	public function createComponentQuestionForm()
+	public function createComponentQuestionForm(): QuestionForm
 	{
 		$form = $this->questionFormFactory->create();
 		$form->onBeforeSave = function (\Nette\Forms\Form $form, array $values) {

@@ -1,11 +1,14 @@
 <?php
+declare(strict_types=1);
 
-namespace Models\Entities\Rule;
+namespace App\Models\Entities\Rule;
 
-use Models\Entities\Entity;
-use Models\Entities\Resource\Privilege;
-use Models\Entities\Resource\Resource;
-use Models\Entities\Role\Role;
+use App\Models\Entities\Entity;
+use App\Models\Entities\IdentifiedById;
+use App\Models\Entities\Resource\Privilege;
+use App\Models\Entities\Resource\Resource;
+use App\Models\Entities\Role\Role;
+use App\Models\Traits\Entity\HasId;
 
 /**
  * @property int $id
@@ -15,24 +18,14 @@ use Models\Entities\Role\Role;
  * @property Type $type
  */
 
-class Rule extends Entity implements \Models\Entities\IdentifiedById
+class Rule extends Entity implements IdentifiedById
 {
 	protected Role $role;
 	protected Resource $resource;
 	protected Privilege $privilege;
 	protected Type $type;
 
-	use \Models\Traits\Entity\HasId;
-
-	public function __construct(string $name = null, string $key = null)
-	{
-		if ($name) {
-			$this->name = $name;
-		}
-		if ($key) {
-			$this->key = $key;
-		}
-	}
+	use HasId;
 
 	public function getRoleId(): ?int
 	{
@@ -55,7 +48,7 @@ class Rule extends Entity implements \Models\Entities\IdentifiedById
 		return $this;
 	}
 
-	public function setType(Type $type)
+	public function setType(Type $type): void
 	{
 		$this->type = $type;
 	}
@@ -72,6 +65,9 @@ class Rule extends Entity implements \Models\Entities\IdentifiedById
 		return $this;
 	}
 
+	/**
+	 * @return array<string, int>
+	 */
 	public function toArray(): array
 	{
 		return [

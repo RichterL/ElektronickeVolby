@@ -2,24 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Resource\Privilege;
-use Models\Entities\Resource\PrivilegeCollection;
-use Models\Entities\Resource\Resource;
-use Models\Mappers\IPrivilegeMapper;
+use App\Models\Entities\Resource\Privilege;
+use App\Models\Entities\Resource\PrivilegeCollection;
+use App\Models\Entities\Resource\Resource;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\PrivilegeMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class PrivilegeRepository
 {
-	private IPrivilegeMapper $privilegeMapper;
+	private PrivilegeMapper $privilegeMapper;
 
-	public function __construct(IPrivilegeMapper $privilegeMapper)
+	public function __construct(PrivilegeMapper $privilegeMapper)
 	{
 		$this->privilegeMapper = $privilegeMapper;
 	}
 
-	public function findById(int $privilegeId): ?Privilege
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $privilegeId): Privilege
 	{
 		return $this->privilegeMapper->findOne(['id' => $privilegeId]);
 	}
@@ -34,7 +39,10 @@ class PrivilegeRepository
 		return $this->privilegeMapper->findRelated($resource);
 	}
 
-	public function save(Resource $resource, Privilege $privilege)
+	/**
+	 * @throws SavingErrorException
+	 */
+	public function save(Resource $resource, Privilege $privilege): bool
 	{
 		return $this->privilegeMapper->save($resource, $privilege);
 	}

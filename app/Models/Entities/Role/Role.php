@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Models\Entities\Role;
+namespace App\Models\Entities\Role;
 
-use Models\Entities\Entity;
-use Models\Entities\IdentifiedById;
-use Models\Entities\Rule\RuleCollection;
-use Models\Traits\Entity\HasId;
+use App\Models\Entities\Entity;
+use App\Models\Entities\IdentifiedById;
+use App\Models\Entities\Rule\RuleCollection;
+use App\Models\Traits\Entity\HasId;
 
 /**
  * @property int|null $id

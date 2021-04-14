@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace App\Forms\Voting;
 
 use App\Forms\BaseForm;
-use Models\Entities\Election\Election;
-use Models\Entities\Election\Question;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\Question;
 
 class VotingForm extends BaseForm
 {

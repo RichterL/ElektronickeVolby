@@ -2,23 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Election\Election;
-use Models\Entities\User;
-use Models\Mappers\IElectionMapper;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\User;
+use App\Models\Mappers\ElectionMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ElectionRepository
 {
-	private IElectionMapper $electionMapper;
+	private ElectionMapper $electionMapper;
 
-	public function __construct(IElectionMapper $electionMapper)
+	public function __construct(ElectionMapper $electionMapper)
 	{
 		$this->electionMapper = $electionMapper;
 	}
 
-	public function findById(int $id): ?Election
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $id): Election
 	{
 		return $this->electionMapper->findOne(['id' => $id]);
 	}
@@ -40,17 +45,20 @@ class ElectionRepository
 		return $this->electionMapper->findAll();
 	}
 
-	public function getDataSource(): IDataSource
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->electionMapper->getDataSource();
+		return $this->electionMapper->getDataSource($filter);
 	}
 
-	public function save(Election $election)
+	/**
+	 * @throws SavingErrorException
+	 */
+	public function save(Election $election): bool
 	{
 		return $this->electionMapper->save($election);
 	}
 
-	public function delete(Election $election)
+	public function delete(Election $election): bool
 	{
 		return $this->electionMapper->delete($election);
 	}

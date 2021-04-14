@@ -2,23 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Repositories;
+namespace App\Repositories;
 
-use Models\Entities\Election\Answer;
-use Models\Entities\Election\Question;
-use Models\Mappers\IAnswerMapper;
+use App\Models\Entities\Election\Answer;
+use App\Models\Entities\Election\Question;
+use App\Models\Mappers\Exception\DeletingErrorException;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
+use App\Models\Mappers\AnswerMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class AnswerRepository
 {
-	private IAnswerMapper $answerMapper;
+	private AnswerMapper $answerMapper;
 
-	public function __construct(IAnswerMapper $answerMapper)
+	public function __construct(AnswerMapper $answerMapper)
 	{
 		$this->answerMapper = $answerMapper;
 	}
 
-	public function findById(int $id): ?Answer
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function findById(int $id): Answer
 	{
 		return $this->answerMapper->findOne(['id' => $id]);
 	}
@@ -35,19 +41,25 @@ class AnswerRepository
 		return $this->answerMapper->findRelated($question);
 	}
 
-	public function getDataSource(): IDataSource
+	public function getDataSource(array $filter = []): IDataSource
 	{
-		return $this->answerMapper->getDataSource();
+		return $this->answerMapper->getDataSource($filter);
 	}
 
-	public function save(Answer $election): bool
+	/**
+	 * @throws SavingErrorException
+	 */
+	public function save(Answer $answer): bool
 	{
-		return $this->answerMapper->save($election);
+		return $this->answerMapper->save($answer);
 	}
 
-	public function delete(Answer $election): bool
+	/**
+	 * @throws DeletingErrorException
+	 */
+	public function delete(Answer $answer): bool
 	{
-		return $this->answerMapper->delete($election);
+		return $this->answerMapper->delete($answer);
 	}
 
 	public function deleteRelated(Question $question): bool

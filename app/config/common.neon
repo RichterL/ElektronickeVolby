@@ -21,10 +21,10 @@ extensions:
 	- Contributte\FormMultiplier\DI\MultiplierExtension
 
 decorator:
-		Repositories\BaseRepository:
+		App\Repositories\BaseRepository:
 			setup:
 				- setCache(@repositoryCache)
-		Models\Mappers\Db\BaseMapper:
+		App\Models\Mappers\Db\BaseDbMapper:
 			setup:
 				- setDibi()
 				- setCache(@mapperCache)
@@ -40,23 +40,24 @@ services:
 	mapperCache: Nette\Caching\Cache(namespace: 'mapperCache')
 
 	# ldap settings from parameters: of local.neon
-	ldap: LDAP\Service(%ldap.server%, %ldap.baseDn%)
+	ldap: App\Core\Classes\LDAP\Service(%ldap.server%, %ldap.baseDn%)
 
 	# set available authenticators
 	-
-		factory: LdapAuthenticator
+		factory: App\Core\Classes\LdapAuthenticator
 		autowired: self
 	-
-		factory: PasswordAuthenticator
+		factory: App\Core\Classes\PasswordAuthenticator
 		autowired: self
 
-	authorizatorFactory : AuthorizatorFactory
+	authorizatorFactory : App\Core\Classes\AuthorizatorFactory
 	authorizator:
 		class: Nette\Security\Permission
 		factory: @authorizatorFactory::create()
 
 	# factories
-	- Models\Entities\Rule\RuleFactory
+	- App\Models\Factories\RuleFactory
+	- App\Models\Factories\BallotFactory
 
 	# formFactory
 	- App\Forms\FormFactory
@@ -67,25 +68,27 @@ services:
 	- App\Frontend\Classes\ElectionsFacade
 
 	# data mappers
-	iprivilegeMapper: Models\Mappers\Db\PrivilegeMapper
-	iResourceMapper: Models\Mappers\Db\ResourceMapper
-	iroleMapper : Models\Mappers\Db\RoleMapper
-	iuserMapper : Models\Mappers\Db\UserMapper
-	iRuleMapper: Models\Mappers\Db\RuleMapper
-	iElectionMapper: Models\Mappers\Db\ElectionMapper
-	iVoterFileMapper: Models\Mappers\Db\VoterFileMapper
-	iVoterMapper: Models\Mappers\Db\VoterMapper
-	iQuestionMapper: Models\Mappers\Db\QuestionMapper
-	iAnswerMapper: Models\Mappers\Db\AnswerMapper
+	PrivilegeMapper: App\Models\Mappers\Db\PrivilegeDbMapper
+	ResourceMapper: App\Models\Mappers\Db\ResourceDbMapper
+	RoleMapper : App\Models\Mappers\Db\RoleDbMapper
+	UserMapper : App\Models\Mappers\Db\UserDbMapper
+	RuleMapper: App\Models\Mappers\Db\RuleDbMapper
+	ElectionMapper: App\Models\Mappers\Db\ElectionDbMapper
+	VoterFileMapper: App\Models\Mappers\Db\VoterFileDbMapper
+	VoterMapper: App\Models\Mappers\Db\VoterDbMapper
+	QuestionMapper: App\Models\Mappers\Db\QuestionDbMapper
+	AnswerMapper: App\Models\Mappers\Db\AnswerDbMapper
+	BallotMapper: App\Models\Mappers\Db\BallotDbMapper
 
 	# repositories
-	privilegeRepository: Repositories\PrivilegeRepository
-	resourceRepository: Repositories\ResourceRepository
-	roleRepository: Repositories\RoleRepository
-	userRepository : Repositories\UserRepository
-	ruleRepository: Repositories\RuleRepository
-	electionRepository: Repositories\ElectionRepository
-	voterFileRepository: Repositories\VoterFileRepository
-	voterRepository: Repositories\VoterRepository
-	questionRepository: Repositories\QuestionRepository
-	answerRepository: Repositories\AnswerRepository
+	privilegeRepository: App\Repositories\PrivilegeRepository
+	resourceRepository: App\Repositories\ResourceRepository
+	roleRepository: App\Repositories\RoleRepository
+	userRepository : App\Repositories\UserRepository
+	ruleRepository: App\Repositories\RuleRepository
+	electionRepository: App\Repositories\ElectionRepository
+	voterFileRepository: App\Repositories\VoterFileRepository
+	voterRepository: App\Repositories\VoterRepository
+	questionRepository: App\Repositories\QuestionRepository
+	answerRepository: App\Repositories\AnswerRepository
+	- App\Repositories\BallotRepository

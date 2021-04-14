@@ -1,23 +1,24 @@
 <?php
+declare(strict_types=1);
 
-namespace Models\Entities\Rule;
+namespace App\Models\Entities\Rule;
 
-use Utils\ValueObject\EnumTrait;
-use Utils\ValueObject\ValueObject;
+use App\Core\Utils\ValueObject\EnumTrait;
+use App\Core\Utils\ValueObject\ValueObject;
 
 class Type implements ValueObject
 {
-	const ALLOW = 1;
-	const DENY = 2;
+	public const ALLOW = 1;
+	public const DENY = 2;
 
-	private $names = [
+	private array $names = [
 		self::ALLOW => 'allow',
 		self::DENY => 'deny',
 	];
 
 	use EnumTrait;
 
-	public function getName()
+	public function getName(): string
 	{
 		return $this->names[$this->getValue()];
 	}

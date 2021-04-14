@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace Models\Entities\Election;
+namespace App\Models\Entities\Election;
 
 use DateTimeInterface;
-use Models\Entities\Entity;
-use Models\Entities\IdentifiedById;
-use Models\Entities\User;
-use Models\Traits\Entity\HasId;
+use App\Models\Entities\Entity;
+use App\Models\Entities\IdentifiedById;
+use App\Models\Entities\User;
+use App\Models\Traits\Entity\HasId;
 
 /**
  * @property int|null $id

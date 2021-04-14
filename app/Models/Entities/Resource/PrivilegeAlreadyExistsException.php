@@ -1,7 +1,10 @@
 <?php
+declare(strict_types=1);
 
-namespace Models\Entities\Resource;
+namespace App\Models\Entities\Resource;
 
-class PrivilegeAlreadyExistsException extends \Exception
+use Exception;
+
+class PrivilegeAlreadyExistsException extends Exception
 {
 }

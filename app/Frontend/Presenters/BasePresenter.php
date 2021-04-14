@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Frontend\Presenters;
 
-use Models\Entities\User;
+use App\Models\Entities\User;
 use Nette;
 
 abstract class BasePresenter extends Nette\Application\UI\Presenter
