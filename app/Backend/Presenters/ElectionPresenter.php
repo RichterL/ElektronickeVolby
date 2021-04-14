@@ -237,7 +237,37 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function createComponentVoterFilesGrid()
+	public function handleActivate(): void
+	{
+		try {
+			if ($this->election->active) {
+				$this->flashMessage('Election is already active', 'info');
+				return;
+			}
+			$this->election->setActive();
+			$this->electionRepository->save($this->election);
+			$this->flashMessage('Election activated!', 'success');
+		} catch (SavingErrorException $e) {
+			$this->flashMessage('Activating failed!', 'error');
+		}
+	}
+
+	public function handleDeactivate(): void
+	{
+		try {
+			if (!$this->election->active) {
+				$this->flashMessage('Election is already inactive', 'info');
+				return;
+			}
+			$this->election->setActive(false);
+			$this->electionRepository->save($this->election);
+			$this->flashMessage('Election deactivated!', 'success');
+		} catch (SavingErrorException $e) {
+			$this->flashMessage('Deactivating failed!', 'error');
+		}
+	}
+
+	public function createComponentVoterFilesGrid(): void
 	{
 		$this->addGrid('voterFilesGrid', $this->voterFileRepository->getDataSource(['election_id' => $this->getParameter('id')]))
 			->addColumn(Column::NUMBER, 'id', 'id')

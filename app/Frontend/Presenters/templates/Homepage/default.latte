@@ -1,4 +1,4 @@
-{varType Models\Entities\Election\Election $election}
+{varType App\Models\Entities\Election\Election $election}
 {block content}
 <h1>UTB voting system</h1>
 {dump}
@@ -17,16 +17,16 @@
 
 <div class="row">
 	<div n:foreach="$allElections as $election" class="col-md-6 col-lg-4 col-xl-3 my-3">
-		<div  n:class="!$election->active ? 'disabled border-secondary bg-light' : 'border-primary', 'card'">
+		<div  n:class="!$election->isActive() ? 'disabled border-secondary bg-light' : 'border-primary', 'card'">
 			<div class="card-header">{$election->title}</div>
 			<div n:class="!$election->active ? 'text-secondary', 'card-body'">
 				Je aktivni : {$election->isActive() ? "ano" : "ne"}<br>
 				Probiha: {$election->isRunning() ? "ano" : "ne"}<br>
-				Zacatek : {$election->start}<br>
-				Konec : {$election->end}<br>
+				Zacatek : {$election->start|formatDate} ({$election->start|formatDateUntil})<br>
+				Konec : {$election->end|formatDate} ({$election->end|formatDateUntil})<br>
 			</div>
 			<div class="card-fotter bg-primary">
-				<a n:href="Voting: $election->id" n:class="!$election->active ? 'btn-secondary disabled' : 'btn-primary stretched-link', 'btn btn-block text-uppercase'" role="button">Chci volit!</a>
+				<a n:href="Voting: $election->id" n:class="!$election->isRunning() ? 'btn-secondary disabled' : 'btn-primary stretched-link', 'btn btn-block text-uppercase'" role="button">Chci volit!</a>
 			</div>
 		</div>
 	</div>

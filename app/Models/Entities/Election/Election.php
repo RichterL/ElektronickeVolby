@@ -80,6 +80,12 @@ class Election extends Entity implements IdentifiedById
 		return $this;
 	}
 
+	public function setActive(bool $active = true): Election
+	{
+		$this->active = $active;
+		return $this;
+	}
+
 	private function getDateTime($value): \DateTimeInterface
 	{
 		if (is_string($value)) {
