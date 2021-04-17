@@ -5,24 +5,32 @@ namespace App\Backend\Utils\DataGrid;
 
 use App\Core\Utils\Constants;
 use InvalidArgumentException;
+use Nette\Security\User;
 use Ublaboo\DataGrid\Column\Action\Confirmation\IConfirmation;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class DataGrid
 {
 	private \Ublaboo\DataGrid\DataGrid $grid;
+	private ?User $user = null;
+	private ?string $resource = null;
 
-	public function __construct(IDataSource $dataSource, string $primaryKey = 'id')
+	public function __construct(IDataSource $dataSource, User $user = null, string $resource = null, string $primaryKey = 'id')
 	{
 		$this->grid = new \Ublaboo\DataGrid\DataGrid();
 		$this->grid->setPrimaryKey($primaryKey);
 		$this->grid->setDataSource($dataSource);
+		$this->user = $user;
+		$this->resource = $resource;
 	}
 
-	public function addAction(string $type, ?string $destination = null, ?array $params = null, bool $ajax = true, bool $keepHistory = false): self
+	public function addAction(string $type, ?string $destination = null, ?array $params = null, bool $ajax = true, bool $keepHistory = false, bool $restricted = true): self
 	{
 		if (!Action::isValid($type)) {
 			throw new InvalidArgumentException('Action ' . $type . ' is not defined');
+		}
+		if ($this->resource !== null && $restricted && !$this->user->isAllowed($this->resource, $type)) {
+			return $this;
 		}
 		$action = $this->grid->addAction($type, '', $destination, $params);
 		switch ($type) {
@@ -62,8 +70,11 @@ class DataGrid
 		return $this;
 	}
 
-	public function addConfirmAction(string $type, IConfirmation $confirm, ?string $destination = null, ?array $params = null): self
+	public function addConfirmAction(string $type, IConfirmation $confirm, ?string $destination = null, ?array $params = null, bool $restricted = true): self
 	{
+		if ($this->resource !== null && $restricted && !$this->user->isAllowed($this->resource, $type)) {
+			return $this;
+		}
 		$this->addAction($type, $destination, $params);
 		$this->grid->getAction($type)->setConfirmation($confirm);
 		return $this;
@@ -112,8 +123,11 @@ class DataGrid
 		return $this->grid;
 	}
 
-	public function addToolbarButton(string $type, string $title = '', string $destination = ''): self
+	public function addToolbarButton(string $type, string $title = '', string $destination = '', bool $restricted = true): self
 	{
+		if ($this->resource !== null && $restricted && !$this->user->isAllowed($this->resource, $type)) {
+			return $this;
+		}
 		switch ($type) {
 			case ToolbarButton::ADD:
 				$this->grid->addToolbarButton($destination, $title)
