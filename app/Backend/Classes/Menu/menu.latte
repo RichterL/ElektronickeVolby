@@ -1,6 +1,6 @@
 {define menuLink, $item}
 	<li class="">
-	<a id="nav-link-{=lcfirst($item['name'])}" href="{plink $item['link']}">
+	<a n:ifset="$item['link']" id="nav-link-{=lcfirst($item['name'])}" href="{plink $item['link']}">
 		<i n:if="!empty($item['icon'])" class="fa fa-{$item['icon']}"></i><span> {$item['name']} </span>
 	</a>
 	</li>
@@ -8,9 +8,7 @@
 
 {define menuItem, $values}
 	{if empty($values['childs'])}
-
-			{include menuLink, $values}
-
+		{include menuLink, $values}
 	{else}
 		<li>
 			<a href="#" data-toggle="collapse" class="collapsed" data-target="#nav-link-section-{$values['name']}">

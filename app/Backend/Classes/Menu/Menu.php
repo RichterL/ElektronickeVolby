@@ -47,44 +47,40 @@ class Menu extends Control
 			'name' => 'Elections',
 			'link' => 'Elections:',
 			'icon' => 'clipboard',
+			'resource' => 'elections',
+			'privilege' => 'view',
 		],
 	];
 
 	public function render(): void
 	{
 		$this->user = $this->presenter->getUser();
-		$this->checkPermissions();
+		$this->template->items = $this->load();
 		$this->template->render(__DIR__ . '/menu.latte');
 	}
 
-	private function checkPermissions(): void
+	private function load(): array
 	{
-		$tmp = [];
+		$menu = [];
 		foreach (self::MENU_ITEMS as $item) {
-			if ($this->checkItem($item)) {
-				$tmp[] = $item;
+			if (array_key_exists('resource', $item)
+				&& !$this->user->isAllowed($item['resource'], $item['privilege'])
+			) {
+				continue;
 			}
-		}
-
-		$this->template->items = $tmp;
-	}
-
-	private function checkItem(array $item): array
-	{
-		$tmp = $item;
-		unset($tmp['childs']);
-		if (array_key_exists('resource', $item)
-			&& !$this->user->isAllowed($item['resource'], $item['privilege'])
-		) {
-			return $tmp;
-		}
-		if (!empty($item['childs'])) {
-			foreach ($item['childs'] as $child) {
-				if ($this->checkItem($child)) {
-					$tmp['childs'] = $child;
+			if (!empty($item['childs'])) {
+				$tmp = [];
+				foreach ($item['childs'] as $child) {
+					if (array_key_exists('resource', $child)
+						&& $this->user->isAllowed($child['resource'], $child['privilege'])
+					) {
+						$tmp[] = $child;
+					}
 				}
+				$item['childs'] = $tmp;
 			}
+			$menu[] = $item;
 		}
-		return $tmp;
+		return $menu;
 	}
 }
