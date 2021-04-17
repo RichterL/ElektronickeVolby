@@ -5,10 +5,14 @@ namespace App\Models\Entities\Election;
 
 use App\Models\Traits\Entity\HasId;
 use App\Core\Utils\Constants;
+use DateTimeInterface;
+use Exception;
 use InvalidArgumentException;
 use App\Models\Entities\Entity;
 use App\Models\Entities\IdentifiedById;
 use App\Models\Entities\User;
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA\PublicKey;
 
 /**
  * @property int|null $id
@@ -16,11 +20,12 @@ use App\Models\Entities\User;
  * @property string $description
  * @property bool $active
  * @property bool $secret
- * @property \DateTimeInterface $start
- * @property \DateTimeInterface $end
- * @property \DateTimeInterface $createdAt
+ * @property DateTimeInterface $start
+ * @property DateTimeInterface $end
+ * @property DateTimeInterface $createdAt
  * @property User $createdBy
  * @property Question[] $questions
+ * @property string $publicKey
  */
 class Election extends Entity implements IdentifiedById
 {
@@ -28,11 +33,12 @@ class Election extends Entity implements IdentifiedById
 	protected string $description;
 	protected bool $active;
 	protected bool $secret;
-	protected \DateTimeInterface $start;
-	protected \DateTimeInterface $end;
-	protected \DateTimeInterface $createdAt;
+	protected DateTimeInterface $start;
+	protected DateTimeInterface $end;
+	protected DateTimeInterface $createdAt;
 	protected User $createdBy;
 	protected iterable $questions = [];
+	protected ?string $publicKey = null;
 
 	use HasId;
 
@@ -47,18 +53,27 @@ class Election extends Entity implements IdentifiedById
 		return $this->active;
 	}
 
+	/**
+	 * @param string|DateTimeInterface $from
+	 */
 	public function setStart($from): self
 	{
 		$this->start = $this->getDateTime($from);
 		return $this;
 	}
 
+	/**
+	 * @param string|DateTimeInterface $to
+	 */
 	public function setEnd($to): self
 	{
 		$this->end = $this->getDateTime($to);
 		return $this;
 	}
 
+	/**
+	 * @param string|DateTimeInterface $datetime
+	 */
 	public function setCreatedAt($datetime): self
 	{
 		$this->createdAt = $this->getDateTime($datetime);
@@ -72,7 +87,7 @@ class Election extends Entity implements IdentifiedById
 
 	public function setQuestions(iterable $questions): self
 	{
-		/** @var Question */
+		/** @var Question $question */
 		foreach ($questions as $question) {
 			$question->setElection($this);
 		}
@@ -86,12 +101,32 @@ class Election extends Entity implements IdentifiedById
 		return $this;
 	}
 
-	private function getDateTime($value): \DateTimeInterface
+	public function getRawPublicKey(): ?string
+	{
+		return $this->publicKey;
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	public function getPublicKey(): PublicKey
+	{
+		$key = PublicKeyLoader::load($this->publicKey);
+		if ($key instanceof PublicKey) {
+			return $key;
+		}
+		throw new Exception('Loading the public key failed');
+	}
+
+	/**
+	 * @param string|DateTimeInterface $value
+	 */
+	private function getDateTime($value): DateTimeInterface
 	{
 		if (is_string($value)) {
 			$value = \DateTime::createFromFormat(Constants::DATETIME_FORMAT, $value);
 		}
-		if (!$value instanceof \DateTimeInterface) {
+		if (!$value instanceof DateTimeInterface) {
 			throw new InvalidArgumentException('Datetime format not supported, use DateTime or string format ' . Constants::DATETIME_FORMAT);
 		}
 		return $value;

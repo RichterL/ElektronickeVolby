@@ -21,6 +21,8 @@ use App\Repositories\UserRepository;
 use App\Repositories\VoterFileRepository;
 use App\Repositories\VoterRepository;
 use Nette\Http\FileUpload;
+use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA\PublicKey;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Ublaboo\DataGrid\DataSource\ArrayDataSource;
 use App\Backend\Utils\DataGrid\Action;
@@ -120,6 +122,56 @@ final class ElectionPresenter extends DefaultPresenter
 			$this->flashMessage('Deactivating failed!', 'error');
 		}
 	}
+
+	public function handleImportPublicKey()
+	{
+		$this->template->showImportPublicKeyForm = true;
+		$this->template->showModal = true;
+		$this->payload->showModal = true;
+		$this->payload->modalId = 'myModal';
+		$this->template->modalControl = 'importPublicKeyForm';
+		if ($this->isAjax()) {
+			// $this->redrawControl('cardSnippet');
+			$this->redrawControl('modal');
+			$this->redrawControl('scripts');
+		}
+	}
+
+	public function createComponentImportPublicKeyForm(): BootstrapForm
+	{
+		$form = new BootstrapForm();
+		$form->setRenderMode(RenderMode::SIDE_BY_SIDE_MODE);
+		$form->setAjax();
+		$form->addUpload('file', 'Upload')->setHtmlAttribute('accept', '.pem');
+		$form->addSubmit('submit', 'Import')->setHtmlAttribute('data-dismiss', 'modal');
+		$form->onSuccess[] = [$this, 'importPublicKeyFormSuccess'];
+		return $form;
+	}
+
+	public function importPublicKeyFormSuccess(Form $form, array $values): void
+	{
+		try {
+			/** @var FileUpload $file */
+			$file = $values['file'];
+
+			$publicKey = PublicKeyLoader::load($file->getContents(), 'heslo');
+			if (!$publicKey instanceof PublicKey) {
+				$this->flashMessage('Wrong key supplied, please provide valid RSA <b>public</b> key', 'error');
+				$this->redirect('this');
+			}
+			unset($values['file']);
+			$values['content'] = $file->getContents();
+			$values['createdAt'] = new \DateTime();
+			$values['createdBy'] = $this->getUser()->getIdentity();
+			$this->election->publicKey = $file->getContents();
+			$this->electionRepository->save($this->election);
+			$this->flashMessage('import success', 'success');
+			$this->redirect(':overview', ['id' => (int) $this->getParameter('id')]);
+		} catch (SavingErrorException | EntityNotFoundException $e) {
+			$this->flashMessage('import failed', 'error');
+		}
+	}
+
 
 	/* QUESTIONS */
 
@@ -376,7 +428,7 @@ final class ElectionPresenter extends DefaultPresenter
 			$csv[] = $line;
 		}
 		$datasource = new ArrayDataSource($csv);
-		$this->addGrid('voterFileDetailGrid', $datasource, '2')
+		$this->addGrid('voterFileDetailGrid', $datasource, null, '2')
 			->addColumn(Column::TEXT, '0', 'name')
 			->addColumn(Column::TEXT, '1', 'surname')
 			->addColumn(Column::TEXT, '2', 'email');

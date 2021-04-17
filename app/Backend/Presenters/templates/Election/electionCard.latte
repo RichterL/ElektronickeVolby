@@ -22,7 +22,7 @@
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
 				<a class="dropdown-item ajax" n:href="importVoterList!" data-naja-history="off">Import voter list</a>
-				<a class="dropdown-item" href="#">Another action</a>
+				<a class="dropdown-item ajax" n:href="importPublicKey!" n:if="$user->isInRole(\App\Core\Utils\Constants::ROLE_COMMITTEE)">Import public key</a>
 				<a class="dropdown-item" href="#">Something else here</a>
 				<div class="dropdown-divider"></div>
 				<a class="dropdown-item" href="#">Separated link</a>
