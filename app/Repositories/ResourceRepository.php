@@ -12,6 +12,8 @@ use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ResourceRepository extends BaseRepository
 {
+	public const CACHE_NAMESPACE = 'resources';
+
 	private ResourceMapper $resourceMapper;
 
 	public function __construct(ResourceMapper $resourceMapper)
@@ -40,7 +42,7 @@ class ResourceRepository extends BaseRepository
 	 */
 	public function findAll(): array
 	{
-		return $this->cache->load('resource.findAll', function () {
+		return $this->cache->load('findAll', function () {
 			return $this->resourceMapper->findAll();
 		});
 	}
@@ -61,9 +63,10 @@ class ResourceRepository extends BaseRepository
 	/**
 	 * @throws SavingErrorException
 	 */
-	public function save(Resource $resource): bool
+	public function save(Resource $resource): void
 	{
-		return $this->resourceMapper->save($resource);
+		$this->resourceMapper->save($resource);
+		$this->invalidate();
 	}
 
 	public function getDataSource(array $filter = []): IDataSource

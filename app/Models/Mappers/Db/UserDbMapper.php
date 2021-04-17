@@ -91,12 +91,6 @@ class UserDbMapper extends BaseDbMapper implements UserMapper
 	/** @return User[] */
 	public function findAll(): array
 	{
-		try {
-			return $this->cache->load('user.findAll', function () {
-				throw new Exception('error');
-			});
-		} catch (\Throwable $e) {
-			return parent::findAll();
-		}
+		return parent::findAll();
 	}
 }

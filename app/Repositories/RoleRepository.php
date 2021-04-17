@@ -13,6 +13,8 @@ use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class RoleRepository extends BaseRepository
 {
+	public const CACHE_NAMESPACE = 'roles';
+
 	private RoleMapper $roleMapper;
 	private RuleMapper $ruleMapper;
 
@@ -43,7 +45,7 @@ class RoleRepository extends BaseRepository
 
 	public function findAll(bool $includeRules = false)
 	{
-		return $this->cache->load('role.findAll', function () use ($includeRules) {
+		return $this->cache->load('findAll', function () use ($includeRules) {
 			$roles = $this->roleMapper->findAll();
 			if ($includeRules) {
 				foreach ($roles as $role) {

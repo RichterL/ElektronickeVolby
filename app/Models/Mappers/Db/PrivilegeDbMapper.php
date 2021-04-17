@@ -67,15 +67,13 @@ class PrivilegeDbMapper extends BaseDbMapper implements PrivilegeMapper
 
 	public function findAll(): PrivilegeCollection
 	{
-		return $this->cache->load('privilege.findAll', function () {
-			$privileges = new PrivilegeCollection();
-			$result = $this->dibi->select(array_values(self::MAP))
-				->from($this->table)
-				->fetchAssoc('id,=');
-			foreach ($result as $id => $values) {
-				$privileges[] = $this->create($values)->setId($id);
-			}
-			return $privileges;
-		});
+		$privileges = new PrivilegeCollection();
+		$result = $this->dibi->select(array_values(self::MAP))
+			->from($this->table)
+			->fetchAssoc('id,=');
+		foreach ($result as $id => $values) {
+			$privileges[] = $this->create($values)->setId($id);
+		}
+		return $privileges;
 	}
 }

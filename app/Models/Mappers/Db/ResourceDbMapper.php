@@ -88,8 +88,6 @@ class ResourceDbMapper extends BaseDbMapper implements ResourceMapper
 	/** @var Resource[] */
 	public function findAll(): array
 	{
-		return $this->cache->load('resource.findAll', function () {
-			return parent::findAll();
-		});
+		return parent::findAll();
 	}
 }

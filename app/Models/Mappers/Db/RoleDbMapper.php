@@ -86,8 +86,6 @@ class RoleDbMapper extends BaseDbMapper implements RoleMapper
 	 */
 	public function findAll(): array
 	{
-		return $this->cache->load('role.findAll', function () {
-			return parent::findAll();
-		});
+		return parent::findAll();
 	}
 }

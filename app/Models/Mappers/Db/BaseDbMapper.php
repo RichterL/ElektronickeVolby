@@ -10,14 +10,12 @@ use dibi;
 use Dibi\Connection;
 use App\Models\Entities\Entity;
 use App\Models\Entities\IdentifiedById;
-use Nette\Caching\Cache;
 use Nette\InvalidStateException;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 abstract class BaseDbMapper
 {
 	protected Connection $dibi;
-	protected Cache $cache;
 	protected string $table;
 
 	protected const MAP = [];
@@ -26,11 +24,6 @@ abstract class BaseDbMapper
 	public function setDibi(Connection $dibi): void
 	{
 		$this->dibi = $dibi;
-	}
-
-	public function setCache(Cache $cache): void
-	{
-		$this->cache = $cache;
 	}
 
 	public function init(): void
