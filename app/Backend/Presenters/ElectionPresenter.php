@@ -427,60 +427,12 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->template->selectedTab = 'voterList';
 	}
 
-	public function handleDeleteVoterFile(int $voterFileId): void
+	public function createComponentVoterListGrid(): void
 	{
-		$voterFile = $this->voterFileRepository->findById($voterFileId);
-		if (!$voterFileId) {
-			$this->flashMessage('Election wasn\'t found!', 'error');
-			return;
-		}
-		if ($this->voterFileRepository->delete($voterFile)) {
-			$this->flashMessage('Voter file ' . $voterFile->filename . ' deleted', 'success');
-			$this->getGrid('voterFilesGrid')->reload();
-		}
-	}
-
-	public function handleShowVoterFileDetail(int $voterFileId): void
-	{
-		$this->template->voterFileDetail = $this->voterFileRepository->findById($voterFileId);
-		$this->template->showVoterFileDetail = true;
-		$this->template->showModal = true;
-		$this->payload->showModal = true;
-		$this->payload->modalId = 'myModal';
-		$this->template->modalControl = 'voterFileDetailGrid';
-		if ($this->isAjax()) {
-			$this->redrawControl('modal');
-		}
-	}
-
-	public function handleImportVoterList(): void
-	{
-		$this->template->showImportVoterListForm = true;
-		$this->template->showModal = true;
-		$this->payload->showModal = true;
-		$this->payload->modalId = 'myModal';
-		$this->template->modalControl = 'importVoterListForm';
-		if ($this->isAjax()) {
-			// $this->redrawControl('cardSnippet');
-			$this->redrawControl('modal');
-			$this->redrawControl('scripts');
-		}
-	}
-
-	public function handleDownloadVoterFile(int $voterFileId): void
-	{
-		if ($this->isAjax()) {
-			$this->redirectUrl($this->link('downloadVoterFile!', ['voterFileId' => $voterFileId]), 302);
-		}
-		$voterFile = $this->voterFileRepository->findById($voterFileId);
-		$content = $voterFile->getContent();
-		$this->sendResponse(new CsvResponse($voterFile->filename, $voterFile->content));
-	}
-
-	public function handleApplyVoterFile(int $voterFileId): void
-	{
-		$voterFile = $this->voterFileRepository->findById($voterFileId);
-		$this->voterRepository->importFromFile($this->election, $voterFile);
-		$this->flashMessage('Voter file applied!', 'success');
+		$this->addGrid('voterListGrid', $this->voterRepository->getDataSource(['election_id' => $this->election->getId()]))
+			->addColumn(Column::NUMBER, 'id', 'id')
+			->addColumn(Column::FILTERTEXT, 'email', 'Email')
+			->addColumn(Column::BOOL, 'voted', 'voted')
+			->addColumn(Column::DATETIME, 'timestamp', 'timestamp');
 	}
 }
