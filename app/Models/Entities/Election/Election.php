@@ -64,6 +64,9 @@ class Election extends Entity implements IdentifiedById
 	 */
 	public function setStart($from): self
 	{
+		if (isset($this->start) && $this->isRunning()) {
+			throw new InvalidStateException('Cannot change running election!');
+		}
 		$this->start = $this->getDateTime($from);
 		return $this;
 	}
@@ -73,6 +76,9 @@ class Election extends Entity implements IdentifiedById
 	 */
 	public function setEnd($to): self
 	{
+		if (isset($this->end) && $this->isRunning()) {
+			throw new InvalidStateException('Cannot change running election!');
+		}
 		$this->end = $this->getDateTime($to);
 		return $this;
 	}
@@ -82,6 +88,9 @@ class Election extends Entity implements IdentifiedById
 	 */
 	public function setCreatedAt($datetime): self
 	{
+		if (isset($this->createdAt) && $this->isRunning()) {
+			throw new InvalidStateException('Cannot change running election!');
+		}
 		$this->createdAt = $this->getDateTime($datetime);
 		return $this;
 	}
@@ -93,6 +102,9 @@ class Election extends Entity implements IdentifiedById
 
 	public function setQuestions(iterable $questions): self
 	{
+		if (!empty($this->questions) && $this->isRunning()) {
+			throw new InvalidStateException('Cannot change running election!');
+		}
 		/** @var Question $question */
 		foreach ($questions as $question) {
 			$question->setElection($this);
@@ -103,6 +115,14 @@ class Election extends Entity implements IdentifiedById
 
 	public function setActive(bool $active = true): Election
 	{
+		if (isset($this->active)) {
+			if ($this->isRunning()) {
+				throw new InvalidStateException('Cannot change running election!');
+			}
+			if ($active === true) {
+				$this->checkReady();
+			}
+		}
 		$this->active = $active;
 		return $this;
 	}
@@ -189,6 +209,14 @@ class Election extends Entity implements IdentifiedById
 		throw new InvalidStateException('Singing key cannot be changed once set.');
 	}
 
+	public function __set(string $key, $value): void
+	{
+		if (isset($this->$key) && $this->isRunning()) {
+			throw new InvalidStateException('Cannot change running election!');
+		}
+		parent::__set($key, $value);
+	}
+
 	/**
 	 * @param string|DateTimeInterface $value
 	 */
@@ -201,6 +229,20 @@ class Election extends Entity implements IdentifiedById
 			throw new InvalidArgumentException('Datetime format not supported, use DateTime or string format ' . Constants::DATETIME_FORMAT);
 		}
 		return $value;
+	}
+
+	private function checkReady(): void
+	{
+		if ($this->active === false && empty($this->encryptionKey)) {
+			throw new InvalidStateException('Cannot activate election before supplying encryption key.');
+		}
+		$now = new \DateTime();
+		if ($this->active === false && $now > $this->start) {
+			throw new InvalidStateException('This election is past start date.');
+		}
+		if (empty($this->questions)) {
+			throw new InvalidStateException('There are no questions set for this election!');
+		}
 	}
 
 	public function toArray(): array

@@ -21,7 +21,7 @@ use App\Repositories\UserRepository;
 use App\Repositories\VoterFileRepository;
 use App\Repositories\VoterRepository;
 use Nette\Http\FileUpload;
-use Nette\InvalidArgumentException;
+use Nette\InvalidStateException;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Ublaboo\DataGrid\DataSource\ArrayDataSource;
 use App\Backend\Utils\DataGrid\Action;
@@ -104,6 +104,8 @@ final class ElectionPresenter extends DefaultPresenter
 			$this->flashMessage('Election activated!', 'success');
 		} catch (SavingErrorException $e) {
 			$this->flashMessage('Activating failed!', 'error');
+		} catch (InvalidStateException $e) {
+			$this->flashMessage($e->getMessage(), 'error');
 		}
 	}
 
@@ -119,11 +121,17 @@ final class ElectionPresenter extends DefaultPresenter
 			$this->flashMessage('Election deactivated!', 'success');
 		} catch (SavingErrorException $e) {
 			$this->flashMessage('Deactivating failed!', 'error');
+		} catch (InvalidStateException $e) {
+			$this->flashMessage($e->getMessage(), 'error');
 		}
 	}
 
 	public function handleImportPublicKey()
 	{
+		if ($this->election->isRunning()) {
+			$this->flashMessage('Cannot change running election!', 'error');
+			return;
+		}
 		$this->template->showImportPublicKeyForm = true;
 		$this->template->showModal = true;
 		$this->payload->showModal = true;
@@ -180,6 +188,10 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function handleEditQuestion(int $questionId): void
 	{
+		if ($this->election->isRunning()) {
+			$this->flashMessage('Cannot change running election!', 'error');
+			return;
+		}
 		try {
 			$question = $this->questionRepository->findById($questionId);
 			/** @var QuestionForm */
@@ -203,6 +215,10 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function handleShowQuestionForm(): void
 	{
+		if ($this->election->isRunning()) {
+			$this->flashMessage('Cannot change running election!', 'error');
+			return;
+		}
 		$this->template->showQuestionForm = true;
 		if ($this->isAjax()) {
 			$this->redrawControl('formSnippet');
@@ -219,6 +235,10 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function handleDeleteQuestion(int $questionId): void
 	{
+		if ($this->election->isRunning()) {
+			$this->flashMessage('Cannot change running election!', 'error');
+			return;
+		}
 		try {
 			$question = $this->questionRepository->findById($questionId);
 			if ($this->questionRepository->delete($question)) {
@@ -240,27 +260,7 @@ final class ElectionPresenter extends DefaultPresenter
 			->addColumn(Column::NUMBER, 'max', 'max')
 			->addAction(Action::EDIT, 'editQuestion!', ['questionId' => 'id'])
 			->addAction(Action::DELETE, 'deleteQuestion!', ['questionId' => 'id'])
-			->addToolbarButton(ToolbarButton::ADD, 'Add new question', 'showQuestionForm!')
-			->getOriginal();
-		$grid->setItemsDetail();
-		$grid->addInlineAdd()
-			->onControlAdd[] = static function (\Nette\Forms\Container $container) {
-				$container->addText('name', '');
-				$container->addText('question', '');
-				$container->addSelect('required', '', ['no', 'yes']);
-				$container->addSelect('multiple', '', ['no', 'yes']);
-			};
-		$grid->getInlineAdd()->onSubmit[] = function (\Nette\Utils\ArrayHash $values): void {
-			$question = new Question();
-			$question->setRequired((bool) $values['required'])
-				->setMultiple((bool) $values['multiple'])
-				->setName($values['name'])
-				->setQuestion($values['question'])
-				->setElection($this->election);
-			if ($this->questionRepository->save($question)) {
-				$this->flashMessage('Question saved');
-			}
-		};
+			->addToolbarButton(ToolbarButton::ADD, 'Add new question', 'showQuestionForm!');
 	}
 
 	/** @var QuestionFormFactory @inject */
@@ -301,6 +301,10 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function handleDeleteAnswer(int $answerId): void
 	{
+		if ($this->election->isRunning()) {
+			$this->flashMessage('Cannot change running election!', 'error');
+			return;
+		}
 		try {
 			$answer = $this->answerRepository->findById($answerId);
 			if (!$this->answerRepository->delete($answer)) {
@@ -336,6 +340,10 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function handleDeleteVoterFile(int $voterFileId): void
 	{
+		if ($this->election->isRunning()) {
+			$this->flashMessage('Cannot change running election!', 'error');
+			return;
+		}
 		try {
 			$voterFile = $this->voterFileRepository->findById($voterFileId);
 			if ($this->voterFileRepository->delete($voterFile)) {
@@ -363,6 +371,10 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function handleImportVoterList(): void
 	{
+		if ($this->election->isRunning()) {
+			$this->flashMessage('Cannot change running election!', 'error');
+			return;
+		}
 		$this->template->showImportVoterListForm = true;
 		$this->template->showModal = true;
 		$this->template->modalTitle = 'Import voter list';
@@ -392,6 +404,10 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function handleApplyVoterFile(int $voterFileId): void
 	{
+		if ($this->election->isRunning()) {
+			$this->flashMessage('Cannot change running election!', 'error');
+			return;
+		}
 		try {
 			$voterFile = $this->voterFileRepository->findById($voterFileId);
 			$this->voterRepository->importFromFile($this->election, $voterFile);
@@ -450,6 +466,10 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function importVoterListFormSuccess(Form $form, array $values): void
 	{
+		if ($this->election->isRunning()) {
+			$this->flashMessage('Cannot change running election!', 'error');
+			return;
+		}
 		try {
 			/** @var FileUpload */
 			$file = $values['file'];
