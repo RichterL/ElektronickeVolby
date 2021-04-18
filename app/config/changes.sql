@@ -30,3 +30,8 @@ CREATE TABLE `ballot` (
     CONSTRAINT `ballot_ibfk_2` FOREIGN KEY (`decrypted_by`) REFERENCES `user` (`id`),
     CONSTRAINT `ballot_ibfk_3` FOREIGN KEY (`counted_by`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `election`
+    ADD `encryption_key` text COLLATE 'utf8_unicode_ci' NULL AFTER `end`;
+ALTER TABLE `election`
+    ADD `signing_key` text COLLATE 'utf8_unicode_ci' NOT NULL AFTER `encryption_key`;

@@ -7,9 +7,7 @@
 			{block body}
 				{switch $selectedTab}
 					{case overview}
-						<a n:if="!$election->isActive()" n:href="activate!" class="btn btn-primary">Activate this election</a>
-						<a n:if="$election->isActive()" n:href="deactivate!" class="btn btn-warning">Deactivate this election</a>
-						{$election->description}
+						{include overview.latte}
 					{case questions}
 						{control questionsGrid}
 					{case answers}
@@ -35,7 +33,7 @@
 {block modal}
 	{if !empty($showModal)}
 		{embed ../defines/modal.latte, classes: "modal-lg modal-dialog-centered"}
-			{block title}Modal{/block}
+			{block title}{$modalTitle}{/block}
 			{block body}
 				{control $modalControl}
 			{/block}

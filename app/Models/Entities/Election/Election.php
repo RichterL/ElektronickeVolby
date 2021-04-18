@@ -11,8 +11,12 @@ use InvalidArgumentException;
 use App\Models\Entities\Entity;
 use App\Models\Entities\IdentifiedById;
 use App\Models\Entities\User;
+use Nette\InvalidStateException;
 use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib3\Crypt\RSA;
+use phpseclib3\Crypt\RSA\PrivateKey;
 use phpseclib3\Crypt\RSA\PublicKey;
+use phpseclib3\Exception\NoKeyLoadedException;
 
 /**
  * @property int|null $id
@@ -25,7 +29,8 @@ use phpseclib3\Crypt\RSA\PublicKey;
  * @property DateTimeInterface $createdAt
  * @property User $createdBy
  * @property Question[] $questions
- * @property string $publicKey
+ * @property string|null $encryptionKey
+ * @property string $signingKey
  */
 class Election extends Entity implements IdentifiedById
 {
@@ -38,7 +43,8 @@ class Election extends Entity implements IdentifiedById
 	protected DateTimeInterface $createdAt;
 	protected User $createdBy;
 	protected iterable $questions = [];
-	protected ?string $publicKey = null;
+	protected ?string $encryptionKey = null;
+	protected string $signingKey;
 
 	use HasId;
 
@@ -101,21 +107,86 @@ class Election extends Entity implements IdentifiedById
 		return $this;
 	}
 
-	public function getRawPublicKey(): ?string
+	public function getPublicEncryptionKey(): ?PublicKey
 	{
-		return $this->publicKey;
+		if ($this->encryptionKey === null) {
+			return null;
+		}
+		try {
+			$key = PublicKeyLoader::load($this->encryptionKey);
+			if ($key instanceof PublicKey) {
+				return $key;
+			}
+			throw new NoKeyLoadedException();
+		} catch (NoKeyLoadedException $e) {
+			throw new \RuntimeException('Loading the encryption key failed');
+		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
-	public function getPublicKey(): PublicKey
+	public function getPublicSigningKey(): PublicKey
 	{
-		$key = PublicKeyLoader::load($this->publicKey);
-		if ($key instanceof PublicKey) {
-			return $key;
+		try {
+			$private = $this->getPrivateSigningKey();
+			return $private->getPublicKey();
+		} catch (Exception $e) {
+			throw new \RuntimeException('Loading the public signing key failed.');
 		}
-		throw new Exception('Loading the public key failed');
+	}
+
+	public function getPrivateSigningKey(): PrivateKey
+	{
+		try {
+			$key = PublicKeyLoader::load($this->signingKey);
+			if ($key instanceof PrivateKey) {
+				return $key;
+			}
+			throw new NoKeyLoadedException();
+		} catch (NoKeyLoadedException $e) {
+			throw new \RuntimeException('Loading the private signing key failed');
+		}
+	}
+
+	public function setSigningKey(string $signingKey): void
+	{
+		if (isset($this->signingKey)) {
+			throw new InvalidStateException('Signing key cannot be changed');
+		}
+		$key = PublicKeyLoader::load($signingKey);
+		if (!$key instanceof PrivateKey) {
+			throw new InvalidArgumentException('Invalid RSA private key.');
+		}
+		$this->signingKey = $signingKey;
+	}
+
+	public function setEncryptionKey(?string $encryptionKey): void
+	{
+		if ($encryptionKey === null) {
+			return;
+		}
+		if (isset($this->encryptionKey) && ($this->isRunning() || $this->isActive())) {
+			throw new InvalidStateException('Cannot change encryption key while election is active or running!');
+		}
+		$key = PublicKeyLoader::load($encryptionKey);
+		if (isset($this->signingKey)) {
+			$signingKey = $this->getPublicSigningKey();
+			if ($signingKey == $key) {
+				throw new InvalidArgumentException('Cannot use the same key for encryption and signing!');
+			}
+		}
+		if (!$key instanceof PublicKey) {
+			throw new InvalidArgumentException('Invalid RSA public key.');
+		}
+		$this->encryptionKey = $encryptionKey;
+	}
+
+	public function withSigningKey(): Election
+	{
+		if ($this->getId() === null) {
+			$new = clone $this;
+			$new->setSigningKey((string) RSA::createKey());
+			return $new;
+		}
+		throw new InvalidStateException('Singing key cannot be changed once set.');
 	}
 
 	/**

@@ -300,6 +300,10 @@ body {
 	box-shadow: 0 0 0.875rem 0 rgba(42, 49, 66, 0.1);
 }
 
+.card-group .card {
+	box-shadow: none;
+}
+
 .card-election {
 	min-height: 400px;
 }

@@ -21,8 +21,7 @@ use App\Repositories\UserRepository;
 use App\Repositories\VoterFileRepository;
 use App\Repositories\VoterRepository;
 use Nette\Http\FileUpload;
-use phpseclib3\Crypt\PublicKeyLoader;
-use phpseclib3\Crypt\RSA\PublicKey;
+use Nette\InvalidArgumentException;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use Ublaboo\DataGrid\DataSource\ArrayDataSource;
 use App\Backend\Utils\DataGrid\Action;
@@ -128,6 +127,7 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->template->showImportPublicKeyForm = true;
 		$this->template->showModal = true;
 		$this->payload->showModal = true;
+		$this->template->modalTitle = 'Import public key';
 		$this->payload->modalId = 'myModal';
 		$this->template->modalControl = 'importPublicKeyForm';
 		if ($this->isAjax()) {
@@ -153,22 +153,18 @@ final class ElectionPresenter extends DefaultPresenter
 		try {
 			/** @var FileUpload $file */
 			$file = $values['file'];
-
-			$publicKey = PublicKeyLoader::load($file->getContents(), 'heslo');
-			if (!$publicKey instanceof PublicKey) {
-				$this->flashMessage('Wrong key supplied, please provide valid RSA <b>public</b> key', 'error');
-				$this->redirect('this');
-			}
 			unset($values['file']);
 			$values['content'] = $file->getContents();
 			$values['createdAt'] = new \DateTime();
 			$values['createdBy'] = $this->getUser()->getIdentity();
-			$this->election->publicKey = $file->getContents();
+			$this->election->setEncryptionKey($file->getContents());
 			$this->electionRepository->save($this->election);
 			$this->flashMessage('import success', 'success');
 			$this->redirect(':overview', ['id' => (int) $this->getParameter('id')]);
-		} catch (SavingErrorException | EntityNotFoundException $e) {
+		} catch (SavingErrorException $e) {
 			$this->flashMessage('import failed', 'error');
+		} catch (\RuntimeException | \InvalidArgumentException $e) {
+			$this->flashMessage($e->getMessage(), 'error');
 		}
 	}
 
@@ -356,6 +352,7 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->template->voterFileDetail = $this->voterFileRepository->findById($voterFileId);
 		$this->template->showVoterFileDetail = true;
 		$this->template->showModal = true;
+		$this->template->modalTitle = 'Voter file detail';
 		$this->payload->showModal = true;
 		$this->payload->modalId = 'myModal';
 		$this->template->modalControl = 'voterFileDetailGrid';
@@ -368,6 +365,7 @@ final class ElectionPresenter extends DefaultPresenter
 	{
 		$this->template->showImportVoterListForm = true;
 		$this->template->showModal = true;
+		$this->template->modalTitle = 'Import voter list';
 		$this->payload->showModal = true;
 		$this->payload->modalId = 'myModal';
 		$this->template->modalControl = 'importVoterListForm';

@@ -21,6 +21,8 @@ class ElectionDbMapper extends BaseDbMapper implements ElectionMapper
 		'end' => 'end',
 		'createdAt' => 'created_at',
 		'createdBy' => 'created_by',
+		'encryptionKey' => 'encryption_key',
+		'signingKey' => 'signing_key',
 	];
 
 	protected const DATA_TYPES = [

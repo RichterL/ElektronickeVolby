@@ -1,0 +1,19 @@
+{varType App\Models\Entities\Election\Election $election}
+<a n:if="!$election->isActive()" n:href="activate!" class="btn btn-primary">Activate this election</a>
+<a n:if="$election->isActive()" n:href="deactivate!" class="btn btn-warning">Deactivate this election</a>
+{$election->description}
+
+<div class="card-group">
+<div class="card">
+    <div class="card-header">Public Key (ballot encryption):</div>
+    <div class="card-body">
+        <pre>{$election->getPublicEncryptionKey()}</pre>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">Signing Key (server signature):</div>
+    <div class="card-body">
+        <pre>{$election->getPublicSigningKey()}</pre>
+    </div>
+</div>
+</div>

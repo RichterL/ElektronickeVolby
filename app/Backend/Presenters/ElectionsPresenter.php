@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Backend\Presenters;
 
 use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
 use App\Models\Entities\Election\Election;
@@ -53,7 +54,6 @@ final class ElectionsPresenter extends DefaultPresenter
 		$form->addHidden('id');
 		$form->addText('title', 'Title')->setRequired();
 		$form->addTextArea('description', 'Description')->setRequired();
-//		$form->addCheckbox('active', 'Active');
 		$form->addCheckbox('secret', 'Secret');
 		$form->addDateTime('start', 'Start')->setRequired();
 		$form->addDateTime('end', 'End')->setRequired();
@@ -72,15 +72,16 @@ final class ElectionsPresenter extends DefaultPresenter
 		try {
 			$electionId = (int) $values['id'];
 			unset($values['id']);
-			$election = $electionId ? $this->electionRepository->findById($electionId) : new Election();
+			if (!empty($electionId)) {
+				$election = $this->electionRepository->findById($electionId);
+			} else {
+				$election = new Election();
+				$election = $election->withSigningKey();
+			}
 			$values['createdAt'] = new \DateTime();
 			$values['createdBy'] = $this->userRepository->findById($this->getLoggedUserId(), false);
 			$election->setValues($values);
-			$success = $this->electionRepository->save($election);
-			if (!$success) {
-				$this->flashMessage('saving failed!', 'error');
-				return;
-			}
+			$this->electionRepository->save($election);
 			if ($this->isAjax()) {
 				$this->handleHideElectionForm();
 				$this->flashMessage('election saved.');
@@ -90,6 +91,8 @@ final class ElectionsPresenter extends DefaultPresenter
 			}
 		} catch (EntityNotFoundException $e) {
 			$this->flashMessage('Election wasn\'t found!', 'error');
+		} catch (SavingErrorException $e) {
+			$this->flashMessage('saving failed!', 'error');
 		}
 	}
 

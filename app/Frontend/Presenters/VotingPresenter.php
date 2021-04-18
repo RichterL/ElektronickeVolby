@@ -55,22 +55,9 @@ class VotingPresenter extends BasePresenter
 		return $form;
 	}
 
-	public function getPrivateSigningKey(): PrivateKey
-	{
-		$privatefile = file_get_contents('../keys/key.pem');
-		return PublicKeyLoader::load($privatefile);
-	}
-
-	public function getPublicKey(): PublicKey
-	{
-		$publicFile = file_get_contents('../keys/public.pem');
-		return PublicKeyLoader::load($publicFile);
-	}
-
 	public function handleGetPublicSigningKey(): void
 	{
-		$publicFile = file_get_contents('../keys/public.pem');
-		$key = PublicKeyLoader::load($publicFile);
+		$key = $this->election->getPublicSigningKey();
 		$parts = $key->toString('raw');
 
 		$this->sendJson([
@@ -82,10 +69,7 @@ class VotingPresenter extends BasePresenter
 
 	public function handleGetPublicEncryptionKey(): void
 	{
-		$publicfile = file_get_contents('../keys/public.pem');
-		$public = PublicKeyLoader::load($publicfile);
-		$key = $public->__toString();
-		$this->sendJson($key);
+		$this->sendJson((string) $this->election->getPublicEncryptionKey());
 	}
 
 	/**
@@ -97,9 +81,7 @@ class VotingPresenter extends BasePresenter
 	public function handleBlindSign()
 	{
 		/** @var PrivateKey $privateKey */
-		$privateKey = PublicKeyLoader::load(file_get_contents('../keys/key.pem'));
-		/** @var PrivateKey $privateKey */
-		$privateKey = $privateKey->withPadding(RSA::ENCRYPTION_NONE);
+		$privateKey = $this->election->getPrivateSigningKey()->withPadding(RSA::ENCRYPTION_NONE);
 		$privateKey::disableBlinding();
 		$request = $this->getHttpRequest();
 		$raw = $request->getRawBody();
@@ -130,8 +112,7 @@ class VotingPresenter extends BasePresenter
 		}
 
 		/** @var PrivateKey $privateKey */
-		$privateKey = $this->getPrivateSigningKey()
-			->withPadding(RSA::ENCRYPTION_NONE);
+		$privateKey = $this->election->getPrivateSigningKey()->withPadding(RSA::ENCRYPTION_NONE);
 		$privateKey::disableBlinding();
 		$hash = new Hash('sha256');
 		$messageHash = $hash->hash($encryptedKey);
@@ -163,7 +144,7 @@ class VotingPresenter extends BasePresenter
 	/** decrypting ballot received by user directly (temporary for testing) */
 	public function decrypt(string $key, string $ballot): void
 	{
-		$privateKey = $this->getPrivateSigningKey();
+		$privateKey = $this->election->getPrivateSigningKey();
 		$decrypted = $privateKey->decrypt(base64_decode($key));
 		['key' => $decryptingKey, 'iv' => $iv] = json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR);
 
