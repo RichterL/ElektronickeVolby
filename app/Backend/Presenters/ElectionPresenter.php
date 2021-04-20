@@ -279,7 +279,6 @@ final class ElectionPresenter extends DefaultPresenter
 	public function renderResults(): void
 	{
 		$this->template->selectedTab = 'results';
-		$this->template->results = $this->election->results->getData();
 	}
 
 	/* QUESTIONS */

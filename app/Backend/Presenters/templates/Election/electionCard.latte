@@ -5,19 +5,19 @@
 			<li class="nav-item">
 				<a n:class="nav-link, ajax, empty($selectedTab) || $selectedTab == overview ? active" n:href=":overview">Overview</a>
 			</li>
-			<li n:if="$election->isFinished()" class="nav-item">
+			<li n:if="$election->isFinished() && $user->isAllowed('results', 'view')" class="nav-item">
 				<a n:class="nav-link, ajax, $selectedTab == 'results' ? active" n:href=":results">Results</a>
 			</li>
-			<li class="nav-item">
+			<li class="nav-item" n:if="$user->isAllowed('questions', 'view')">
 				<a n:class="nav-link, ajax, $selectedTab == 'questions' ? active" n:href=":questions">Questions</a>
 			</li>
-			<li class="nav-item">
+			<li class="nav-item" n:if="$user->isAllowed('answers', 'view')">
 				<a n:class="nav-link, ajax, $selectedTab == 'answers' ? active" n:href=":answers">Answers</a>
 			</li>
-			<li class="nav-item">
+			<li class="nav-item" n:if="$user->isAllowed('voterList', 'view')">
 				<a n:class="nav-link, ajax, $selectedTab == 'voterList' ? active" n:href=":voterList">Voter list</a>
 			</li>
-			<li class="nav-item">
+			<li class="nav-item" n:if="$user->isAllowed('voterFiles', 'view')">
 				<a n:class="nav-link, ajax, $selectedTab == 'voterFiles' ? active" n:href=":voterFiles">Voter files</a>
 			</li>
 			<li class="nav-item dropdown ml-auto">
