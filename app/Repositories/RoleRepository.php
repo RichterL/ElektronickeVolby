@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Entities\Role\Role;
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\RoleMapper;
@@ -75,6 +76,9 @@ class RoleRepository extends BaseRepository
 		return $this->roleMapper->save($role);
 	}
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(Role $role): bool
 	{
 		return $this->roleMapper->delete($role);
