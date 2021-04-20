@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers;
 
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Entities\Resource\Resource;
@@ -27,5 +28,8 @@ interface ResourceMapper
 
 	public function getDataSource(array $filter = []): IDataSource;
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(Resource $resource): bool;
 }

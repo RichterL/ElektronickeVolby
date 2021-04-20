@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Entities\Resource\Resource;
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\ResourceMapper;
@@ -74,6 +75,9 @@ class ResourceRepository extends BaseRepository
 		return $this->resourceMapper->getDataSource($filter);
 	}
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(Resource $resource): bool
 	{
 		return $this->resourceMapper->delete($resource);

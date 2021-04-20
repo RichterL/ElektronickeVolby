@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Backend\Presenters;
 
 use App\Models\Factories\RuleFactory;
+use App\Models\Mappers\Exception\DeletingErrorException;
+use App\Models\Mappers\Exception\EntityNotFoundException;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
 use Contributte\FormsBootstrap\Inputs\SelectInput;
@@ -44,6 +46,11 @@ final class RolesPresenter extends DefaultPresenter
 		$this->ruleFactory = $ruleFactory;
 	}
 
+	/**
+	 * @restricted
+	 * @resource(roles)
+	 * @privilege(view)
+	 */
 	public function renderDefault(): void
 	{
 		$roles = $this->roleRepository->findAll();
@@ -61,7 +68,7 @@ final class RolesPresenter extends DefaultPresenter
 
 	public function createComponentRolesGrid()
 	{
-		$this->addGrid('rolesGrid', $this->roleRepository->getDataSource())
+		$this->addGrid('rolesGrid', $this->roleRepository->getDataSource(), 'roles')
 			->addColumn(Column::NUMBER, 'id', 'id')
 			->addColumn(Column::TEXT, 'name', 'Name')
 			->addColumn(Column::TEXT, 'key', 'Key')
@@ -76,7 +83,7 @@ final class RolesPresenter extends DefaultPresenter
 		$roles = $this->roleRepository->getIdNamePairs();
 		$resources = $this->resourceRepository->getIdNamePairs();
 		$privileges = $this->privilegeRepository->findAll()->getIdNamePairs();
-		$this->addGrid('rulesGrid', $this->ruleRepository->getDataSource(['role_id' => $this->getParameter('id')]))
+		$this->addGrid('rulesGrid', $this->ruleRepository->getDataSource(['role_id' => $this->getParameter('id')]), 'rules')
 			->addColumn(Column::NUMBER, 'id', 'id')
 			->addColumn(Column::TEXT_MULTISELECT, 'role_id', 'Role', $roles)
 			->addColumn(Column::TEXT_MULTISELECT, 'resource_id', 'Resource', $resources)
@@ -87,6 +94,11 @@ final class RolesPresenter extends DefaultPresenter
 			->addToolbarButton(ToolbarButton::ADD, 'Add new rule', 'showRuleForm!');
 	}
 
+	/**
+	 * @restricted
+	 * @resource(roles)
+	 * @privilege(edit)
+	 */
 	public function handleEditRole(int $id)
 	{
 		$role = $this->roleRepository->findById($id);
@@ -100,6 +112,11 @@ final class RolesPresenter extends DefaultPresenter
 		$this->template->roleEdit = true;
 	}
 
+	/**
+	 * @restricted
+	 * @resource(roles)
+	 * @privilege(delete)
+	 */
 	public function handleDeleteRole(int $id)
 	{
 		$role = $this->roleRepository->findById($id);
@@ -113,6 +130,11 @@ final class RolesPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(rules)
+	 * @privilege(edit)
+	 */
 	public function handleEditRule(int $ruleId)
 	{
 		$rule = $this->ruleRepository->findById($ruleId);
@@ -131,19 +153,30 @@ final class RolesPresenter extends DefaultPresenter
 		$this->template->ruleEdit = true;
 	}
 
-	public function handleDeleteRule(int $ruleId)
+	/**
+	 * @restricted
+	 * @resource(rules)
+	 * @privilege(delete)
+	 */
+	public function handleDeleteRule(int $ruleId): void
 	{
-		$rule = $this->ruleRepository->findById($ruleId);
-		if (!$rule) {
-			$this->flashMessage('Rule not found!', 'error');
-			return;
-		}
-		if ($this->ruleRepository->delete($rule)) {
+		try {
+			$rule = $this->ruleRepository->findById($ruleId);
+			$this->ruleRepository->delete($rule);
 			$this->flashMessage('Rule id ' . $ruleId . ' deleted', 'success');
 			$this->getGrid('rulesGrid')->reload();
+		} catch (EntityNotFoundException $e) {
+			$this->flashMessage('Rule not found!', 'error');
+		} catch (DeletingErrorException $e) {
+			$this->flashMessage('Deleting failed', 'error');
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(roles)
+	 * @privilege(edit)
+	 */
 	public function handleShowRoleForm()
 	{
 		$this->template->showRoleForm = true;
@@ -156,6 +189,11 @@ final class RolesPresenter extends DefaultPresenter
 		$this->redrawControl('roleFormSnippet');
 	}
 
+	/**
+	 * @restricted
+	 * @resource(rules)
+	 * @privilege(edit)
+	 */
 	public function handleShowRuleForm()
 	{
 		$this->template->showRuleForm = true;
@@ -176,7 +214,14 @@ final class RolesPresenter extends DefaultPresenter
 		$form->addText('name', 'Name')->setRequired();
 		$form->addText('key', 'Key')->setRequired();
 		$form->addSubmit('submit', 'Save');
-		$form->addButton('Cancel', Html::el('a')->href($this->link('hideRoleForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
+		$form->addButton(
+			'Cancel',
+			Html::el('a')
+					->href($this->link('hideRoleForm!'))
+					->data('naja-history', 'off')
+					->class('ajax text-white')
+					->setHtml('Cancel')
+		)->setBtnClass('btn-danger');
 		$form->onSuccess[] = [$this, 'roleFormSuccess'];
 
 		return $form;
@@ -203,11 +248,18 @@ final class RolesPresenter extends DefaultPresenter
 		$form->renderMode = RenderMode::SIDE_BY_SIDE_MODE;
 		$form->setAjax();
 		$form->addHidden('id');
-		$form->addHidden('role')->setValue((int) $this->getParameter('roleId'));
+		$form->addHidden('role')->setDefaultValue($this->getParameter('id'));
 		$submit = $form->addSelect('resource', 'Resource', [0 => 'Select one ...'] + $this->resourceRepository->getIdNamePairs());
 		$submit->setHtmlAttribute('onChange', "document.getElementById('refreshSubmit').click()");
 		$form->addSubmit('refresh', 'Refresh')->setHtmlId('refreshSubmit')->setBtnClass('d-none');
-		$form->addButton('cancel', Html::el('a')->href($this->link('hideRuleForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
+		$form->addButton(
+			'cancel',
+			Html::el('a')
+				->href($this->link('hideRuleForm!'))
+				->data('naja-history', 'off')
+				->class('ajax text-white')
+				->setHtml('Cancel')
+		)->setBtnClass('btn-danger');
 		$form->onSuccess[] = [$this, 'ruleFormRefresh'];
 		$form->onSubmit[] = [$this, 'ruleFormSubmitted'];
 		$form->onError[] = [$this, 'ruleFormError'];
@@ -225,7 +277,7 @@ final class RolesPresenter extends DefaultPresenter
 		$errors = $form->getErrors();
 	}
 
-	public function ruleFormRefresh(Form $form, array $values)
+	public function ruleFormRefresh(BootstrapForm $form, array $values)
 	{
 		$resourceId = $form->getComponent('resource')->getValue();
 		if (!empty($resourceId)) {
@@ -235,7 +287,14 @@ final class RolesPresenter extends DefaultPresenter
 			$form->addRadioList('type', 'Type', [Rule\Type::ALLOW => 'Allow', Rule\Type::DENY => 'Deny']);
 			$form->removeComponent($form->getComponent('cancel'));
 			$form->addSubmit('submit', 'Submit');
-			$form->addButton('Cancel', Html::el('a')->href($this->link('hideRuleForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
+			$form->addButton(
+				'Cancel',
+				Html::el('a')
+					->href($this->link('hideRuleForm!'))
+					->data('naja-history', 'off')
+					->class('ajax text-white')
+					->setHtml('Cancel')
+			)->setBtnClass('btn-danger');
 			$this->handleShowRuleForm();
 		}
 
@@ -254,6 +313,7 @@ final class RolesPresenter extends DefaultPresenter
 		$rule = $this->ruleFactory->createFromValues($values);
 		$this->ruleRepository->save($rule);
 		$this->handleHideRuleForm();
-		$this->redrawControl('rulesListSnippet'); // TODO: not working
+//		$this->redrawControl('rulesListSnippet'); // TODO: not working
+		$this->getGrid('rulesGrid')->reload();
 	}
 }

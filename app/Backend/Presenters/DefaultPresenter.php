@@ -29,10 +29,17 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 			$privilege = $element->getAnnotation('privilege');
 			if (!$user->isAllowed($resource, $privilege)) {
 				if (!$user->isAllowed($resource, 'view')) {
-					throw new Nette\Application\ForbiddenRequestException('You are not allowed to do that', 403);
+					$this->flashMessage('You do not have permission to do that', 'warning');
+					$this->redirect('Homepage:');
+//					throw new Nette\Application\ForbiddenRequestException('You are not allowed to do that', 403);
 				}
 				$this->flashMessage('You do not have permission to do that', 'warning');
-				$this->forward('this');
+				if ($this->isAjax()) {
+					$this->forward('this');
+				} else {
+					$this->forward(':default');
+				}
+
 			}
 		}
 	}

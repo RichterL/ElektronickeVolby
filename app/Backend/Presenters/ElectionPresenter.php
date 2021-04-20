@@ -90,12 +90,21 @@ final class ElectionPresenter extends DefaultPresenter
 	}
 
 	/* OVERVIEW */
-
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(view)
+	 */
 	public function renderOverview(): void
 	{
 		$this->template->selectedTab = 'overview';
 	}
 
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(activate)
+	 */
 	public function handleActivate(): void
 	{
 		try {
@@ -113,6 +122,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(activate)
+	 */
 	public function handleDeactivate(): void
 	{
 		try {
@@ -130,6 +144,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(decrypt)
+	 */
 	public function handleDecryptBallots(): void
 	{
 		try {
@@ -142,6 +161,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(importKey)
+	 */
 	public function handleImportPublicKey(): void
 	{
 		if ($this->election->isRunning()) {
@@ -160,6 +184,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(importKey)
+	 */
 	public function handleImportPrivateKey(): void
 	{
 		if (!$this->election->isFinished()) {
@@ -241,6 +270,12 @@ final class ElectionPresenter extends DefaultPresenter
 
 
 	/* RESULTS */
+
+	/**
+	 * @restricted
+	 * @resource(results)
+	 * @privilege(view)
+	 */
 	public function renderResults(): void
 	{
 		$this->template->selectedTab = 'results';
@@ -249,6 +284,11 @@ final class ElectionPresenter extends DefaultPresenter
 
 	/* QUESTIONS */
 
+	/**
+	 * @restricted
+	 * @resource(questions)
+	 * @privilege(view)
+	 */
 	public function renderQuestions(): void
 	{
 		$this->template->selectedTab = 'questions';
@@ -256,6 +296,11 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->template->questions = $questions;
 	}
 
+	/**
+	 * @restricted
+	 * @resource(questions)
+	 * @privilege(edit)
+	 */
 	public function handleEditQuestion(int $questionId): void
 	{
 		if ($this->election->isRunning()) {
@@ -283,6 +328,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(questions)
+	 * @privilege(edit)
+	 */
 	public function handleShowQuestionForm(): void
 	{
 		if ($this->election->isRunning()) {
@@ -303,6 +353,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(questions)
+	 * @privilege(delete)
+	 */
 	public function handleDeleteQuestion(int $questionId): void
 	{
 		if ($this->election->isRunning()) {
@@ -364,11 +419,21 @@ final class ElectionPresenter extends DefaultPresenter
 
 	/* ANSWERS */
 
+	/**
+	 * @restricted
+	 * @resource(answers)
+	 * @privilege(view)
+	 */
 	public function renderAnswers(): void
 	{
 		$this->template->selectedTab = 'answers';
 	}
 
+	/**
+	 * @restricted
+	 * @resource(answers)
+	 * @privilege(delete)
+	 */
 	public function handleDeleteAnswer(int $answerId): void
 	{
 		if ($this->election->isRunning()) {
@@ -402,12 +467,22 @@ final class ElectionPresenter extends DefaultPresenter
 
 	/* VOTER FILES */
 
+	/**
+	 * @restricted
+	 * @resource(voterFiles)
+	 * @privilege(view)
+	 */
 	public function renderVoterFiles(): void
 	{
 		$this->template->voterFiles = $this->voterFileRepository->findRelated($this->election);
 		$this->template->selectedTab = 'voterFiles';
 	}
 
+	/**
+	 * @restricted
+	 * @resource(voterFiles)
+	 * @privilege(delete)
+	 */
 	public function handleDeleteVoterFile(int $voterFileId): void
 	{
 		if ($this->election->isRunning()) {
@@ -425,6 +500,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(voterFiles)
+	 * @privilege(detail)
+	 */
 	public function handleShowVoterFileDetail(int $voterFileId): void
 	{
 		$this->template->voterFileDetail = $this->voterFileRepository->findById($voterFileId);
@@ -439,6 +519,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(voterFiles)
+	 * @privilege(import)
+	 */
 	public function handleImportVoterList(): void
 	{
 		if ($this->election->isRunning()) {
@@ -458,6 +543,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(voterFiles)
+	 * @privilege(download)
+	 */
 	public function handleDownloadVoterFile(int $voterFileId): void
 	{
 		if ($this->isAjax()) {
@@ -472,6 +562,11 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(voterFiles)
+	 * @privilege(apply)
+	 */
 	public function handleApplyVoterFile(int $voterFileId): void
 	{
 		if ($this->election->isRunning()) {
@@ -562,6 +657,11 @@ final class ElectionPresenter extends DefaultPresenter
 
 	/* VOTER LIST */
 
+	/**
+	 * @restricted
+	 * @resource(voterList)
+	 * @privilege(view)
+	 */
 	public function renderVoterList(): void
 	{
 		$this->template->selectedTab = 'voterList';

@@ -131,6 +131,7 @@ class DataGrid
 		switch ($type) {
 			case ToolbarButton::ADD:
 				$this->grid->addToolbarButton($destination, $title)
+					->addAttributes(['data-naja-history' => 'off'])
 					->setIcon('plus')
 					->setTitle($title)
 					->setClass('btn btn-sm btn-primary ajax');

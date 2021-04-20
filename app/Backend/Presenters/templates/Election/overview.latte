@@ -1,8 +1,8 @@
 {varType App\Models\Entities\Election\Election $election}
-<a n:if="!$election->isActive()" n:href="activate!" class="btn btn-primary">Activate this election</a>
-<a n:if="$election->isActive()" n:href="deactivate!" class="btn btn-warning">Deactivate this election</a>
+<a n:if="!$election->isActive()" n:href="activate!" class="ajax btn btn-primary" data-naja-history="off">Activate this election</a>
+<a n:if="$election->isActive()" n:href="deactivate!" class="ajax btn btn-warning" data-naja-history="off">Deactivate this election</a>
 {$election->description}
-<a n:if="$election->isFinished()" n:href="decryptBallots!" class="btn btn-primary">Decrypt ballots</a>
+<a n:if="$election->isFinished()" n:href="decryptBallots!" class="ajax btn btn-primary" data-naja-history="off">Decrypt ballots</a>
 <div class="card-group election-keys">
 <div class="card">
     <div class="card-header">Public Key (ballot encryption):</div>

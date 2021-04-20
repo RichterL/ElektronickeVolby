@@ -35,7 +35,7 @@ final class ElectionsPresenter extends DefaultPresenter
 
 	public function createComponentElectionsGrid(): void
 	{
-		$this->addGrid('electionsGrid', $this->electionRepository->getDataSource())
+		$this->addGrid('electionsGrid', $this->electionRepository->getDataSource(), 'elections')
 			->addColumn(Column::TEXT, 'title', 'Title')
 			->addColumn(Column::BOOL, 'active', 'Active')
 			->addColumn(Column::BOOL, 'secret', 'Secret')
@@ -96,6 +96,11 @@ final class ElectionsPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(edit)
+	 */
 	public function handleShowElectionForm(): void
 	{
 		$this->template->showElectionForm = true;
@@ -108,6 +113,11 @@ final class ElectionsPresenter extends DefaultPresenter
 		$this->redrawControl('electionFormSnippet');
 	}
 
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(delete)
+	 */
 	public function handleDelete(int $id): void
 	{
 		try {
@@ -121,6 +131,11 @@ final class ElectionsPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(edit)
+	 */
 	public function handleEdit(int $id): void
 	{
 		try {
