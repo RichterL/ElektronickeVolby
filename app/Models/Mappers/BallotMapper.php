@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace App\Models\Mappers;
 
 use App\Models\Entities\Election\Ballot;
+use App\Models\Entities\Election\DecryptedBallot;
+use App\Models\Entities\Election\Election;
+use App\Models\Entities\Election\EncryptedBallot;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
@@ -19,6 +22,16 @@ interface BallotMapper
 	 * @return Ballot[]
 	 */
 	public function find(array $filter = []): iterable;
+
+	/**
+	 * @return EncryptedBallot[]
+	 */
+	public function findEncrypted(Election $election): iterable;
+
+	/**
+	 * @return DecryptedBallot[]
+	 */
+	public function findDecrypted(Election $election): iterable;
 
 	/**
 	 * @throws SavingErrorException

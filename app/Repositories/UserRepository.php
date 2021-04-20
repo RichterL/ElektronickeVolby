@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Entities\User;
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\RoleMapper;
@@ -39,7 +40,9 @@ class UserRepository
 	 */
 	public function findByUsername(string $username): User
 	{
-		return $this->userMapper->findOne(['username' => $username]);
+		$user = $this->userMapper->findOne(['username' => $username]);
+		$user->setRoles(...$this->roleMapper->findRelated($user));
+		return $user;
 	}
 
 	public function findAll(): array
@@ -60,6 +63,9 @@ class UserRepository
 		return $this->userMapper->getDataSource($filter);
 	}
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(User $user): bool
 	{
 		return $this->userMapper->delete($user);

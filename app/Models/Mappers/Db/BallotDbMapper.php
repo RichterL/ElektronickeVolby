@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Models\Mappers\Db;
 
 use App\Models\Entities\Election\Ballot;
+use App\Models\Entities\Election\Election;
 use App\Models\Factories\BallotFactory;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
@@ -20,6 +21,10 @@ class BallotDbMapper extends BaseDbMapper implements BallotMapper
 		'decryptedKey' => 'decrypted_key',
 		'hash' => 'hash',
 		'signature' => 'signature',
+		'decryptedAt' => 'decrypted_at',
+		'decryptedBy' => 'decrypted_by',
+		'countedAt' => 'counted_at',
+		'countedBy' => 'counted_by',
 	];
 
 	protected string $table = Tables::BALLOT;
@@ -32,10 +37,11 @@ class BallotDbMapper extends BaseDbMapper implements BallotMapper
 
 	public function create(array $data = []): Ballot
 	{
+		$tmp = [];
 		foreach (self::MAP as $property => $key) {
 			$tmp[$property] = $data[$key];
 		}
-		return $this->ballotFactory->create($data);
+		return $this->ballotFactory::create($tmp);
 	}
 
 	/**
@@ -45,6 +51,34 @@ class BallotDbMapper extends BaseDbMapper implements BallotMapper
 	{
 		return $this->saveWithId($ballot);
 	}
+
+	public function findEncrypted(Election $election): iterable
+	{
+		$collection = static::createCollection();
+		$rows = $this->dibi->select('*')
+			->from($this->table)
+			->where(['election_id' => $election->getId(), 'decrypted_at' => null])
+			->fetchAll();
+		foreach ($rows as $row) {
+			$collection[] = $this->create($row->toArray());
+		}
+		return $collection;
+	}
+
+	public function findDecrypted(Election $election): iterable
+	{
+		$collection = static::createCollection();
+		$rows = $this->dibi->select('*')
+			->from($this->table)
+			->where('election_id = %i', $election->getId())
+			->where('decrypted_at IS NOT NULL')
+			->fetchAll();
+		foreach ($rows as $row) {
+			$collection[] = $this->create($row->toArray());
+		}
+		return $collection;
+	}
+
 
 	/**
 	 * @throws EntityNotFoundException

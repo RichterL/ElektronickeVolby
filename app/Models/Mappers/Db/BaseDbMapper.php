@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers\Db;
 
+use App\Models\Entities\Identifier;
 use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
@@ -44,6 +45,12 @@ abstract class BaseDbMapper
 				$propertyValue = $entity->$property;
 				if ($propertyValue instanceof IdentifiedById) {
 					$propertyValue = $propertyValue->getId();
+				}
+				if ($propertyValue instanceof Identifier) {
+					$propertyValue = $propertyValue->getValue();
+				}
+				if ($propertyValue instanceof \JsonSerializable) {
+					$propertyValue = json_encode($propertyValue);
 				}
 				$data[$key] = $propertyValue;
 			}
@@ -114,11 +121,13 @@ abstract class BaseDbMapper
 		}
 
 		foreach ($filter as $property => $value) {
-			if (static::MAP[$property] === $property) {
-				continue;
+			if ($value instanceof IdentifiedById) {
+				$value = $value->getId();
+			}
+			if (static::MAP[$property] !== $property) {
+				unset($filter[$property]);
 			}
 			$filter[static::MAP[$property]] = $value;
-			unset($filter[$property]);
 		}
 	}
 

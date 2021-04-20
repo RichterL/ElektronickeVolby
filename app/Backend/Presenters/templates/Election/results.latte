@@ -1,0 +1,9 @@
+{varType App\Models\Entities\Election\Election $election}
+{dump}
+{foreach $election->getQuestions() as $qid => $question}
+    <div>{$qid} => {$question->question}</div>
+    {foreach $question->getAnswers() as $aid => $answer}
+        <div>{$aid} => {$answer->value}</div>
+    {/foreach}
+{/foreach}
+{=print_r($results)}

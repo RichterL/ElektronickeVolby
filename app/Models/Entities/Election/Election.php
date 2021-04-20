@@ -30,7 +30,9 @@ use phpseclib3\Exception\NoKeyLoadedException;
  * @property User $createdBy
  * @property Question[] $questions
  * @property string|null $encryptionKey
+ * @property string|null $decryptionKey
  * @property string $signingKey
+ * @property Results|null $results
  */
 class Election extends Entity implements IdentifiedById
 {
@@ -44,7 +46,9 @@ class Election extends Entity implements IdentifiedById
 	protected User $createdBy;
 	protected iterable $questions = [];
 	protected ?string $encryptionKey = null;
+	protected ?string $decryptionKey = null;
 	protected string $signingKey;
+	protected ?Results $results = null;
 
 	use HasId;
 
@@ -52,6 +56,12 @@ class Election extends Entity implements IdentifiedById
 	{
 		$now = new \DateTime();
 		return $now >= $this->start && $now < $this->end && $this->active;
+	}
+
+	public function isFinished(): bool
+	{
+		$now = new \DateTime();
+		return $now >= $this->end;
 	}
 
 	public function isActive(): bool
@@ -95,6 +105,7 @@ class Election extends Entity implements IdentifiedById
 		return $this;
 	}
 
+	/** @return Question[] */
 	public function getQuestions(): iterable
 	{
 		return $this->questions;
@@ -127,6 +138,16 @@ class Election extends Entity implements IdentifiedById
 		return $this;
 	}
 
+	/** @param Results|array $results */
+	public function setResults($results): Election
+	{
+		if (is_array($results)) {
+			$results = new Results($results);
+		}
+		$this->results = $results;
+		return $this;
+	}
+
 	public function getPublicEncryptionKey(): ?PublicKey
 	{
 		if ($this->encryptionKey === null) {
@@ -140,6 +161,25 @@ class Election extends Entity implements IdentifiedById
 			throw new NoKeyLoadedException();
 		} catch (NoKeyLoadedException $e) {
 			throw new \RuntimeException('Loading the encryption key failed');
+		}
+	}
+
+	public function getPrivateEncryptionKey(): ?PrivateKey
+	{
+		if ($this->decryptionKey === null) {
+			return null;
+		}
+		if (!$this->isFinished()) {
+			throw new InvalidStateException('Election is not finished.');
+		}
+		try {
+			$key = PublicKeyLoader::load($this->decryptionKey);
+			if ($key instanceof PrivateKey) {
+				return $key;
+			}
+			throw new NoKeyLoadedException();
+		} catch (NoKeyLoadedException $e) {
+			throw new \RuntimeException('Loading the decryption key failed');
 		}
 	}
 
@@ -158,7 +198,8 @@ class Election extends Entity implements IdentifiedById
 		try {
 			$key = PublicKeyLoader::load($this->signingKey);
 			if ($key instanceof PrivateKey) {
-				return $key;
+				$key::disableBlinding();
+				return $key->withPadding(RSA::ENCRYPTION_NONE);
 			}
 			throw new NoKeyLoadedException();
 		} catch (NoKeyLoadedException $e) {
@@ -197,6 +238,21 @@ class Election extends Entity implements IdentifiedById
 			throw new InvalidArgumentException('Invalid RSA public key.');
 		}
 		$this->encryptionKey = $encryptionKey;
+	}
+
+	public function setDecryptionKey(?string $decryptionKey): void
+	{
+		if ($decryptionKey === null) {
+			return;
+		}
+		if (!$this->isFinished()) {
+			throw new InvalidStateException('Cannot set decryption key before election ends!');
+		}
+		$key = PublicKeyLoader::load($decryptionKey);
+		if (!$key instanceof PrivateKey) {
+			throw new InvalidArgumentException('Invalid RSA private key.');
+		}
+		$this->decryptionKey = $decryptionKey;
 	}
 
 	public function withSigningKey(): Election

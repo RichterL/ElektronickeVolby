@@ -3,11 +3,13 @@
 	{block title}<h1>Election - {$election->title}</h1>{/block}
 	<a n:href="Elections:">Go back</a>
 	{snippet cardSnippet}
-		{embed electionCard.latte, selectedTab: $selectedTab, user: $user}
+		{embed electionCard.latte, selectedTab: $selectedTab, user: $user, election: $election}
 			{block body}
 				{switch $selectedTab}
 					{case overview}
 						{include overview.latte}
+					{case results}
+						{include results.latte}
 					{case questions}
 						{control questionsGrid}
 					{case answers}
@@ -44,7 +46,7 @@
 
 {block scripts}
 	{include parent}
-	{if !empty($showImportVoterListForm) || !empty($showImportPublicKeyForm)}
+	{if !empty($showImportVoterListForm) || !empty($showImportKeyForm)}
 		<script>
 		$(function () {
 			bsCustomFileInput.init()

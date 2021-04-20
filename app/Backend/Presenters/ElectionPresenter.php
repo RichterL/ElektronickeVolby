@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Backend\Presenters;
 
+use App\Backend\Classes\VoteCounting\VoteCounter;
 use App\Forms\Election\QuestionForm;
 use App\Forms\Election\QuestionFormFactory;
 use App\Models\Mappers\Exception\EntityNotFoundException;
@@ -40,6 +41,7 @@ final class ElectionPresenter extends DefaultPresenter
 	private VoterRepository $voterRepository;
 	private QuestionRepository $questionRepository;
 	private AnswerRepository $answerRepository;
+	private VoteCounter $voteCounter;
 
 	public function __construct(
 		ElectionRepository $electionRepository,
@@ -47,7 +49,8 @@ final class ElectionPresenter extends DefaultPresenter
 		VoterFileRepository $voterFileRepository,
 		VoterRepository $voterRepository,
 		QuestionRepository $questionRepository,
-		AnswerRepository $answerRepository
+		AnswerRepository $answerRepository,
+		VoteCounter $voteCounter
 	) {
 		parent::__construct();
 		$this->electionRepository = $electionRepository;
@@ -56,6 +59,7 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->voterRepository = $voterRepository;
 		$this->questionRepository = $questionRepository;
 		$this->answerRepository = $answerRepository;
+		$this->voteCounter = $voteCounter;
 	}
 
 	public function startup(): void
@@ -126,20 +130,49 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
-	public function handleImportPublicKey()
+	public function handleDecryptBallots(): void
+	{
+		try {
+			$this->election->setResults($this->voteCounter->processBallots($this->election));
+			$this->electionRepository->save($this->election);
+			$this->flashMessage('Votes were counted');
+			$this->redirect(':results');
+		} catch (SavingErrorException $e) {
+			$this->flashMessage('Result saving failed, check logs', 'error');
+		}
+	}
+
+	public function handleImportPublicKey(): void
 	{
 		if ($this->election->isRunning()) {
 			$this->flashMessage('Cannot change running election!', 'error');
 			return;
 		}
-		$this->template->showImportPublicKeyForm = true;
+		$this->template->showImportKeyForm = true;
 		$this->template->showModal = true;
 		$this->payload->showModal = true;
 		$this->template->modalTitle = 'Import public key';
 		$this->payload->modalId = 'myModal';
 		$this->template->modalControl = 'importPublicKeyForm';
 		if ($this->isAjax()) {
-			// $this->redrawControl('cardSnippet');
+			$this->redrawControl('modal');
+			$this->redrawControl('scripts');
+		}
+	}
+
+	public function handleImportPrivateKey(): void
+	{
+		if (!$this->election->isFinished()) {
+			$this->flashMessage('Cannot upload decryption key before election ends!', 'error');
+			return;
+		}
+		$this->template->showImportKeyForm = true;
+		$this->template->showModal = true;
+		$this->payload->showModal = true;
+		$this->template->modalTitle = 'Import decryption key';
+		$this->payload->modalId = 'myModal';
+		$this->template->modalControl = 'importPrivateKeyForm';
+		if ($this->isAjax()) {
 			$this->redrawControl('modal');
 			$this->redrawControl('scripts');
 		}
@@ -147,12 +180,25 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function createComponentImportPublicKeyForm(): BootstrapForm
 	{
+		$form = $this->createImportKeyForm();
+		$form->onSuccess[] = [$this, 'importPublicKeyFormSuccess'];
+		return $form;
+	}
+
+	public function createComponentImportPrivateKeyForm(): BootstrapForm
+	{
+		$form = $this->createImportKeyForm();
+		$form->onSuccess[] = [$this, 'importPrivateKeyFormSuccess'];
+		return $form;
+	}
+
+	public function createImportKeyForm(): BootstrapForm
+	{
 		$form = new BootstrapForm();
 		$form->setRenderMode(RenderMode::SIDE_BY_SIDE_MODE);
 		$form->setAjax();
 		$form->addUpload('file', 'Upload')->setHtmlAttribute('accept', '.pem');
 		$form->addSubmit('submit', 'Import')->setHtmlAttribute('data-dismiss', 'modal');
-		$form->onSuccess[] = [$this, 'importPublicKeyFormSuccess'];
 		return $form;
 	}
 
@@ -176,6 +222,30 @@ final class ElectionPresenter extends DefaultPresenter
 		}
 	}
 
+	public function importPrivateKeyFormSuccess(Form $form, array $values): void
+	{
+		try {
+			/** @var FileUpload $file */
+			$file = $values['file'];
+			unset($values['file']);
+			$this->election->setDecryptionKey($file->getContents());
+			$this->electionRepository->save($this->election);
+			$this->flashMessage('import success', 'success');
+			$this->redirect(':overview', ['id' => (int) $this->getParameter('id')]);
+		} catch (SavingErrorException $e) {
+			$this->flashMessage('import failed', 'error');
+		} catch (\RuntimeException | \InvalidArgumentException $e) {
+			$this->flashMessage($e->getMessage(), 'error');
+		}
+	}
+
+
+	/* RESULTS */
+	public function renderResults(): void
+	{
+		$this->template->selectedTab = 'results';
+		$this->template->results = $this->election->results->getData();
+	}
 
 	/* QUESTIONS */
 

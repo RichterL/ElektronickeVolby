@@ -6,6 +6,7 @@ namespace App\Frontend\Presenters;
 use App\Forms\Voting\VotingForm;
 use App\Forms\Voting\VotingFormFactory;
 use App\Frontend\Classes\ElectionsFacade;
+use App\Models\Entities\Election\ElectionId;
 use App\Models\Entities\Election\EncryptedBallot;
 use App\Models\Entities\Election\Election;
 use Nette\Forms\Form;
@@ -121,7 +122,7 @@ class VotingPresenter extends BasePresenter
 
 		$ballot = new EncryptedBallot();
 		$ballot->setValues([
-			'election' => $this->election,
+			'election' => ElectionId::fromValue($this->election->getId()),
 			'encryptedData' => $ballotData,
 			'encryptedKey' => $encryptedKey,
 			'hash' => bin2hex($messageHash),
