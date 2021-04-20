@@ -5,14 +5,14 @@ namespace App\Models\Entities\Election;
 
 use App\Models\Entities\BaseEntityIterator;
 
-final class AnswerIterator extends BaseEntityIterator
+class QuestionIterator extends BaseEntityIterator
 {
-	public function __construct(AnswerCollection $collection)
+	public function __construct(QuestionCollection $collection)
 	{
 		$this->collection = $collection;
 	}
 
-	public function current(): Answer
+	public function current(): Question
 	{
 		return $this->collection->offsetGet($this->position);
 	}

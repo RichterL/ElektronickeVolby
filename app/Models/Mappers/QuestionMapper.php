@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers;
 
+use App\Models\Entities\Election\QuestionCollection;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Entities\Election\Election;
@@ -18,11 +19,9 @@ interface QuestionMapper
 	 */
 	public function findOne(array $filter = []): Question;
 
-	/** @return Question[] */
-	public function findAll(): array;
+	public function findAll(): QuestionCollection;
 
-	/** @return Question[] */
-	public function findRelated(Election $election): array;
+	public function findRelated(Election $election): QuestionCollection;
 
 	public function getDataSource(array $filter = []): IDataSource;
 

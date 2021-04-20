@@ -1,11 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Models\Entities\Election;
+namespace App\Models\Entities\Resource;
 
 use App\Models\Entities\BaseEntityIterator;
-use App\Models\Entities\Resource\Privilege;
-use App\Models\Entities\Resource\PrivilegeCollection;
 
 class PrivilegeIterator extends BaseEntityIterator
 {

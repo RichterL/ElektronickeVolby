@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers\Db;
 
+use App\Models\Entities\Election\QuestionCollection;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use Dibi\DriverException;
@@ -96,17 +97,22 @@ class QuestionDbMapper extends BaseDbMapper implements QuestionMapper
 //		return true;
 //	}
 
-	public function findRelated(Election $election): array
+	public function findRelated(Election $election): QuestionCollection
 	{
 		$result = $this->dibi->select('*')->from($this->table)->where('election_id = %i', $election->getId())->execute();
 		self::applyDataTypes($result);
 		$result->fetchAll();
-		$questions = [];
+		$questions = self::createCollection();
 		/** @var Row $row */
 		foreach ($result as $row) {
 			$questions[] = $this->create($row->toArray());
 		}
 		return $questions;
+	}
+
+	public static function createCollection(): QuestionCollection
+	{
+		return new QuestionCollection();
 	}
 
 	/**
@@ -117,9 +123,8 @@ class QuestionDbMapper extends BaseDbMapper implements QuestionMapper
 		return parent::findOne($filter);
 	}
 
-	/** @return Question[] */
-	public function findAll(): array
+	public function findAll(): QuestionCollection
 	{
-		return (array) parent::findAll();
+		return parent::findAll();
 	}
 }

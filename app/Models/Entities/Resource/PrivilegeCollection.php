@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 namespace App\Models\Entities\Resource;
+
 use App\Models\Entities\BaseCollection;
-use App\Models\Entities\Election\PrivilegeIterator;
 
 class PrivilegeCollection extends BaseCollection
 {

@@ -28,7 +28,7 @@ use phpseclib3\Exception\NoKeyLoadedException;
  * @property DateTimeInterface $end
  * @property DateTimeInterface $createdAt
  * @property User $createdBy
- * @property Question[] $questions
+ * @property QuestionCollection $questions
  * @property string|null $encryptionKey
  * @property string|null $decryptionKey
  * @property string $signingKey
@@ -44,7 +44,7 @@ class Election extends Entity implements IdentifiedById
 	protected DateTimeInterface $end;
 	protected DateTimeInterface $createdAt;
 	protected User $createdBy;
-	protected iterable $questions = [];
+	protected QuestionCollection $questions;
 	protected ?string $encryptionKey = null;
 	protected ?string $decryptionKey = null;
 	protected string $signingKey;
@@ -105,18 +105,16 @@ class Election extends Entity implements IdentifiedById
 		return $this;
 	}
 
-	/** @return Question[] */
-	public function getQuestions(): iterable
+	public function getQuestions(): QuestionCollection
 	{
 		return $this->questions;
 	}
 
-	public function setQuestions(iterable $questions): self
+	public function setQuestions(QuestionCollection $questions): self
 	{
 		if (!empty($this->questions) && $this->isRunning()) {
 			throw new InvalidStateException('Cannot change running election!');
 		}
-		/** @var Question $question */
 		foreach ($questions as $question) {
 			$question->setElection($this);
 		}

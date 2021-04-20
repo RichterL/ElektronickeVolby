@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\Question;
+use App\Models\Entities\Election\QuestionCollection;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\QuestionMapper;
@@ -28,18 +29,19 @@ class QuestionRepository
 		return $this->questionMapper->findOne(['id' => $id]);
 	}
 
-	/** @return Question[] */
-	public function findAll(): array
+	public function findAll(): QuestionCollection
 	{
 		return $this->questionMapper->findAll();
 	}
 
-	/** @return Question[] */
-	public function findRelated(Election $election): array
+	public function findRelated(Election $election): QuestionCollection
 	{
 		return $this->questionMapper->findRelated($election);
 	}
 
+	/**
+	 * @param array<string, mixed> $filter
+	 */
 	public function getDataSource(array $filter = []): IDataSource
 	{
 		return $this->questionMapper->getDataSource($filter);
