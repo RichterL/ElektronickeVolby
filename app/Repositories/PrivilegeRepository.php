@@ -7,6 +7,7 @@ namespace App\Repositories;
 use App\Models\Entities\Resource\Privilege;
 use App\Models\Entities\Resource\PrivilegeCollection;
 use App\Models\Entities\Resource\Resource;
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\PrivilegeMapper;
@@ -47,6 +48,9 @@ class PrivilegeRepository
 		return $this->privilegeMapper->save($resource, $privilege);
 	}
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(Privilege $privilege): bool
 	{
 		return $this->privilegeMapper->delete($privilege);

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers\Db;
 
+use App\Models\Entities\Election\AnswerCollection;
 use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
@@ -40,14 +41,13 @@ class AnswerDbMapper extends BaseDbMapper implements AnswerMapper
 		return $this->saveWithId($answer);
 	}
 
-	/** @return Answer[] */
-	public function findRelated(Question $question): array
+	public function findRelated(Question $question): AnswerCollection
 	{
 		$result = $this->dibi->select('*')->from($this->table)->where('question_id = %i', $question->getId())->fetchAll();
-		$answers = [];
+		$answers = self::createCollection();
 		/** @var \Dibi\Row $row */
 		foreach ($result as $row) {
-			$answers[] = $this->create($row->toArray());
+			$answers->add($this->create($row->toArray()));
 		}
 		return $answers;
 	}
@@ -75,6 +75,12 @@ class AnswerDbMapper extends BaseDbMapper implements AnswerMapper
 		return new DibiFluentDataSource($fluent, 'id');
 	}
 
+	public static function createCollection(): AnswerCollection
+	{
+		return new AnswerCollection();
+	}
+
+
 	/**
 	 * @throws EntityNotFoundException
 	 */
@@ -84,7 +90,7 @@ class AnswerDbMapper extends BaseDbMapper implements AnswerMapper
 	}
 
 	/** @return Answer[] */
-	public function findAll(): array
+	public function findAll(): AnswerCollection
 	{
 		return (array) parent::findAll();
 	}

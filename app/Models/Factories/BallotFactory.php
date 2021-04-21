@@ -5,26 +5,19 @@ namespace App\Models\Factories;
 
 use App\Models\Entities\Election\Ballot;
 use App\Models\Entities\Election\DecryptedBallot;
+use App\Models\Entities\Election\ElectionId;
 use App\Models\Entities\Election\EncryptedBallot;
-use App\Models\Mappers\ElectionMapper;
 
 class BallotFactory
 {
-	private ElectionMapper $electionMapper;
-
-	public function __construct(ElectionMapper $electionMapper)
+	public static function create(array $data): Ballot
 	{
-		$this->electionMapper = $electionMapper;
-	}
-
-	public function create(array $data): Ballot
-	{
-		$data['election'] = $this->electionMapper->findOne(['id' => $data['election']]);
-		if (!empty($data['encrypted_at'])) {
-			$ballot = new DecryptedBallot();
-		} else {
+		if (empty($data['decryptedAt'])) {
 			$ballot = new EncryptedBallot();
+		} else {
+			$ballot = new DecryptedBallot();
 		}
+		$data['election'] = ElectionId::fromValue($data['election']);
 		$ballot->setValues($data);
 		return $ballot;
 	}

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers;
 
+use App\Models\Entities\Election\AnswerCollection;
 use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
@@ -20,10 +21,10 @@ interface AnswerMapper
 	public function findOne(array $filter = []): Answer;
 
 	/** @return Answer[] */
-	public function findAll(): iterable;
+	public function findAll(): AnswerCollection;
 
 	/** @return Answer[] */
-	public function findRelated(Question $question): array;
+	public function findRelated(Question $question): AnswerCollection;
 
 	public function deleteRelated(Question $question): bool;
 

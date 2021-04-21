@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers\Db;
 
+use App\Models\Entities\Election\Results;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Entities\Election\Election;
@@ -21,6 +22,10 @@ class ElectionDbMapper extends BaseDbMapper implements ElectionMapper
 		'end' => 'end',
 		'createdAt' => 'created_at',
 		'createdBy' => 'created_by',
+		'encryptionKey' => 'encryption_key',
+		'decryptionKey' => 'decryption_key',
+		'signingKey' => 'signing_key',
+		'results' => 'results',
 	];
 
 	protected const DATA_TYPES = [
@@ -47,14 +52,20 @@ class ElectionDbMapper extends BaseDbMapper implements ElectionMapper
 			return $election;
 		}
 		foreach (self::MAP as $property => $key) {
-			if ($property === 'createdBy') {
-				$election->$property = $this->userMapper->findOne(['id' => $data[$key]]);
-				continue;
+			switch ($property) {
+				case 'createdBy':
+					$election->$property = $this->userMapper->findOne(['id' => $data[$key]]);
+					break;
+				case 'results':
+					if (!empty($data[$key])) {
+						$election->results = new Results(json_decode($data[$key], true, 512, JSON_THROW_ON_ERROR));
+					}
+					break;
+				default:
+					$election->$property = $data[$key];
 			}
-			$election->$property = $data[$key];
 		}
 		$election->setQuestions($this->questionMapper->findRelated($election));
-
 		return $election;
 	}
 

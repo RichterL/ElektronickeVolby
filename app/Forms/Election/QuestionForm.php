@@ -5,6 +5,7 @@ namespace App\Forms\Election;
 
 use App\Core\Utils\Form\TextInput;
 use App\Forms\HasMultiplier;
+use App\Models\Entities\Election\AnswerCollection;
 use Contributte\FormMultiplier\Buttons\CreateButton;
 use Contributte\FormMultiplier\Buttons\RemoveButton;
 use App\Models\Entities\Election\Answer;
@@ -81,7 +82,7 @@ class QuestionForm extends \App\Forms\BaseForm
 		$questionId = (int) $values['id'];
 		unset($values['id']);
 		$question = ($questionId) ? $this->questionRepository->findById($questionId) : new Question();
-		$answers = [];
+		$answers = new AnswerCollection();
 		foreach ($values['multiplier'] as $value) {
 			$tmp = new Answer();
 			$tmp->setValue($value['answer']);

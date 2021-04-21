@@ -16,13 +16,32 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 {
 	public function checkRequirements($element): void
 	{
-		if (!$this->getUser()->isLoggedIn()) {
+		$user = $this->getUser();
+		parent::checkRequirements($element);
+		if (!$user->isLoggedIn()) {
 			if ($this->isAjax()) {
 				$this->payload->forceRedirect = true;
 			}
-			$this->redirect('Sign:in');
+			$this->redirect('Sign:in', ['backlink' => $this->storeRequest()]);
 		}
-		parent::checkRequirements($element);
+		if ($element instanceof Nette\Application\UI\MethodReflection && $element->hasAnnotation('restricted')) {
+			$resource = $element->getAnnotation('resource');
+			$privilege = $element->getAnnotation('privilege');
+			if (!$user->isAllowed($resource, $privilege)) {
+				if (!$user->isAllowed($resource, 'view')) {
+					$this->flashMessage('You do not have permission to do that', 'warning');
+					$this->redirect('Homepage:');
+//					throw new Nette\Application\ForbiddenRequestException('You are not allowed to do that', 403);
+				}
+				$this->flashMessage('You do not have permission to do that', 'warning');
+				if ($this->isAjax()) {
+					$this->forward('this');
+				} else {
+					$this->forward(':default');
+				}
+
+			}
+		}
 	}
 
 	public function beforeRender()
@@ -50,9 +69,9 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 		return $this->getConcreteComponent(Form::class, $name);
 	}
 
-	public function addGrid(string $name, IDataSource $dataSource, string $primaryKey = 'id')
+	public function addGrid(string $name, IDataSource $dataSource, ?string $resource = null, string $primaryKey = 'id'): \App\Backend\Utils\DataGrid\DataGrid
 	{
-		$grid = new \App\Backend\Utils\DataGrid\DataGrid($dataSource, $primaryKey);
+		$grid = new \App\Backend\Utils\DataGrid\DataGrid($dataSource, $this->getUser(), $resource, $primaryKey);
 		$this->addComponent($grid->getOriginal(), $name);
 		return $grid;
 	}

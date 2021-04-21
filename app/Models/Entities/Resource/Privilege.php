@@ -34,6 +34,7 @@ class Privilege extends Entity implements IdentifiedById
 	public function toArray(): array
 	{
 		return [
+			'id' => $this->getId(),
 			'name' => $this->name,
 			'key' => $this->key,
 		];

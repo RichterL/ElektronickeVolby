@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Entities\Resource\Resource;
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\ResourceMapper;
@@ -12,6 +13,8 @@ use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class ResourceRepository extends BaseRepository
 {
+	public const CACHE_NAMESPACE = 'resources';
+
 	private ResourceMapper $resourceMapper;
 
 	public function __construct(ResourceMapper $resourceMapper)
@@ -40,7 +43,7 @@ class ResourceRepository extends BaseRepository
 	 */
 	public function findAll(): array
 	{
-		return $this->cache->load('resource.findAll', function () {
+		return $this->cache->load('findAll', function () {
 			return $this->resourceMapper->findAll();
 		});
 	}
@@ -61,9 +64,10 @@ class ResourceRepository extends BaseRepository
 	/**
 	 * @throws SavingErrorException
 	 */
-	public function save(Resource $resource): bool
+	public function save(Resource $resource): void
 	{
-		return $this->resourceMapper->save($resource);
+		$this->resourceMapper->save($resource);
+		$this->invalidate();
 	}
 
 	public function getDataSource(array $filter = []): IDataSource
@@ -71,6 +75,9 @@ class ResourceRepository extends BaseRepository
 		return $this->resourceMapper->getDataSource($filter);
 	}
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(Resource $resource): bool
 	{
 		return $this->resourceMapper->delete($resource);

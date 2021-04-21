@@ -105,8 +105,6 @@ class RuleDbMapper extends BaseDbMapper implements RuleMapper
 	 */
 	public function findAll(): array
 	{
-		return $this->cache->load('rule.findAll', function () {
-			return parent::findAll();
-		});
+		return parent::findAll();
 	}
 }

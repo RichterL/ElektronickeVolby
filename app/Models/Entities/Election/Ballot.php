@@ -14,5 +14,5 @@ abstract class Ballot extends Entity implements IdentifiedById
 {
 	use HasId;
 
-	protected Election $election;
+	protected ElectionId $election;
 }

@@ -10,6 +10,10 @@ application:
 session:
 	expiration: 14 days
 
+constants:
+    APP_DIR: %appDir%
+    TEMP_DIR: %tempDir%
+    LOG_DIR: %appDir%/../log
 
 di:
 	export:
@@ -23,21 +27,25 @@ extensions:
 decorator:
 		App\Repositories\BaseRepository:
 			setup:
-				- setCache(@repositoryCache)
+				- initCache()
 		App\Models\Mappers\Db\BaseDbMapper:
 			setup:
 				- setDibi()
-				- setCache(@mapperCache)
 				- init()
 		App\Forms\BaseForm:
 			setup:
 				- setFormFactory()
 
+search:
+    repositories:
+        in: %appDir%/Repositories
+    mappers:
+        in: %appDir%/Models/Mappers/Db
+
 services:
 	router: App\Router\RouterFactory::createRouter
-	# cache.storage: Nette\Caching\Storages\DevNullStorage
-	repositoryCache: Nette\Caching\Cache(namespace: 'repositoryCache')
-	mapperCache: Nette\Caching\Cache(namespace: 'mapperCache')
+#	cache.storage: Nette\Caching\Storages\DevNullStorage
+	cache.storage: Nette\Caching\Storages\FileStorage(%tempDir%/cache)
 
 	# ldap settings from parameters: of local.neon
 	ldap: App\Core\Classes\LDAP\Service(%ldap.server%, %ldap.baseDn%)
@@ -67,28 +75,7 @@ services:
 	#facades
 	- App\Frontend\Classes\ElectionsFacade
 
-	# data mappers
-	PrivilegeMapper: App\Models\Mappers\Db\PrivilegeDbMapper
-	ResourceMapper: App\Models\Mappers\Db\ResourceDbMapper
-	RoleMapper : App\Models\Mappers\Db\RoleDbMapper
-	UserMapper : App\Models\Mappers\Db\UserDbMapper
-	RuleMapper: App\Models\Mappers\Db\RuleDbMapper
-	ElectionMapper: App\Models\Mappers\Db\ElectionDbMapper
-	VoterFileMapper: App\Models\Mappers\Db\VoterFileDbMapper
-	VoterMapper: App\Models\Mappers\Db\VoterDbMapper
-	QuestionMapper: App\Models\Mappers\Db\QuestionDbMapper
-	AnswerMapper: App\Models\Mappers\Db\AnswerDbMapper
-	BallotMapper: App\Models\Mappers\Db\BallotDbMapper
-
-	# repositories
-	privilegeRepository: App\Repositories\PrivilegeRepository
-	resourceRepository: App\Repositories\ResourceRepository
-	roleRepository: App\Repositories\RoleRepository
-	userRepository : App\Repositories\UserRepository
-	ruleRepository: App\Repositories\RuleRepository
-	electionRepository: App\Repositories\ElectionRepository
-	voterFileRepository: App\Repositories\VoterFileRepository
-	voterRepository: App\Repositories\VoterRepository
-	questionRepository: App\Repositories\QuestionRepository
-	answerRepository: App\Repositories\AnswerRepository
-	- App\Repositories\BallotRepository
+	#others
+	- App\Backend\Classes\VoteCounting\VoteCounter
+	- App\Backend\Classes\VoteCounting\BallotDecryptor
+	- App\Backend\Classes\VoteCounting\BallotValidator

@@ -3,21 +3,20 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers\Db;
 
+use App\Models\Entities\Identifier;
 use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
-use dibi;
-use Dibi\Connection;
 use App\Models\Entities\Entity;
 use App\Models\Entities\IdentifiedById;
-use Nette\Caching\Cache;
+use dibi;
+use Dibi\Connection;
 use Nette\InvalidStateException;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
 abstract class BaseDbMapper
 {
 	protected Connection $dibi;
-	protected Cache $cache;
 	protected string $table;
 
 	protected const MAP = [];
@@ -26,11 +25,6 @@ abstract class BaseDbMapper
 	public function setDibi(Connection $dibi): void
 	{
 		$this->dibi = $dibi;
-	}
-
-	public function setCache(Cache $cache): void
-	{
-		$this->cache = $cache;
 	}
 
 	public function init(): void
@@ -52,6 +46,12 @@ abstract class BaseDbMapper
 				if ($propertyValue instanceof IdentifiedById) {
 					$propertyValue = $propertyValue->getId();
 				}
+				if ($propertyValue instanceof Identifier) {
+					$propertyValue = $propertyValue->getValue();
+				}
+				if ($propertyValue instanceof \JsonSerializable) {
+					$propertyValue = json_encode($propertyValue);
+				}
 				$data[$key] = $propertyValue;
 			}
 		}
@@ -59,6 +59,7 @@ abstract class BaseDbMapper
 	}
 
 	/**
+	 * @param array<string, mixed> $data
 	 * @throws SavingErrorException
 	 */
 	protected function saveData(array $data, IdentifiedById $entity): bool
@@ -80,6 +81,7 @@ abstract class BaseDbMapper
 
 	/**
 	 * @throws EntityNotFoundException
+	 * @param array<string, mixed> $filter
 	 */
 	public function findOne(array $filter = []): Entity
 	{
@@ -90,6 +92,10 @@ abstract class BaseDbMapper
 		return $this->create($data->toArray());
 	}
 
+	/**
+	 * @return iterable<int, Entity>
+	 * @param array<string, mixed> $filter
+	 */
 	public function find(array $filter = []): iterable
 	{
 		$collection = static::createCollection();
@@ -100,7 +106,10 @@ abstract class BaseDbMapper
 		return $collection;
 	}
 
-	public function getResult(array $filter = []): dibi\Result
+	/**
+	 * @param array<string, mixed> $filter
+	 */
+	public function getResult(array $filter = []): \Dibi\Result
 	{
 		static::applyMapToFilter($filter);
 		$result = $this->dibi->select('*')->from($this->table)->where($filter)->execute();
@@ -108,12 +117,18 @@ abstract class BaseDbMapper
 		return $result;
 	}
 
-	/** @deprecated use find() */
+	/**
+	 * @deprecated use find()
+	 * @return iterable<int, Entity>
+	 */
 	public function findAll(): iterable
 	{
 		return $this->find();
 	}
 
+	/**
+	 * @param array<string, mixed>|null $filter
+	 */
 	public static function applyMapToFilter(?array &$filter = []): void
 	{
 		if (empty($filter)) {
@@ -121,11 +136,13 @@ abstract class BaseDbMapper
 		}
 
 		foreach ($filter as $property => $value) {
-			if (static::MAP[$property] === $property) {
-				continue;
+			if ($value instanceof IdentifiedById) {
+				$value = $value->getId();
+			}
+			if (static::MAP[$property] !== $property) {
+				unset($filter[$property]);
 			}
 			$filter[static::MAP[$property]] = $value;
-			unset($filter[$property]);
 		}
 	}
 
@@ -136,6 +153,9 @@ abstract class BaseDbMapper
 		}
 	}
 
+	/**
+	 * @return iterable<int, Entity>
+	 */
 	public static function createCollection(): iterable
 	{
 		return [];
@@ -153,6 +173,9 @@ abstract class BaseDbMapper
 		}
 	}
 
+	/**
+	 * @param array<string, mixed> $filter
+	 */
 	public function getDataSource(array $filter = []): DibiFluentDataSource
 	{
 		$fluent = $this->dibi->select('*')->from($this->table);
@@ -162,5 +185,8 @@ abstract class BaseDbMapper
 		return new DibiFluentDataSource($fluent, 'id');
 	}
 
+	/**
+	 * @param array<string, mixed> $data
+	 */
 	abstract public function create(array $data = []): Entity;
 }

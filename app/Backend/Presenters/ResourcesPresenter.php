@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Backend\Presenters;
 
+use App\Models\Mappers\Exception\DeletingErrorException;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\RenderMode;
 use App\Models\Entities\Resource\Privilege;
@@ -24,18 +27,24 @@ final class ResourcesPresenter extends DefaultPresenter
 
 	public function __construct(ResourceRepository $resourceRepository, PrivilegeRepository $privilegeRepository)
 	{
+		parent::__construct();
 		$this->resourceRepository = $resourceRepository;
 		$this->privilegeRepository = $privilegeRepository;
 	}
 
-	public function actionDefault()
+	public function actionDefault(): void
 	{
 		if (!$this->getUser()->isLoggedIn()) {
 			$this->redirect('Sign:in');
 		}
 	}
 
-	public function actionEdit(int $id)
+	/**
+	 * @restricted
+	 * @resource(resources)
+	 * @privilege(edit)
+	 */
+	public function actionEdit(int $id): void
 	{
 	}
 
@@ -45,18 +54,19 @@ final class ResourcesPresenter extends DefaultPresenter
 		$this->template->resources = $resources;
 	}
 
-	public function renderEdit(int $id)
+	public function renderEdit(int $id): void
 	{
-		$resource = $this->resourceRepository->findById($id);
-		if (!$resource) {
+		try {
+			$resource = $this->resourceRepository->findById($id);
+			$this->template->resource = $resource;
+		} catch (EntityNotFoundException $e) {
 			$this->error('Resource not found');
 		}
-		$this->template->resource = $resource;
 	}
 
-	public function createComponentResourcesGrid()
+	public function createComponentResourcesGrid(): void
 	{
-		$this->addGrid('resourcesGrid', $this->resourceRepository->getDataSource())
+		$this->addGrid('resourcesGrid', $this->resourceRepository->getDataSource(), 'resources')
 			->addColumn(Column::NUMBER, 'id', 'id')
 			->addColumn(Column::TEXT, 'name', 'Name')
 			->addColumn(Column::TEXT, 'key', 'Key')
@@ -66,10 +76,10 @@ final class ResourcesPresenter extends DefaultPresenter
 			->addToolbarButton(ToolbarButton::ADD, 'Add new resource', 'showResourceForm!');
 	}
 
-	public function createComponentPrivilegesGrid()
+	public function createComponentPrivilegesGrid(): void
 	{
 		$resources = $this->resourceRepository->getIdNamePairs();
-		$this->addGrid('privilegesGrid', $this->privilegeRepository->getDataSource(['resource_id' => $this->getParameter('id')]))
+		$this->addGrid('privilegesGrid', $this->privilegeRepository->getDataSource(['resource_id' => $this->getParameter('id')]), 'resources')
 			->addColumn(Column::NUMBER, 'id', 'id')
 			->addColumn(Column::TEXT_MULTISELECT, 'resource_id', 'Resource', $resources)
 			->addColumn(Column::FILTERTEXT, 'name', 'Name')
@@ -79,49 +89,75 @@ final class ResourcesPresenter extends DefaultPresenter
 			->addToolbarButton(ToolbarButton::ADD, 'Add new privilege', 'showPrivilegeForm!');
 	}
 
-	public function handleEditResource(int $id)
+	/**
+	 * @restricted
+	 * @resource(resources)
+	 * @privilege(edit)
+	 */
+	public function handleEditResource(int $id): void
 	{
-		$resource = $this->resourceRepository->findById($id);
-		if (!$resource) {
+		try {
+			$resource = $this->resourceRepository->findById($id);
+			$this->handleShowResourceForm();
+			$this->getForm('resourceForm')->setDefaults($resource->toArray());
+			$this->template->resourceEdit = true;
+		} catch (EntityNotFoundException $e) {
 			$this->error('Resource not found');
 		}
-		$this->handleShowResourceForm();
-		$this->getForm('resourceForm')->setDefaults($resource->toArray());
-		$this->template->resourceEdit = true;
 	}
 
-	public function handleDeleteResource(int $id)
+	/**
+	 * @restricted
+	 * @resource(resources)
+	 * @privilege(delete)
+	 */
+	public function handleDeleteResource(int $id): void
 	{
-		$resource = $this->resourceRepository->findById($id);
-		if (!$resource) {
-			$this->error('Resource not found!');
-		}
-		if ($this->resourceRepository->delete($resource)) {
+		try {
+			$resource = $this->resourceRepository->findById($id);
+			$this->resourceRepository->delete($resource);
 			$this->flashMessage('Role id ' . $id . ' deleted', 'success');
 			$this->getGrid('resourcesGrid')->reload();
+		} catch (EntityNotFoundException $e) {
+			$this->error('Resource not found!');
+		} catch (DeletingErrorException $e) {
+			$this->flashMessage('Deleting failed', 'error');
 		}
 	}
 
-	public function handleEditPrivilege(int $privilegeId)
+	/**
+	 * @restricted
+	 * @resource(resources)
+	 * @privilege(edit)
+	 */
+	public function handleEditPrivilege(int $privilegeId): void
 	{
-		$privilege = $this->privilegeRepository->findById($privilegeId);
-		if (!$privilege) {
+		try {
+			$privilege = $this->privilegeRepository->findById($privilegeId);
+			$this->handleShowPrivilegeForm();
+			$this->template->editPrivilege = true;
+			$this['privilegeForm']->setDefaults($privilege->toArray());
+		} catch (EntityNotFoundException $e) {
 			$this->error('Privilege not found');
 		}
-		$this->handleShowPrivilegeForm();
-		$this->template->editPrivilege = true;
-		$this['privilegeForm']->setDefaults($privilege->toArray());
 	}
 
-	public function handleDeletePrivilege(int $privilegeId)
+	/**
+	 * @restricted
+	 * @resource(resources)
+	 * @privilege(delete)
+	 */
+	public function handleDeletePrivilege(int $privilegeId): void
 	{
-		$privilege = $this->privilegeRepository->findById($privilegeId);
-		if (!$privilege) {
-			$this->error('Resource not found!');
-		}
-		if ($this->privilegeRepository->delete($privilege)) {
+		try {
+			$privilege = $this->privilegeRepository->findById($privilegeId);
+			$this->privilegeRepository->delete($privilege);
 			$this->flashMessage('Privilege id ' . $privilegeId . ' deleted', 'success');
 			$this->getGrid('privilegesGrid')->reload();
+		} catch (EntityNotFoundException $e) {
+			$this->error('Resource not found!');
+		} catch (DeletingErrorException $e) {
+			$this->flashMessage('Deleting failed', 'error');
 		}
 	}
 
@@ -133,35 +169,46 @@ final class ResourcesPresenter extends DefaultPresenter
 		$form->addText('name', 'Name')->setRequired();
 		$form->addText('key', 'Key')->setRequired();
 		$form->addSubmit('submit', 'Save');
-		$form->addButton('Cancel', Html::el('a')->href($this->link('hideResourceForm!'))->class('ajax text-white')->setHtml('Cancel'))->setBtnClass('btn-danger');
+		$form->addButton(
+			'Cancel',
+			Html::el('a')
+				->href($this->link('hideResourceForm!'))
+				->data('naja-history', 'off')
+				->class('ajax text-white')
+				->setHtml('Cancel')
+		)->setBtnClass('btn-danger');
 		$form->onSuccess[] = [$this, 'resourceFormSuccess'];
-
 		return $form;
 	}
 
 	public function resourceFormSuccess(Form $form, array $values): void
 	{
-		$resourceId = (int) $values['id'];
-		unset($values['id']);
-		if ($resourceId) {
-			$resource = $this->resourceRepository->findById($resourceId);
-		} else {
-			$resource = new Resource();
-		}
-		$resource->setValues($values);
-		if ($this->resourceRepository->save($resource)) {
+		try {
+			$resourceId = (int) $values['id'];
+			unset($values['id']);
+			$resource = $resourceId ? $this->resourceRepository->findById($resourceId) : new Resource();
+			$resource->setValues($values);
+			$this->resourceRepository->save($resource);
 			$this->flashMessage('Resource saved.', 'success');
+		} catch (EntityNotFoundException $e) {
+			$this->flashMessage('Privilege not found!', 'error');
+		} catch (SavingErrorException $e) {
+			$this->flashMessage('Saving failed', 'error');
 		}
-		//$this->redrawControl('resourceFormSnippet');
 	}
 
-	public function handleShowResourceForm()
+	/**
+	 * @restricted
+	 * @resource(resources)
+	 * @privilege(edit)
+	 */
+	public function handleShowResourceForm(): void
 	{
 		$this->template->showResourceForm = true;
 		$this->redrawControl('resourceFormSnippet');
 	}
 
-	public function handleHideResourceForm()
+	public function handleHideResourceForm(): void
 	{
 		$this->template->showResourceForm = false;
 		$this->redrawControl('resourceFormSnippet');
@@ -171,7 +218,7 @@ final class ResourcesPresenter extends DefaultPresenter
 	{
 		$form = new BootstrapForm();
 		$form->addHidden('id');
-		$form->addHidden('resourceId')->setValue($this->getParameter('id'));
+		$form->addHidden('resourceId')->setDefaultValue($this->getParameter('id'));
 		$form->addText('name', 'Name')->setRequired();
 		$form->addText('key', 'Key')->setRequired();
 		$form->addSubmit('submit', 'Save');
@@ -183,7 +230,7 @@ final class ResourcesPresenter extends DefaultPresenter
 	{
 		$privilegeId = (int) $values['id'];
 		$resourceId = (int) $values['resourceId'];
-		unset($values['id'], $values['resrouceId']);
+		unset($values['id'], $values['resourceId']);
 
 		if ($privilegeId) {
 			$privilege = $this->privilegeRepository->findById($privilegeId);
@@ -191,19 +238,29 @@ final class ResourcesPresenter extends DefaultPresenter
 			$privilege = new Privilege();
 		}
 		$privilege->setValues($values);
-		$resource = $this->resourceRepository->findById($resourceId);
-		if ($this->privilegeRepository->save($resource, $privilege)) {
+		try {
+			$resource = $this->resourceRepository->findById($resourceId);
+			$this->privilegeRepository->save($resource, $privilege);
 			$this->flashMessage('Privilege saved.', 'success');
+		} catch (EntityNotFoundException $e) {
+			$this->flashMessage('resource not found', 'error');
+		} catch (SavingErrorException $e) {
+			$this->flashMessage('saving failed', 'error');
 		}
 	}
 
-	public function handleShowPrivilegeForm()
+	/**
+	 * @restricted
+	 * @resource(resources)
+	 * @privilege(edit)
+	 */
+	public function handleShowPrivilegeForm(): void
 	{
 		$this->template->showPrivilegeForm = true;
 		$this->redrawControl('privilegeFormSnippet');
 	}
 
-	public function handleHidePrivilegeForm()
+	public function handleHidePrivilegeForm(): void
 	{
 		$this->template->showPrivilegeForm = false;
 		$this->redrawControl('privilegeFormSnippet');

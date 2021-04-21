@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace App\Frontend\Classes;
 
 use App\Models\Entities\Election\Ballot;
+use App\Models\Mappers\Exception\EntityNotFoundException;
+use App\Models\Mappers\Exception\SavingErrorException;
 use App\Repositories\BallotRepository;
-use Exception;
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\User;
 use App\Repositories\ElectionRepository;
@@ -38,13 +39,16 @@ class ElectionsFacade
 		return $this->electionRepository->findRelated($user);
 	}
 
-	public function getElectionById(int $electionId): ?Election
+	/**
+	 * @throws EntityNotFoundException
+	 */
+	public function getElectionById(int $electionId): Election
 	{
 		return $this->electionRepository->findById($electionId);
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws SavingErrorException
 	 */
 	public function saveBallot(Ballot $ballot): bool
 	{

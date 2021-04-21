@@ -2,60 +2,30 @@
 declare(strict_types=1);
 
 namespace App\Models\Entities\Resource;
-use ArrayAccess;
-use ArrayIterator;
-use InvalidArgumentException;
-use IteratorAggregate;
 
-/**
- * @implements \IteratorAggregate<int, Privilege>
- * @implements \ArrayAccess<int, Privilege>
- */
-class PrivilegeCollection implements IteratorAggregate, ArrayAccess
+use App\Models\Entities\BaseCollection;
+
+class PrivilegeCollection extends BaseCollection
 {
 	/**
 	 * @var Privilege[]
 	 */
-	private array $items;
+	protected array $items;
+	protected const CONTAINS = Privilege::class;
 
 	public function __construct(Privilege ...$privileges)
 	{
 		$this->items = $privileges;
 	}
 
-	/**
-	 * @return ArrayIterator<int, Privilege>
-	 */
-	public function getIterator(): ArrayIterator
+	public function getIterator(): PrivilegeIterator
 	{
-		return new ArrayIterator($this->items);
-	}
-
-	public function offsetSet($offset, $value): void
-	{
-		if (!$value instanceof Privilege) {
-			throw new InvalidArgumentException('Only instances of Privilege can be added to PrivilegeCollection');
-		}
-		if (is_null($offset) || $value->getId() === null) {
-			$this->items[] = $value;
-		} else {
-			$this->items[$offset] = $value;
-		}
+		return new PrivilegeIterator($this);
 	}
 
 	public function offsetGet($offset): Privilege
 	{
 		return $this->items[$offset];
-	}
-
-	public function offsetUnset($offset): void
-	{
-		unset($this->items[$offset]);
-	}
-
-	public function offsetExists($offset): bool
-	{
-		return array_key_exists($offset, $this->items);
 	}
 
 	public function add(Privilege $privilege): void

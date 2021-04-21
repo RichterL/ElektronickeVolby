@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Entities\Role\Role;
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\RoleMapper;
@@ -13,6 +14,8 @@ use Ublaboo\DataGrid\DataSource\IDataSource;
 
 class RoleRepository extends BaseRepository
 {
+	public const CACHE_NAMESPACE = 'roles';
+
 	private RoleMapper $roleMapper;
 	private RuleMapper $ruleMapper;
 
@@ -43,7 +46,7 @@ class RoleRepository extends BaseRepository
 
 	public function findAll(bool $includeRules = false)
 	{
-		return $this->cache->load('role.findAll', function () use ($includeRules) {
+		return $this->cache->load('findAll', function () use ($includeRules) {
 			$roles = $this->roleMapper->findAll();
 			if ($includeRules) {
 				foreach ($roles as $role) {
@@ -73,6 +76,9 @@ class RoleRepository extends BaseRepository
 		return $this->roleMapper->save($role);
 	}
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(Role $role): bool
 	{
 		return $this->roleMapper->delete($role);

@@ -1,0 +1,35 @@
+{varType App\Models\Entities\Election\Election $election}
+<a n:if="!$election->isActive()" n:href="activate!" class="ajax btn btn-primary" data-naja-history="off">Activate this election</a>
+<a n:if="$election->isActive()" n:href="deactivate!" class="ajax btn btn-warning" data-naja-history="off">Deactivate this election</a>
+{$election->description}
+<div class="card-group election-keys">
+<div class="card">
+    <div class="card-header">Public Key (ballot encryption):</div>
+    <div class="card-body">
+        <div class="collapse election-key text-monospace" id="public-key">{$election->getPublicEncryptionKey()}</div>
+    </div>
+    <div class="card-footer text-center bg-light">
+        <a href="" class="stretched-link" data-toggle="collapse" data-target="#public-key">Click to show / hide</a>
+    </div>
+</div>
+<div n:if="$election->isFinished()" class="card">
+    <div class="card-header">Private Key (ballot decryption):</div>
+    <div class="card-body">
+        <div class="collapse election-key text-monospace" id="private-key">{$election->getPrivateEncryptionKey()}</div>
+    </div>
+    <div class="card-footer text-center bg-light">
+        <a href="" class="stretched-link" data-toggle="collapse" data-target="#private-key">Click to show / hide</a>
+    </div>
+
+</div>
+<div class="card">
+    <div class="card-header">Signing Key (server signature):</div>
+    <div class="card-body">
+        <div class="collapse election-key text-monospace" id="signing-key">{$election->getPublicSigningKey()}</div>
+    </div>
+    <div class="card-footer text-center bg-light">
+        <a href="" class="stretched-link" data-toggle="collapse" data-target="#signing-key">Click to show / hide</a>
+    </div>
+</div>
+
+</div>

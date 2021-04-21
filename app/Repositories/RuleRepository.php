@@ -7,13 +7,15 @@ namespace App\Repositories;
 use App\Models\Entities\Role\Role;
 use App\Models\Entities\Rule\Rule;
 use App\Models\Entities\Rule\RuleCollection;
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\RuleMapper;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
-class RuleRepository
+class RuleRepository extends BaseRepository
 {
+	public const CACHE_NAMESPACE = 'rules';
 	private RuleMapper $ruleMapper;
 
 	public function __construct(RuleMapper $ruleMapper)
@@ -42,14 +44,19 @@ class RuleRepository
 	/**
 	 * @throws SavingErrorException
 	 */
-	public function save(Rule $rule): bool
+	public function save(Rule $rule): void
 	{
-		return $this->ruleMapper->save($rule);
+		$this->ruleMapper->save($rule);
+		$this->invalidate([RoleRepository::CACHE_NAMESPACE, self::CACHE_NAMESPACE]);
 	}
 
-	public function delete(Rule $rule): bool
+	/**
+	 * @throws DeletingErrorException
+	 */
+	public function delete(Rule $rule): void
 	{
-		return $this->ruleMapper->delete($rule);
+		$this->ruleMapper->delete($rule);
+		$this->invalidate([RoleRepository::CACHE_NAMESPACE, self::CACHE_NAMESPACE]);
 	}
 
 	public function getDataSource(array $filter = []): IDataSource

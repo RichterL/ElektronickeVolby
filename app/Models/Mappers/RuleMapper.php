@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers;
 
+use App\Models\Mappers\Exception\DeletingErrorException;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Entities\Role\Role;
@@ -29,6 +30,9 @@ interface RuleMapper
 	 */
 	public function save(Rule $rule): bool;
 
+	/**
+	 * @throws DeletingErrorException
+	 */
 	public function delete(Rule $rule): bool;
 
 	public function getDataSource(array $filter = []): IDataSource;
