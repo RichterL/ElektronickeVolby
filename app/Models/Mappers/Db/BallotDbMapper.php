@@ -49,7 +49,42 @@ class BallotDbMapper extends BaseDbMapper implements BallotMapper
 	 */
 	public function save(Ballot $ballot): bool
 	{
-		return $this->saveWithId($ballot);
+		$this->dibi->query('LOCK TABLES %n WRITE', $this->table);
+		if ($ballot->getId() === null) {
+			$electionId = $ballot->getElection()->getValue();
+			$emptyRows = $this->getEmptyRows($electionId);
+			$count = count($emptyRows);
+			if ($count < 20) {
+
+				for ($i = 0; $i < 20; $i++) {
+					$emptyRows[] = $this->dibi->insert($this->table, [
+						'election_id' => $electionId,
+						'encrypted_data' => '',
+						'encrypted_key' => '',
+						'hash' => '',
+						'signature' => '',
+					])->execute(\dibi::IDENTIFIER);
+					$count++;
+				}
+			}
+			$randomIndex = random_int(0,$count-1);
+			$ballot->setId($emptyRows[$randomIndex]);
+		}
+		$result = $this->saveWithId($ballot);
+		$this->dibi->query('UNLOCK TABLES');
+		return $result;
+	}
+
+	private function getEmptyRows(int $electionId): array
+	{
+		return (array) $this->dibi->select('id')
+			->from($this->table)
+			->where('election_id = %i', $electionId)
+			->where('hash LIKE ""')
+			->where('encrypted_data LIKE ""')
+			->where('encrypted_key LIKE ""')
+			->where('signature LIKE ""')
+			->fetchAssoc('[]=id');
 	}
 
 	public function findEncrypted(Election $election): iterable
@@ -60,6 +95,9 @@ class BallotDbMapper extends BaseDbMapper implements BallotMapper
 			->where(['election_id' => $election->getId(), 'decrypted_at' => null])
 			->fetchAll();
 		foreach ($rows as $row) {
+			if (empty($row['encrypted_data'])) {
+				continue;
+			}
 			$collection[] = $this->create($row->toArray());
 		}
 		return $collection;
