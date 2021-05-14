@@ -43,7 +43,7 @@ class AnswerDbMapper extends BaseDbMapper implements AnswerMapper
 
 	public function findRelated(Question $question): AnswerCollection
 	{
-		$result = $this->dibi->select('*')->from($this->table)->where('question_id = %i', $question->getId())->fetchAll();
+		$result = $this->dibi->select('*')->from($this->table)->where('question_id = %i', $question->getId())->orderBy('value')->fetchAll();
 		$answers = self::createCollection();
 		/** @var \Dibi\Row $row */
 		foreach ($result as $row) {
