@@ -105,6 +105,7 @@ class ElectionDbMapper extends BaseDbMapper implements ElectionMapper
 			->from('%n e', $this->table)
 			->leftJoin('%n v', $this->voterTable)->on('v.election_id = e.id')
 			->where('v.email = %s', $user->getEmail())
+			->where('e.active = %i', true)
 			->execute();
 		self::applyDataTypes($result);
 
