@@ -9,7 +9,7 @@
     ],
 	"type": "project",
     "homepage": "https://github.com/RichterL/ElektronickeVolby",
-	"license": "GPL-3.0-or-later",
+	"license": "GPL-3.0-only",
     "authors": [
         {
             "name": "Lukas Richter",
