@@ -3,11 +3,11 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers\Db;
 
+use App\Models\Entities\Role\Role;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use dibi;
 use Dibi\Row;
 use Exception;
-use App\Models\Entities\Role\Role;
 use App\Models\Entities\User;
 use App\Models\Mappers\RoleMapper;
 

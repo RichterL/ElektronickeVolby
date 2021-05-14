@@ -36,7 +36,7 @@
 		<button class="btn btn-primary" id="menu-toggle"><i class="fa fa-bars"></i></button>
 	</nav>
 	<main>
-		<div class="container-fluid">
+		<div class="container-fluid container-xl">
 		{include content}
 		</div>
 	</main>
@@ -70,6 +70,8 @@
 	<!-- Ublaboo\Datagrid - END -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bs-custom-file-input/dist/bs-custom-file-input.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@3.1.1/dist/chart.min.js"></script>
+	<script src="https://cdn.tiny.cloud/1/lwoh93jzxra86mfcbxzhdl315kosuvhvka34q63d1ct3o9lw/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 	<script>
 		$(function () {
 			$('.modal-backdrop').remove()
@@ -93,6 +95,7 @@
 		naja.registerExtension(new ForceRedirectExtension());
 		naja.registerExtension(new LoadingIndicatorExtension());
 		naja.registerExtension(new ModalExtension());
+		naja.registerExtension(new SaveTinyExtension());
 		document.addEventListener('DOMContentLoaded', () => naja.initialize());
 	</script>
 	{snippet scripts}

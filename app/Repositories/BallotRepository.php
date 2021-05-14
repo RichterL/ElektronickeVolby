@@ -11,7 +11,7 @@ use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use App\Models\Mappers\BallotMapper;
 
-class BallotRepository extends BaseRepository
+class BallotRepository extends BaseRepository implements TransactionableRepository
 {
 	private BallotMapper $ballotMapper;
 
@@ -47,4 +47,21 @@ class BallotRepository extends BaseRepository
 	{
 		return $this->ballotMapper->findOne(['id' => $id]);
 	}
+
+	public function beginTransaction(): void
+	{
+		$this->ballotMapper->beginTransaction();
+	}
+
+	public function finishTransaction(): void
+	{
+		$this->ballotMapper->finishTransaction();
+	}
+
+	public function rollbackTransaction(): void
+	{
+		$this->ballotMapper->rollbackTransaction();
+	}
+
+
 }

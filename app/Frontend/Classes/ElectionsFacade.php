@@ -10,18 +10,22 @@ use App\Repositories\BallotRepository;
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\User;
 use App\Repositories\ElectionRepository;
+use App\Repositories\VoterRepository;
 
 class ElectionsFacade
 {
 	private ElectionRepository $electionRepository;
 	private BallotRepository $ballotRepository;
+	private VoterRepository $voterRepository;
 
 	public function __construct(
 		ElectionRepository $electionRepository,
-		BallotRepository $ballotRepository
+		BallotRepository $ballotRepository,
+		VoterRepository $voterRepository
 	) {
 		$this->electionRepository = $electionRepository;
 		$this->ballotRepository = $ballotRepository;
+		$this->voterRepository = $voterRepository;
 	}
 
 	public function getAllElections(): array
@@ -50,8 +54,21 @@ class ElectionsFacade
 	/**
 	 * @throws SavingErrorException
 	 */
-	public function saveBallot(Ballot $ballot): bool
+	public function saveBallot(User $user, Ballot $ballot): void
 	{
-		return $this->ballotRepository->save($ballot);
+		try {
+			$this->ballotRepository->beginTransaction();
+			$this->ballotRepository->save($ballot);
+			$this->voterRepository->update($user, $ballot->getElection());
+			$this->ballotRepository->finishTransaction();
+		} catch (SavingErrorException $e) {
+			$this->ballotRepository->rollbackTransaction();
+			throw $e;
+		}
+	}
+
+	public function hasVoted(User $user, Election $election)
+	{
+		return $this->voterRepository->hasVoted($user, $election);
 	}
 }

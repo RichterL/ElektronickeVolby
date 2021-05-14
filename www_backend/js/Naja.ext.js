@@ -54,3 +54,14 @@ class ForceRedirectExtension {
 		}
 	}
 }
+
+class SaveTinyExtension {
+	initialize(naja) {
+		naja.uiHandler.addEventListener('interaction', this.saveTiny.bind(this));
+	}
+	saveTiny(event) {
+		if (typeof tinyMCE !== null) {
+			tinyMCE.triggerSave();
+		}
+	}
+}

@@ -125,7 +125,8 @@ class DataGrid
 
 	public function addToolbarButton(string $type, string $title = '', string $destination = '', bool $restricted = true): self
 	{
-		if ($this->resource !== null && $restricted && !$this->user->isAllowed($this->resource, $type)) {
+		$privilege = ($type === ToolbarButton::ADD) ? 'edit' : null;
+		if ($this->resource !== null && $restricted && !$this->user->isAllowed($this->resource, $privilege)) {
 			return $this;
 		}
 		switch ($type) {

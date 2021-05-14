@@ -20,7 +20,7 @@ final class HomepagePresenter extends BasePresenter
 		parent::beforeRender();
 		$this->template->addFilter('formatDate', function (string $date) {
 			$dateTime = new \DateTime($date);
-			return $dateTime->format('d. m. Y H:i:s');
+			return $dateTime->format('d.m.Y H:i');
 		});
 		$this->template->addFilter('formatDateUntil', function (string $date) {
 			$full = false;
@@ -57,17 +57,8 @@ final class HomepagePresenter extends BasePresenter
 		});
 	}
 
-	public function actionDefault(): void
-	{
-		if (!$this->getUser()->isLoggedIn()) {
-			$this->redirect('Sign:in');
-		}
-	}
-
 	public function renderDefault(): void
 	{
-		$this->template->allElections = $this->electionsFacade->getAllElections();
-		$this->template->activeElections = $this->electionsFacade->getAllActiveElections();
 		$this->template->availableElections = $this->electionsFacade->findVoterInVoterLists($this->getUserEntity());
 	}
 }

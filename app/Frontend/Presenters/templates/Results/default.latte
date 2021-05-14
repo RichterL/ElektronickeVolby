@@ -1,16 +1,65 @@
 {varType \App\Models\Entities\Election\Election $election}
 {varType App\Models\Entities\Election\EncryptedBallot $ballot}
 {block content}
-    This is the results page for the election
-    {$election->title}
-    <pre>
-        {=print_r($election->results->getData())}
-    </pre>
+    <h1>Election results</h1>
+    <h3>{$election->title}</h3>
+    <div>{$election->description|noescape}</div>
+    {if empty($election->results)}
+        <div>There are no results computed yet. Please check again later.</div>
+    {else}
+        <div class="row text-center">
+            {foreach $election->getQuestions() as $qid => $question}
+                <div class="col-lg-6 offset-lg-3">
+                    <h3>{$question->question}</h3>
+                    <canvas id="chart-{$qid}"></canvas>
+                </div>
 
-    {foreach $election->getQuestions() as $qid => $question}
-        <div>{$qid} => {$question->question}</div>
-        {foreach $question->getAnswers() as $aid => $answer}
-            <div>{$aid} => {$answer->value}</div>
-        {/foreach}
-    {/foreach}
+            {/foreach}
+        </div>
+        {var $results = $election->results->getData()}
+
+        <script>
+            if( document.readyState !== 'loading' ) {
+                init();
+            } else {
+                document.addEventListener('DOMContentLoaded', () => { init() });
+            }
+            function init() {
+                {foreach $election->getQuestions() as $qid => $question}
+                var myChart = new Chart(
+                    document.getElementById('chart-{$qid}'),
+                    {
+                        type: 'bar',
+                        data: {
+                            labels: [
+                                {foreach $question->getAnswers() as $answer}
+                                {$answer->value},
+                                {/foreach}
+                            ],
+                            datasets: [{
+                                label: 'Votes',
+                                backgroundColor: 'rgb(255, 99, 132)',
+                                borderColor: 'rgb(255, 99, 132)',
+                                data: [
+                                    {foreach $question->getAnswers() as $aid => $answer}
+                                    {$results[$qid][$aid]},
+                                    {/foreach}
+                                ],
+                            }]
+                        },
+                        options: {
+                            indexAxis: 'y',
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                );
+                {/foreach}
+            }
+
+        </script>
+    {/if}
 {/block}

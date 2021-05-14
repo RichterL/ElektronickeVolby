@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace App\Models\Mappers\Db;
 
+use App\Models\Entities\Election\ElectionId;
+use App\Models\Entities\User;
+use App\Models\Mappers\Exception\SavingErrorException;
 use Exception;
 use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\VoterFile;
-use App\Models\Entities\Entity;
+//use App\Models\Entities\Entity;
 use App\Models\Mappers\VoterMapper;
 
 class VoterDbMapper extends BaseDbMapper implements VoterMapper
@@ -43,9 +46,20 @@ class VoterDbMapper extends BaseDbMapper implements VoterMapper
 		return (bool) $this->dibi->delete($this->table)->where('election_id = %i', $election->getId())->execute();
 	}
 
-	public function create(array $data = []): Entity
+//	protected function create(array $data = []): Entity
+//	{
+//		return null;
+//	}
+
+	public function getCount(Election $election, bool $voted = false): int
 	{
-		return null;
+		$select = $this->dibi->select('COUNT(id)')
+			->from($this->table)
+			->where('election_id = %i', $election->getId());
+		if ($voted) {
+			$select->where('timestamp IS NOT NULL');
+		}
+		return (int) $select->groupBy('election_id')->fetchSingle();
 	}
 
 	private function prepareFile(Election $election, VoterFile $voterFile): string
@@ -63,5 +77,29 @@ class VoterDbMapper extends BaseDbMapper implements VoterMapper
 			throw new \RuntimeException('Saving temporary file failed!');
 		}
 		return $filename;
+	}
+
+	/**
+	 * @throws SavingErrorException
+	 */
+	public function update(User $user, ElectionId $electionId): void
+	{
+		try {
+			$this->dibi->update($this->table, ['timestamp' => new \DateTime()])
+				->where('election_id = %i', $electionId->getValue())
+				->where('email LIKE %like', $user->getEmail())
+				->execute();
+		} catch (\Dibi\Exception $e) {
+			throw new SavingErrorException('unable to update voter list');
+		}
+	}
+
+	public function hasVoted(User $user, Election $election): bool
+	{
+		return (bool) $this->dibi->select('voted')
+			->from($this->table)
+			->where('election_id = %i', $election->getId())
+			->where('email LIKE %like', $user->getEmail())
+			->fetchSingle();
 	}
 }

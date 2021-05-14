@@ -9,6 +9,7 @@ use App\Frontend\Classes\ElectionsFacade;
 use App\Models\Entities\Election\ElectionId;
 use App\Models\Entities\Election\EncryptedBallot;
 use App\Models\Entities\Election\Election;
+use App\Models\Mappers\Exception\EntityNotFoundException;
 use Nette\Forms\Form;
 use phpseclib3\Crypt\AES;
 use phpseclib3\Crypt\Hash;
@@ -31,7 +32,15 @@ class VotingPresenter extends BasePresenter
 
 	public function actionDefault(int $id): void
 	{
-		$this->election = $this->electionsFacade->getElectionById($id);
+		try {
+			$this->election = $this->electionsFacade->getElectionById($id);
+			if ($this->electionsFacade->hasVoted($this->getUserEntity(), $this->election)) {
+				$this->flashMessage('You already voted in this election!', 'warning');
+				$this->redirect('Homepage:');
+			}
+		} catch (EntityNotFoundException $e) {
+			$this->error('Election not found');
+		}
 	}
 
 	public function renderDefault(): void
@@ -52,8 +61,14 @@ class VotingPresenter extends BasePresenter
 		$form->onSubmit = function () {
 			$this->flashMessage('Form submitted directly without encrypting the vote, aborting.', 'error');
 		};
+//		$form->onSuccess[] = [$this, 'votingFormSuccess'];
 
 		return $form;
+	}
+
+	public function votingFormSuccess($form, $values): void
+	{
+		$form->addError('This form should be sent through AJAX.');
 	}
 
 	public function handleGetPublicSigningKey(): void
@@ -79,7 +94,7 @@ class VotingPresenter extends BasePresenter
 	 * blinded_signature = blinded_message^d = padded_message^d⋅r (modN)
 	 * signature = blinded_signature⋅r^−1 = padded_message^d (modN)
 	 */
-	public function handleBlindSign()
+	public function handleBlindSign(): void
 	{
 		/** @var PrivateKey $privateKey */
 		$privateKey = $this->election->getPrivateSigningKey()->withPadding(RSA::ENCRYPTION_NONE);
@@ -130,7 +145,12 @@ class VotingPresenter extends BasePresenter
 		]);
 
 		try {
-			$this->electionsFacade->saveBallot($ballot);
+			if ($this->electionsFacade->hasVoted($this->getUserEntity(), $this->election)) {
+				$this->sendJson([
+					'error' => 'You already voted in this election.',
+				]);
+			}
+			$this->electionsFacade->saveBallot($this->getUserEntity(), $ballot);
 		} catch (\Exception $e) {
 			$this->sendJson([
 				'error' => $e->getMessage(),
@@ -140,38 +160,5 @@ class VotingPresenter extends BasePresenter
 		$this->sendJson([
 			'status' => 'ok',
 		]);
-	}
-
-	/** decrypting ballot received by user directly (temporary for testing) */
-	public function decrypt(string $key, string $ballot): void
-	{
-		$privateKey = $this->election->getPrivateSigningKey();
-		$decrypted = $privateKey->decrypt(base64_decode($key));
-		['key' => $decryptingKey, 'iv' => $iv] = json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR);
-
-		$aes = new AES('gcm');
-		$ballotBin = base64_decode($ballot);
-		$aes->setKey(base64_decode($decryptingKey));
-		$aes->setNonce(base64_decode($iv));
-		$aes->setTag(substr($ballotBin, -16));
-		$decrypted = $aes->decrypt(substr($ballotBin, 0, -16));
-		$decrypted = json_decode($decrypted, true, 512, JSON_THROW_ON_ERROR);
-
-		$this->sendJson([
-			'status' => 'ok',
-			'decryptedKey' => $decryptingKey,
-			'iv' => $iv,
-			'decryptedMessage' => $decrypted,
-		]);
-	}
-
-	public function base64_encode_url($string)
-	{
-		return str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($string));
-	}
-
-	public function base64_decode_url($string)
-	{
-		return base64_decode(str_replace(['-', '_'], ['+', '/'], $string));
 	}
 }

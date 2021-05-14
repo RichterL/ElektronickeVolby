@@ -101,7 +101,7 @@ class ElectionDbMapper extends BaseDbMapper implements ElectionMapper
 	 */
 	public function findRelated(User $user): iterable
 	{
-		$result = $this->dibi->select('*')
+		$result = $this->dibi->select('e.*')
 			->from('%n e', $this->table)
 			->leftJoin('%n v', $this->voterTable)->on('v.election_id = e.id')
 			->where('v.email = %s', $user->getEmail())

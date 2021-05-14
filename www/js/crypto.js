@@ -67,12 +67,9 @@ class Crypto {
         this.modalOutput = $('#encrypted')
     }
     async processVote(vote) {
-        const myModal = $('#myModal')
-        myModal.modal({ keyboard: false, backdrop: 'static'})
-        myModal.modal('show')
         this.modalConsole.append('Encrypting vote using AES-GCM ...\n')
         const encryptedVote = await this.aesEncrypt(vote).then((result) => {
-            this.modalProgress.css('width', '10%')
+            this.modalProgress.css('width', '15%')
             this.modalConsole.append('Vote encrypted (see output below) ...\n')
             this.modalOutput.append('-------- AES encrypted vote --------'+ result + '\n')
             return result
@@ -81,44 +78,36 @@ class Crypto {
         const wrappedKey = await this.getWrappedKey().then((result) => {
             this.modalConsole.append('AES key encrypted (see output below) ... \n')
             this.modalOutput.append('-------- RSA encrypted secret key -------- '+ result + '\n')
-            this.modalProgress.css('width', '20%')
+            this.modalProgress.css('width', '30%')
             return result
         })
-        // console.log('encryptedVote')
-        // console.log(encryptedVote)
-        // console.log('wrappedKey')
-        // console.log(wrappedKey)
-
-
         let message = wrappedKey;
         this.modalConsole.append('Applying random blinding factor ...\n')
         const { blinded, r } = await this.blind(message);
-        // console.log(blinded.toString(16));
-        this.modalProgress.css('width', '30%')
+        this.modalProgress.css('width', '45%')
 
         this.modalConsole.append('Requesting signature from the server ...\n')
         const signed = await postData(this.signingLink, {message: blinded.toString(16)}).then((result) => {
             return new window.jsbn.BigInteger(result.message, 16);
         })
-        // console.log(signed.toString(16));
-        this.modalProgress.css('width', '40%')
+        this.modalProgress.css('width', '60%')
         this.modalConsole.append('Removing blinding factor ...\n')
         const unblinded = await this.unblind({ signed, r});
-        // console.log(unblinded.toString(16));
         this.modalOutput.append('-------- Signature -------- '+ unblinded.toString(16) + '\n')
         this.modalConsole.append('Verifying signature integrity ...\n')
-        this.modalProgress.css('width', '50%')
+        this.modalProgress.css('width', '75%')
 
         const verified = await this.verify({unblinded, message})
-        this.modalProgress.css('width', '60%')
+        this.modalProgress.css('width', '90%')
         if (verified) {
             this.modalConsole.append('Signature and encrypted vote match ...\n')
         } else {
             this.modalConsole.append('Signature doesn\'t match the encrypted vote, stopping ...\n')
             throw new Error('Signature verification failed.')
         }
+        this.modalConsole.append('Sending the encrypted vote to server ...\n')
         postData(this.savingLink, { ballot: encryptedVote, key: wrappedKey, signature: unblinded.toString(16) }).then((result) => {
-            console.log(result)
+            this.modalProgress.css('width', '100%')
         })
 
 
@@ -126,14 +115,12 @@ class Crypto {
 
     messageToHash(message) {
         const messageHash = window.jsSha256(message);
-        // console.log("hash");console.log(messageHash);
         return messageHash;
     }
 
     messageToHashInt(message) {
         const messageHash = this.messageToHash(message);
         const messageBig = new window.jsbn.BigInteger(messageHash, 16);
-        // console.log("messageHashInt"); console.log(messageBig.toString());
         return messageBig;
     }
 
@@ -143,9 +130,6 @@ class Crypto {
         const key = await this.publicSigningKey
         const N = key.parts.N
         const E = key.parts.E
-        // console.log('N')
-        // console.log(key.parts.N.toString(16))
-
         const bigOne = new window.jsbn.BigInteger('1');
         let gcd;
         let r;
@@ -170,8 +154,6 @@ class Crypto {
         const key = await this.publicSigningKey;
         const N = key.parts.N
         signed = new window.jsbn.BigInteger(signed.toString());
-        // console.log('unblinding signed')
-        // console.log(signed.toString(16))
         const unblinded = signed.multiply(r.modInverse(N)).mod(N);
         return unblinded;
     }
@@ -184,14 +166,11 @@ class Crypto {
         const E = key.parts.E
 
         const originalMsg = unblinded.modPow(E, N);
-        // console.log('originalMsg')
-        // console.log(originalMsg.toString(16))
         const result = messageHash.equals(originalMsg);
         return result;
     }
 
     async aesEncrypt(message) {
-        console.log(message)
         const encoded = new TextEncoder().encode(JSON.stringify(message))
         let encrypted = window.crypto.subtle.encrypt(
             {
@@ -239,8 +218,6 @@ class Crypto {
 
     async importPublicEncryptionKey(url) {
         const response = await postData(url)
-        console.log('Public Singing key')
-        console.log(response)
         const buffer = this.parsePublicKey(response)
         return window.crypto.subtle.importKey(
             "spki",

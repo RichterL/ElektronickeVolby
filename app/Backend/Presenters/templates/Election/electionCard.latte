@@ -25,11 +25,13 @@
 					<i class="fa fa-cog"></i>
 				</a>
 				<div class="dropdown-menu dropdown-menu-right">
-				<a class="dropdown-item ajax" n:href="importVoterList!" data-naja-history="off">Import voter list</a>
-				<a class="dropdown-item ajax" n:href="importPublicKey!" n:if="$user->isInRole(\App\Core\Utils\Constants::ROLE_COMMITTEE)">Import public key</a>
-				<a class="dropdown-item ajax" n:href="importPrivateKey!" n:if="$user->isInRole(\App\Core\Utils\Constants::ROLE_COMMITTEE)">Import decryption key</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" href="#">Separated link</a>
+					<a class="dropdown-item ajax" n:href="importVoterList!" data-naja-history="off" n:if="$user->isAllowed('voterFiles', 'import')">Import voter list</a>
+					<a class="dropdown-item ajax" n:href="importPublicKey!" n:if="$user->isAllowed('elections', 'importKey')">Import public key</a>
+					<a class="dropdown-item ajax" n:href="importPrivateKey!" n:if="$election->isFinished() && $user->isAllowed('elections', 'importKey')">Import decryption key</a>
+					<div class="dropdown-divider"></div>
+					<a n:if="!$election->isActive()" n:href="activate!" class="ajax dropdown-item" data-naja-history="off">Activate this election</a>
+					<a n:if="$election->isActive()" n:href="deactivate!" class="ajax dropdown-item" data-naja-history="off">Deactivate this election</a>
+					<a n:if="$election->isFinished() && $user->isAllowed('results', 'view')" n:href="downloadProtocol!" class="dropdown-item" target="_blank" data-naja-history="off">Download protocol</a>
 				</div>
 			</li>
 		</ul>

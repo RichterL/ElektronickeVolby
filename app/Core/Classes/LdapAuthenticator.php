@@ -4,8 +4,10 @@ declare(strict_types=1);
 namespace App\Core\Classes;
 
 use App\Core\Classes\LDAP\LdapException;
+use App\Core\Classes\LDAP\NoConnectionException;
 use App\Core\Classes\LDAP\Service;
 use App\Models\Entities\User;
+use App\Models\Mappers\Exception\EntityNotFoundException;
 use Nette\Security\IIdentity;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
@@ -32,14 +34,14 @@ class LdapAuthenticator implements Nette\Security\Authenticator
 			throw new Nette\Security\AuthenticationException('Authentication failed.');
 		}
 
-		$user = $this->userRepository->findByUsername($remoteUser['email']);
-		if ($user) {
+		try {
+			$user = $this->userRepository->findByUsername($remoteUser['email']);
+		} catch (EntityNotFoundException $e) {
+			$user = new User();
+			$roles = $this->roleRepository->findByKey(reset($remoteUser['roles']));
+			$user->setEmail($remoteUser['email'])->setName($remoteUser['fullname'])->setUsername($remoteUser['email'])->setRoles(...$roles);
+		} finally {
 			return $user;
 		}
-		$user = new User();
-
-		$roles = $this->roleRepository->findByKey(reset($remoteUser['roles']));
-		$user->setEmail($remoteUser['email'])->setName($remoteUser['fullname'])->setUsername($remoteUser['email'])->setRoles(...$roles);
-		return $user;
 	}
 }

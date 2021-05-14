@@ -51,12 +51,6 @@ class BallotDecryptor
 
 	private function loadBallots(): void
 	{
-		$ballots = $this->ballotRepository->findEncryptedBallots($this->election);
-//		for ($i = 0; $i < 500; $i++) {
-//			foreach ($ballots as $ballot) {
-//				$this->ballots[] = $ballot;
-//			}
-//		}
 		$this->ballots = $this->ballotRepository->findEncryptedBallots($this->election);
 	}
 
@@ -67,7 +61,7 @@ class BallotDecryptor
 			try {
 				$this->verify($ballot);
 				$decrypted = $this->decrypt($ballot);
-//				$this->ballotRepository->save($decrypted);
+				$this->ballotRepository->save($decrypted);
 
 			} catch (DecryptionException | SavingErrorException | VerificationException $e) {
 				$this->log($e, Logger::WARNING, $ballot);

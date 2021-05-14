@@ -7,6 +7,9 @@
 				<div class="card-body">
 					<h3 n:block=title class="mx-auto text-center card-title">Sign in</h3>
 					{form signInForm}
+						{foreach $form->getOwnErrors() as $error}
+							<div class="alert alert-danger">{$error}</div>
+						{/foreach}
 						<div class="form-group">
 							{input username}
 							{label username}

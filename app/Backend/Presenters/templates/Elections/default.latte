@@ -5,7 +5,7 @@
 {/embed}
 {snippet electionFormSnippet}
 	{if !empty($showElectionForm)}
-		<div class="col-lg-9 col-xl-5 px-0">
+		<div class="col-lg-9 px-0">
 			<div class="card">
 				<div class="card-header position-relative">
 					{if empty($editElection)}Add new election{else}Edit election{/if}
@@ -19,6 +19,15 @@
 				</div>
 			</div>
 		</div>
+		<script>
+			$(function () {
+				tinymce.init({
+					selector: '#textareaInput'
+				});
+				$('input').on('click', function (e) { tinymce.triggerSave(); console.log($('form').serializeArray()); e.preventDefault(); e.stopPropagation(); })
+				$('form.ajax').on('submit', () => { console.log('sending'); })
+			})
+		</script>
 	{/if}
 {/snippet}
 {/block}

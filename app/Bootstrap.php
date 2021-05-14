@@ -11,7 +11,7 @@ class Bootstrap
 	public static function boot(): Configurator
 	{
 		$configurator = new Configurator;
-		$configurator->setDebugMode('31.30.168.141');
+		$configurator->setDebugMode('31.30.168.82');
 		$configurator->enableTracy(__DIR__ . '/../log');
 
 		$configurator->setTimeZone('Europe/Prague');

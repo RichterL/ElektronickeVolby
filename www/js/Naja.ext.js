@@ -98,9 +98,14 @@ class ValidateVotingForm {
 			$('form input[type=submit]').attr('disabled', false)
 			return;
 		}
-
-		toastr.success('Form is being encrypted')
-
+		Swal.fire({
+			title: 'Please wait',
+			showConfirmButton: false,
+			allowOutsideClick: false,
+			showLoading: true,
+			text: 'Your vote is being encrypted',
+		});
+		Swal.showLoading();
 		const $form = $('form')
 
 		let res = {questions: {}}
@@ -120,18 +125,38 @@ class ValidateVotingForm {
 
 		})
 		res.electionId = $form.find('input[name=electionId]').val()
-		res.timestamp = new Date().getTime()
-		console.log(res)
-
 
 		if (typeof window.crypt === "undefined") {
 			throw new Error('Encryption script is not loaded')
 		}
-
 		window.crypt.processVote(res).catch((error) => {
 			throw new Error('encryption processing error: '+ error)
 		}).then((result) => {
-			$('#myModal #closeButton').attr('disabled', false)
+			Swal.fire({
+				title: 'Vote sent',
+				text: 'Your vote was successfully stored on the server. You can find more details including encryption process by clicking on the button bellow.',
+				icon: 'success',
+				showCancelButton: true,
+				cancelButtonText: 'Close',
+				cancelButtonColor: '#dc3545',
+				confirmButtonText: 'View details',
+				confirmButtonColor: '#007bff',
+			}).then((result) => {
+				if (result.isConfirmed) {
+					const myModal = $('#myModal')
+					myModal.on('hidden.bs.modal', function (e) {
+						window.location.replace('/');
+					})
+					myModal.modal('show');
+
+					return false;
+				} else {
+					window.location.replace('/');
+				}
+
+			});
+
+
 		})
 	}
 }

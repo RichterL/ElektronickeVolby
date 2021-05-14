@@ -3,7 +3,7 @@
 {block content}
 	<h1 n:block="title">{$election->title}</h1>
 	<div>
-		{$election->description}
+		{$election->description|noescape}
 	</div>
 
 	<div class="container-fluid mb-5">
@@ -63,7 +63,7 @@
 				</div>
 
 				<div class="modal-footer">
-					<button type="button" disabled="disabled" class="btn btn-success" data-dismiss="modal" id="closeButton">Close</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal" id="closeButton">Close</button>
 				</div>
 			</div>
 		</div>
@@ -73,6 +73,7 @@
 {block scripts}
 	<script src="/js/crypto/jsbn@latest.js"></script>
 	<script src="/js/crypto/js-sha256@latest.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 	<script type="module">
 		naja.registerExtension(new ValidateVotingForm());
 		import Crypto from '/js/crypto.js'

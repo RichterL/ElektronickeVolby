@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace App\Backend\Presenters;
 
-use App\Backend\Classes\VoteCounting\VoteCounter;
+use App\Backend\Classes\VoteCounting\BallotCounter;
 use App\Forms\Election\QuestionForm;
 use App\Forms\Election\QuestionFormFactory;
+use App\Models\Entities\User;
 use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -14,6 +15,7 @@ use App\Models\Entities\Election\Election;
 use App\Models\Entities\Election\Question;
 use App\Models\Entities\Election\VoterFile;
 use App\Core\Classes\CsvResponse;
+use Contributte\PdfResponse\PdfResponse;
 use Nette\Application\UI\Form;
 use App\Repositories\AnswerRepository;
 use App\Repositories\ElectionRepository;
@@ -29,7 +31,7 @@ use App\Backend\Utils\DataGrid\Action;
 use App\Backend\Utils\DataGrid\Column;
 use App\Backend\Utils\DataGrid\ToolbarButton;
 
-final class ElectionPresenter extends DefaultPresenter
+final class ElectionPresenter extends BasePresenter
 {
 	/** @persistent */
 	public int $id;
@@ -41,7 +43,7 @@ final class ElectionPresenter extends DefaultPresenter
 	private VoterRepository $voterRepository;
 	private QuestionRepository $questionRepository;
 	private AnswerRepository $answerRepository;
-	private VoteCounter $voteCounter;
+	private BallotCounter $ballotCounter;
 
 	public function __construct(
 		ElectionRepository $electionRepository,
@@ -50,7 +52,7 @@ final class ElectionPresenter extends DefaultPresenter
 		VoterRepository $voterRepository,
 		QuestionRepository $questionRepository,
 		AnswerRepository $answerRepository,
-		VoteCounter $voteCounter
+		BallotCounter $ballotCounter
 	) {
 		parent::__construct();
 		$this->electionRepository = $electionRepository;
@@ -59,7 +61,7 @@ final class ElectionPresenter extends DefaultPresenter
 		$this->voterRepository = $voterRepository;
 		$this->questionRepository = $questionRepository;
 		$this->answerRepository = $answerRepository;
-		$this->voteCounter = $voteCounter;
+		$this->ballotCounter = $ballotCounter;
 	}
 
 	public function startup(): void
@@ -149,10 +151,13 @@ final class ElectionPresenter extends DefaultPresenter
 	 * @resource(elections)
 	 * @privilege(decrypt)
 	 */
-	public function handleDecryptBallots(): void
+	public function handleCountBallots(): void
 	{
 		try {
-			$this->election->setResults($this->voteCounter->processBallots($this->election));
+			$results = $this->ballotCounter->processBallots($this->election);
+			$results['countVoted'] = $this->voterRepository->getCountVoted($this->election);
+			$results['countTotal'] = $this->voterRepository->getCountTotal($this->election);
+			$this->election->setResults($results);
 			$this->electionRepository->save($this->election);
 			$this->flashMessage('Votes were counted');
 			$this->redirect(':results');
@@ -279,6 +284,34 @@ final class ElectionPresenter extends DefaultPresenter
 	public function renderResults(): void
 	{
 		$this->template->selectedTab = 'results';
+		if ($this->isAjax()) {
+			$this->redrawControl('scripts');
+		}
+	}
+
+	/**
+	 * @restricted
+	 * @resource(results)
+	 * @privilege(view)
+	 */
+	public function handleDownloadProtocol(): void
+	{
+		if (empty($this->election->results)) {
+			$this->flashMessage('Votes haven\'t been counted yet!', 'warning');
+			return;
+		}
+
+		$template = $this->createTemplate();
+		$template->setFile(__DIR__ . "/templates/Election/protocol.latte");
+		$template->election = $this->election;
+
+		$pdf = new PdfResponse($template);
+		$pdf->setSaveMode(PdfResponse::INLINE);
+		$now = (new \DateTime())->format('d.m.Y H:i:s');
+		/** @var User $user */
+		$user = $this->getUser()->getIdentity();
+		$pdf->getMPDF()->setFooter("|Printed at $now <br> by {$user->getName()} {$user->getSurname()}|");
+		$this->sendResponse($pdf);
 	}
 
 	/* QUESTIONS */
@@ -375,7 +408,7 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function createComponentQuestionsGrid(): void
 	{
-		$grid = $this->addGrid('questionsGrid', $this->questionRepository->getDataSource(['election_id' => $this->election->getId()]))
+		$grid = $this->addGrid('questionsGrid', $this->questionRepository->getDataSource(['election_id' => $this->election->getId()]), 'questions')
 			->addColumn(Column::NUMBER, 'id', 'id')
 			->addColumn(Column::FILTERTEXT, 'name', 'Name')
 			->addColumn(Column::FILTERTEXT, 'question', 'Question')
@@ -406,6 +439,10 @@ final class ElectionPresenter extends DefaultPresenter
 		};
 		$form->onAdd = function () {
 			$this->flashMessage('Question added');
+		};
+		$form->onCancel = function() {
+			$this->flashMessage('canceled');
+			$this->template->showQuestionForm = false;
 		};
 		$form->onSuccess = function () {
 			$this->redirect('this');
@@ -457,7 +494,7 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function createComponentAnswersGrid(): void
 	{
-		$this->addGrid('answersGrid', $this->answerRepository->getDataSource(['election_id' => $this->election->getId()]))
+		$this->addGrid('answersGrid', $this->answerRepository->getDataSource(['election_id' => $this->election->getId()]), 'answers')
 			->addColumn(Column::TEXT, 'question_id', 'question id')
 			->addColumn(Column::TEXT, 'question', 'question text')
 			->addColumn(Column::TEXT, 'value', 'answer')
@@ -583,7 +620,7 @@ final class ElectionPresenter extends DefaultPresenter
 
 	public function createComponentVoterFilesGrid(): void
 	{
-		$this->addGrid('voterFilesGrid', $this->voterFileRepository->getDataSource(['election_id' => $this->getParameter('id')]))
+		$this->addGrid('voterFilesGrid', $this->voterFileRepository->getDataSource(['election_id' => $this->getParameter('id')]), 'voterFiles')
 			->addColumn(Column::NUMBER, 'id', 'id')
 			->addColumn(Column::FILTERTEXT, 'filename', 'Filename')
 			->addColumn(Column::DATETIME, 'created_at', 'Created at')

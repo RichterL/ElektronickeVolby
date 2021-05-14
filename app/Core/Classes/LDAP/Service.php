@@ -16,6 +16,7 @@ class Service extends \Nette\DI\CompilerExtension
 		$this->connection = ldap_connect($server);
 		ldap_set_option($this->connection, LDAP_OPT_PROTOCOL_VERSION, 3);
 		ldap_set_option($this->connection, LDAP_OPT_REFERRALS, 0);
+		ldap_set_option($this->connection, LDAP_OPT_NETWORK_TIMEOUT, 3);
 	}
 
 	public function getRemoteUser(string $username, string $password): ?array

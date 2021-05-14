@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Frontend\Presenters;
 
+use App\Core\Classes\LDAP\NoConnectionException;
 use Contributte\FormsBootstrap\BootstrapForm;
 use App\Core\Classes\LdapAuthenticator;
 use Nette;
@@ -59,6 +60,8 @@ final class SignPresenter extends Nette\Application\UI\Presenter
 				$this->redirect('Homepage:');
 			} catch (AuthenticationException $ex) {
 				$form->addError('Username or password invalid');
+			} catch (NoConnectionException $ex) {
+				$form->addError('LDAP server not available');
 			}
 		}
 	}

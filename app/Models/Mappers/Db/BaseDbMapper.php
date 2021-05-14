@@ -185,8 +185,23 @@ abstract class BaseDbMapper
 		return new DibiFluentDataSource($fluent, 'id');
 	}
 
-	/**
-	 * @param array<string, mixed> $data
-	 */
-	abstract public function create(array $data = []): Entity;
+	public function beginTransaction(): void
+	{
+		$this->dibi->begin();
+	}
+
+	public function finishTransaction(): void
+	{
+		$this->dibi->commit();
+	}
+
+	public function rollbackTransaction(): void
+	{
+		$this->dibi->rollback();
+	}
+
+//	/**
+//	 * @param array<string, mixed> $data
+//	 */
+//	abstract public function create(array $data = []): Entity;
 }

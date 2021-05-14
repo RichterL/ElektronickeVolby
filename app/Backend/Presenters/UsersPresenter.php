@@ -19,7 +19,7 @@ use App\Backend\Utils\DataGrid\Action;
 use App\Backend\Utils\DataGrid\Column;
 use App\Backend\Utils\DataGrid\ToolbarButton;
 
-final class UsersPresenter extends DefaultPresenter
+final class UsersPresenter extends BasePresenter
 {
 	private UserRepository $userRepository;
 	private RoleRepository $roleRepository;
@@ -88,6 +88,11 @@ final class UsersPresenter extends DefaultPresenter
 		}
 	}
 
+	/**
+	 * @restricted
+	 * @resource(users)
+	 * @privilege(edit)
+	 */
 	public function handleShowUserForm(): void
 	{
 		$this->template->showUserForm = true;
@@ -110,20 +115,18 @@ final class UsersPresenter extends DefaultPresenter
 			->addColumn(Column::FILTERTEXT, 'surname', 'Surname')
 			->addColumn(Column::TEXT, 'roles', 'Roles')
 			->addAction(Action::EDIT, 'edit!');
-//		if ($this->getUser()->isAllowed('users', 'delete')) {
+
 			$grid->addConfirmAction(
 				Action::DELETE,
 				new StringConfirmation('Do you really want to delete user %s', 'username'),
 				'delete!'
 			);
-//		}
-//		if ($this->getUser()->isAllowed('users', 'add')) {
+
 			$grid->addToolbarButton(
 				ToolbarButton::ADD,
 				'Add new user',
 				'showUserForm!'
 			);
-//		}
 
 		$this->getGrid('usersGrid')->addFilterMultiSelect('roles', 'roles', $roles)
 			->setCondition(function (\Dibi\Fluent $fluent, $value) {

@@ -24,7 +24,7 @@ use App\Backend\Utils\DataGrid\Action;
 use App\Backend\Utils\DataGrid\Column;
 use App\Backend\Utils\DataGrid\ToolbarButton;
 
-final class RolesPresenter extends DefaultPresenter
+final class RolesPresenter extends BasePresenter
 {
 	private RoleRepository $roleRepository;
 	private ResourceRepository $resourceRepository;
@@ -281,7 +281,7 @@ final class RolesPresenter extends DefaultPresenter
 			$privileges = $this->privilegeRepository->findByResource($resource)->getIdNamePairs();
 			$form->addSelect('privilege', 'Privilege', $privileges);
 			$form->addRadioList('type', 'Type', [Rule\Type::ALLOW => 'Allow', Rule\Type::DENY => 'Deny'])
-				->setDefaultValue(Rule\Type::ALLOW);
+				->setDefaultValue(Rule\Type::ALLOW)->setHtmlAttribute('required');
 			$form->removeComponent($form->getComponent('cancel'));
 			$form->addSubmit('submit', 'Submit');
 			$form->addButton(

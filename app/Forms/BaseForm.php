@@ -36,6 +36,9 @@ abstract class BaseForm extends Nette\Application\UI\Control
 			$form->onSuccess['beforeSave'] = $this->onBeforeSave ?? static function () {};
 			$form->onSuccess['save'] = $this->onSave ?? static function () {};
 			$form->onSuccess['afterSave'] = function (Nette\Forms\Form $form, array $values) {
+				if ($form->isSubmitted() === false) {
+					return;
+				}
 				$callback = (empty($values['id']) ? $this->onAdd : $this->onEdit);
 				if ($callback !== null) {
 					$callback();
@@ -119,6 +122,7 @@ abstract class BaseForm extends Nette\Application\UI\Control
 
 	protected function dispatchOnCancel()
 	{
+		$this->form->reset();
 		if ($this->onCancel !== null) {
 			call_user_func($this->onCancel);
 		}

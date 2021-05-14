@@ -8,11 +8,16 @@ use App\Models\Entities\IdentifiedById;
 use App\Models\Traits\Entity\HasId;
 
 /**
- * @property Election $election
+ * @property ElectionId $election
  */
 abstract class Ballot extends Entity implements IdentifiedById
 {
 	use HasId;
 
-	protected ElectionId $election;
+	protected ?ElectionId $election = null;
+
+	public function getElection(): ?ElectionId
+	{
+		return $this->election;
+	}
 }

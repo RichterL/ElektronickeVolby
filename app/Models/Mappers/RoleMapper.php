@@ -12,7 +12,7 @@ use Ublaboo\DataGrid\DataSource\IDataSource;
 
 interface RoleMapper
 {
-	public function create(array $data = []): Role;
+//	public function create(array $data = []): Role;
 
 	/** @return Role[] */
 	public function findRelated(User $user): array;

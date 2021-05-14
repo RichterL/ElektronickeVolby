@@ -76,6 +76,6 @@ services:
 	- App\Frontend\Classes\ElectionsFacade
 
 	#others
-	- App\Backend\Classes\VoteCounting\VoteCounter
+	- App\Backend\Classes\VoteCounting\BallotCounter
 	- App\Backend\Classes\VoteCounting\BallotDecryptor
 	- App\Backend\Classes\VoteCounting\BallotValidator

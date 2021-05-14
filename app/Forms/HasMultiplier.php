@@ -8,7 +8,7 @@ use Contributte\FormMultiplier\Multiplier;
 trait HasMultiplier
 {
 	private int $copies = 1;
-	private int $maxCopies = 5;
+	private int $maxCopies = 50;
 
 	public function setMultiplierValues(array $multiplierValues): void
 	{

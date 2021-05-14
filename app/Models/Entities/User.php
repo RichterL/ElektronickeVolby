@@ -60,16 +60,16 @@ class User extends Entity implements IdentifiedById, IIdentity
 		return $this;
 	}
 
-	// public function getSurname(): string
-	// {
-	// 	return $this->surname;
-	// }
+	 public function getSurname(): string
+	 {
+	 	return $this->surname;
+	 }
 
-	// public function setSurname(string $surname): self
-	// {
-	// 	$this->surname = $surname;
-	// 	return $this;
-	// }
+	 public function setSurname(string $surname): self
+	 {
+	 	$this->surname = $surname;
+	 	return $this;
+	 }
 
 	public function getEmail(): string
 	{

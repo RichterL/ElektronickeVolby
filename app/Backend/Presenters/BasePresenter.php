@@ -12,7 +12,7 @@ use Tracy\Debugger;
 use Ublaboo\DataGrid\DataGrid;
 use Ublaboo\DataGrid\DataSource\IDataSource;
 
-abstract class DefaultPresenter extends Nette\Application\UI\Presenter
+abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
 	public function checkRequirements($element): void
 	{
@@ -28,18 +28,15 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 			$resource = $element->getAnnotation('resource');
 			$privilege = $element->getAnnotation('privilege');
 			if (!$user->isAllowed($resource, $privilege)) {
-				if (!$user->isAllowed($resource, 'view')) {
-					$this->flashMessage('You do not have permission to do that', 'warning');
-					$this->redirect('Homepage:');
-//					throw new Nette\Application\ForbiddenRequestException('You are not allowed to do that', 403);
-				}
 				$this->flashMessage('You do not have permission to do that', 'warning');
+				if (!$user->isAllowed($resource, 'view')) {
+					$this->redirect('Homepage:');
+				}
 				if ($this->isAjax()) {
 					$this->forward('this');
 				} else {
 					$this->forward(':default');
 				}
-
 			}
 		}
 	}
@@ -69,14 +66,14 @@ abstract class DefaultPresenter extends Nette\Application\UI\Presenter
 		return $this->getConcreteComponent(Form::class, $name);
 	}
 
-	public function addGrid(string $name, IDataSource $dataSource, ?string $resource = null, string $primaryKey = 'id'): \App\Backend\Utils\DataGrid\DataGrid
+	protected function addGrid(string $name, IDataSource $dataSource, ?string $resource = null, string $primaryKey = 'id'): \App\Backend\Utils\DataGrid\DataGrid
 	{
 		$grid = new \App\Backend\Utils\DataGrid\DataGrid($dataSource, $this->getUser(), $resource, $primaryKey);
 		$this->addComponent($grid->getOriginal(), $name);
 		return $grid;
 	}
 
-	public function getGrid(string $name): DataGrid
+	protected function getGrid(string $name): DataGrid
 	{
 		return $this->getConcreteComponent(DataGrid::class, $name);
 	}

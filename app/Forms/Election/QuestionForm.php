@@ -39,13 +39,15 @@ class QuestionForm extends \App\Forms\BaseForm
 			->setRequired()
 			->setPlaceholder('Enter the question asked ...');
 		$form->addInteger('min', 'Minimum answers')
-			->addRule($form::MIN, 'Min value is %d', 1)
+			->addRule($form::MIN, 'Min value is %d', $this->copies)
+			->addRule($form::MAX, 'Max value is %d', $this->maxCopies)
 			->setRequired()
-			->setDefaultValue(1);
+			->setDefaultValue($this->copies);
 		$form->addInteger('max', 'Maximum answers')
-			->addRule($form::MAX, 'Max value is %d', 10)
+			->addRule($form::MAX, 'Max value is %d', $this->maxCopies)
+			->addRule($form::MIN, 'Min value is %d', $this->copies)
 			->setRequired()
-			->setDefaultValue(1);
+			->setDefaultValue($this->copies);
 		$form->addCheckbox('required', 'Is answer required?')
 			->setDefaultValue(true);
 
@@ -63,11 +65,36 @@ class QuestionForm extends \App\Forms\BaseForm
 		/** @var RemoveButton */
 		$removeButton = $multiplier->addRemoveButton('-')
 			->addClass('btn btn-danger');
-
+		$form->onSuccess['beforeSave'] = [$this, 'validate'];
 		$form->onSuccess['save'] = [$this, 'processForm'];
 		$form->addSubmit('submit', 'Submit');
 		$form->addSubmit('cancel', 'Cancel')->setBtnClass('btn-danger')->setOmitted()->setValidationScope([]);
 		return $form;
+	}
+
+	public function validate(Nette\Forms\Form $form, array $values): void
+	{
+		if ($form->isSubmitted()->getValue() == 'Cancel') {
+			return;
+		}
+		$valid = true;
+		if ($values['min'] < $this->copies || $values['min'] > $values['max']) {
+			$form['min']->addError('incorrect value');
+			$valid = false;
+		}
+		if ($values['max'] > $this->maxCopies || $values['max'] < $values['min']) {
+			$form['max']->addError('incorrect value');
+			$valid = false;
+		}
+		if (!$valid) {
+			return;
+		}
+		if ($values['min'] > count($values['multiplier'])) {
+			$form['min']->setValue(count($values['multiplier']));
+		}
+		if ($values['max'] > count($values['multiplier'])) {
+			$form['max']->setValue(count($values['multiplier']));
+		}
 	}
 
 	public function processForm(Nette\Forms\Form $form, array $values)

@@ -20,7 +20,7 @@ use App\Backend\Utils\DataGrid\Action;
 use App\Backend\Utils\DataGrid\Column;
 use App\Backend\Utils\DataGrid\ToolbarButton;
 
-final class ResourcesPresenter extends DefaultPresenter
+final class ResourcesPresenter extends BasePresenter
 {
 	private ResourceRepository $resourceRepository;
 	private PrivilegeRepository $privilegeRepository;

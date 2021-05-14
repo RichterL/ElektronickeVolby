@@ -1,0 +1,29 @@
+{varType App\Models\Entities\Election\Election $election}
+<html lang="en">
+<head>
+    <title>Election results for {$election->title}</title>
+</head>
+<body>
+    {var $results = $election->results->getData()}
+    <h1>Election results for {$election->title}</h1>
+    <div><strong>Total eligible voters:</strong> {$results['countTotal']}</div>
+    <div><strong>Total valid ballots:</strong> {$results['valid']} </div>
+    <div><strong>Total invalid ballots:</strong>  {$results['invalid']} </div>
+    <div><strong>Total damaged ballots:</strong>  {$results['error']} </div>
+    <div><strong>Total turnout:</strong> {$results['valid'] / $results['countTotal']|round:2} % </div>
+
+    <h3><strong>Results:</strong></h3>
+
+    {foreach $election->getQuestions() as $qid => $question}
+        <div><strong>{$question->question}</strong></div>
+        <ul>
+            {foreach $question->getAnswers() as $aid => $answer}
+                <li>{$answer->value}: {$results[$qid][$aid]}</li>
+            {/foreach}
+
+        </ul>
+
+    {/foreach}
+
+</body>
+</html>

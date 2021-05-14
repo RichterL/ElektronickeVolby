@@ -19,13 +19,9 @@ class BallotValidator
 	private array $ballots;
 	private BallotRepository $ballotRepository;
 
-	public function __construct()
+	public function __construct(BallotRepository $repository)
 	{
-	}
-
-	public function getElection(): Election
-	{
-		return $this->election;
+		$this->ballotRepository = $repository;
 	}
 
 	public function setElection(Election $election): BallotValidator
@@ -34,8 +30,14 @@ class BallotValidator
 		return $this;
 	}
 
+	public function validateBallots(): array
+	{
+		$this->ballots = $this->ballotRepository->findDecryptedBallots($this->election);
+		return $this->validate($this->ballots);
+	}
+
 	/** @param DecryptedBallot[] $ballots */
-	public function validate(array $ballots)
+	private function validate(array $ballots): array
 	{
 		$valid = $invalid = $error = [];
 		foreach ($ballots as $ballot) {

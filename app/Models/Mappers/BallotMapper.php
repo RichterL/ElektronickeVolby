@@ -11,7 +11,7 @@ use App\Models\Mappers\Exception\EntityNotFoundException;
 use App\Models\Mappers\Exception\SavingErrorException;
 use Ublaboo\DataGrid\DataSource\DibiFluentDataSource;
 
-interface BallotMapper
+interface BallotMapper extends TransactionableMapper
 {
 	/**
 	 * @throws EntityNotFoundException

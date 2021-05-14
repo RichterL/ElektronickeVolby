@@ -11,12 +11,13 @@ use App\Models\Entities\Election\Election;
 use Nette\Application\UI\Form;
 use App\Repositories\ElectionRepository;
 use App\Repositories\UserRepository;
+use Nette\InvalidStateException;
 use Ublaboo\DataGrid\Column\Action\Confirmation\StringConfirmation;
 use App\Backend\Utils\DataGrid\Action;
 use App\Backend\Utils\DataGrid\Column;
 use App\Backend\Utils\DataGrid\ToolbarButton;
 
-final class ElectionsPresenter extends DefaultPresenter
+final class ElectionsPresenter extends BasePresenter
 {
 	private ElectionRepository $electionRepository;
 	private UserRepository $userRepository;
@@ -28,6 +29,11 @@ final class ElectionsPresenter extends DefaultPresenter
 		$this->userRepository = $userRepository;
 	}
 
+	/**
+	 * @restricted
+	 * @resource(elections)
+	 * @privilege(view)
+	 */
 	public function renderDefault(): void
 	{
 		$this->template->elections = $this->electionRepository->findAll();
@@ -53,8 +59,8 @@ final class ElectionsPresenter extends DefaultPresenter
 		$form->setRenderMode(RenderMode::SIDE_BY_SIDE_MODE);
 		$form->addHidden('id');
 		$form->addText('title', 'Title')->setRequired();
-		$form->addTextArea('description', 'Description')->setRequired();
-		$form->addCheckbox('secret', 'Secret');
+		$form->addTextArea('description', 'Description')->setRequired()->setHtmlId('textareaInput');
+//		$form->addCheckbox('secret', 'Secret');	
 		$form->addDateTime('start', 'Start')->setRequired();
 		$form->addDateTime('end', 'End')->setRequired();
 		$form->addSubmit('submit', 'Submit')->setBtnClass('ajax btn-primary');
@@ -93,6 +99,8 @@ final class ElectionsPresenter extends DefaultPresenter
 			$this->flashMessage('Election wasn\'t found!', 'error');
 		} catch (SavingErrorException $e) {
 			$this->flashMessage('saving failed!', 'error');
+		} catch (InvalidStateException $e) {
+			$this->flashMessage($e->getMessage(), 'error');
 		}
 	}
 
