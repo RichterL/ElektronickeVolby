@@ -154,6 +154,10 @@ final class ElectionPresenter extends BasePresenter
 	public function handleCountBallots(): void
 	{
 		try {
+			if ($this->election->getPrivateEncryptionKey() === null) {
+				$this->handleImportPrivateKey();
+				return;
+			}
 			$results = $this->ballotCounter->processBallots($this->election);
 			$results['countVoted'] = $this->voterRepository->getCountVoted($this->election);
 			$results['countTotal'] = $this->voterRepository->getCountTotal($this->election);
